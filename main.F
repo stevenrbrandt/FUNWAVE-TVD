@@ -239,9 +239,7 @@ Program FUNWAVE_TVD
 
      ENDDO
 
-# if defined (MIXING)
      CALL MIXING_STUFF
-# endif
 
 !  find maximum eta velocity 
 
