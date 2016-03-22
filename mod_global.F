@@ -315,7 +315,6 @@ MODULE GLOBAL
                   OUT_WaveHeight = .FALSE.,&
 	            OUT_WaveHeightSig = .FALSE.    !ykchoi
 	 
-	 INTEGER :: OUTPUT_MIX = 1                 !ykchoi
 
 
 !# if defined (CARTESIAN)
