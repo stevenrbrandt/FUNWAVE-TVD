@@ -246,7 +246,6 @@ MODULE GLOBAL
 
 
 ! smagorinsky and wave height
-# if defined (MIXING)
       REAL(SP),DIMENSION(:,:),ALLOCATABLE :: Umean,Vmean,&
                   ETAmean,Usum,Vsum,ETAsum, nu_smg
       REAL(SP)::T_INTV_mean = 20.0,T_sum=0.0,C_smg=0.25
@@ -257,7 +256,6 @@ MODULE GLOBAL
 
       !ykchoi
 	REAL(SP),DIMENSION(:,:),ALLOCATABLE :: ETA2sum,ETA2mean,SigWaveHeight
-# endif
 
 ! depth H=Eta+Depth, 
        REAL(SP),DIMENSION(:,:),ALLOCATABLE :: Depth,H,&
@@ -311,7 +309,7 @@ MODULE GLOBAL
                   OUT_Umax=.FALSE.
        LOGICAL :: OUT_MFmax=.FALSE., &
                   OUT_VORmax=.FALSE.
-!# if defined (MIXING)
+
        LOGICAL :: OUT_Umean=.FALSE.,OUT_Vmean=.FALSE.,&
                   OUT_ETAmean=.FALSE.,&
                   OUT_WaveHeight = .FALSE.,&
@@ -319,7 +317,7 @@ MODULE GLOBAL
 	 
 	 INTEGER :: OUTPUT_MIX = 1                 !ykchoi
 
-!# endif
+
 !# if defined (CARTESIAN)
 ! periodic boundary conditions
        LOGICAL :: PERIODIC=.FALSE.
