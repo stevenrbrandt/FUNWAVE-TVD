@@ -106,7 +106,6 @@ END SUBROUTINE MIXING_STUFF
 	
 	!ykchoi
 	REAL(SP),DIMENSION(M,N),INTENT(INOUT) :: ETA2sum,ETA2mean,SigWaveHeight
-	INTEGER,INTENT(INOUT) :: OUTPUT_MIX
       
       T_sum=T_sum+DT
       IF(T_sum.GE.T_INTV_mean)THEN
