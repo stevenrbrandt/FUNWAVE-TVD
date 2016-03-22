@@ -863,8 +863,6 @@ SUBROUTINE READ_INPUT
       WRITE(3,'(A20,F12.6)')'WAVEMAKER_visbrk =', WAVEMAKER_visbrk
 # endif
 	ENDIF
-	!ykchoi]
-# if defined (MIXING)
       CALL READ_FLOAT(T_INTV_mean,FILE_NAME,'T_INTV_mean',ierr)
       CALL READ_FLOAT(C_smg,FILE_NAME,'C_smg',ierr)
 # if defined (PARALLEL)
@@ -873,7 +871,6 @@ SUBROUTINE READ_INPUT
 # else
       WRITE(3,'(A14,F12.6)')'T_INTV_mean =', T_INTV_mean
       WRITE(3,'(A8,F12.6)')'C_smg =', C_smg
-# endif
 # endif
 	
       CALL READ_FLOAT(nu_bkg,FILE_NAME,'nu_bkg',ierr)
@@ -900,12 +897,10 @@ SUBROUTINE READ_INPUT
       CALL READ_LOGICAL(OUT_VORmax,FILE_NAME,'VORmax',ierr)
       CALL READ_LOGICAL(OUT_MASK,FILE_NAME,'MASK',ierr)
       CALL READ_LOGICAL(OUT_MASK9,FILE_NAME,'MASK9',ierr)
-# if defined (MIXING)
       CALL READ_LOGICAL(OUT_Umean,FILE_NAME,'Umean',ierr)
       CALL READ_LOGICAL(OUT_Vmean,FILE_NAME,'Vmean',ierr)
       CALL READ_LOGICAL(OUT_ETAmean,FILE_NAME,'ETAmean',ierr)
       CALL READ_LOGICAL(OUT_WaveHeight,FILE_NAME,'WaveHeight',ierr)
-# endif
       CALL READ_LOGICAL(OUT_SXL,FILE_NAME,'SXL',ierr)
       CALL READ_LOGICAL(OUT_SXR,FILE_NAME,'SXR',ierr)
       CALL READ_LOGICAL(OUT_SYL,FILE_NAME,'SYL',ierr)
@@ -1321,7 +1316,6 @@ SUBROUTINE PREVIEW
         call PutFile(TMP_NAME,VorticityMax)                                                                              
      ENDIF            
      
-# if defined (MIXING)
 !!ykchoi
      IF( time >= STEADY_TIME )THEN
 !!ykchoi
@@ -1356,8 +1350,6 @@ SUBROUTINE PREVIEW
       ENDIF
 !ykchoi
 
-
-# endif
 
      IF(OUT_U)THEN
         TMP_NAME = TRIM(FDIR)//'u_'//TRIM(FILE_NAME)

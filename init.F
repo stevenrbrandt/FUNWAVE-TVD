@@ -98,7 +98,6 @@ SUBROUTINE ALLOCATE_VARIABLES
               SyL(Mloc,Nloc1),SyR(Mloc,Nloc1),SourceX(Mloc,Nloc), &
               SourceY(Mloc,Nloc), &
 ! others
-# if defined (MIXING)
               Umean(Mloc,Nloc),Vmean(Mloc,Nloc),ETAmean(Mloc,Nloc),&
               Usum(Mloc,Nloc),Vsum(Mloc,Nloc),ETAsum(Mloc,Nloc), &
               nu_smg(Mloc,Nloc), &
@@ -112,7 +111,6 @@ SUBROUTINE ALLOCATE_VARIABLES
 	        !ykchoi
 	        ETA2sum(Mloc,Nloc), ETA2mean(Mloc,Nloc), &
 			SigWaveHeight(Mloc,Nloc),  &
-# endif
 # if defined (CARTESIAN)
               U4xL(Mloc1,Nloc),U4xR(Mloc1,Nloc),&
               V4yL(Mloc,Nloc1),V4yR(Mloc,Nloc1), &
@@ -324,7 +322,6 @@ SUBROUTINE INITIALIZATION
      ENDIF
 
 ! set zeros
-# if defined (MIXING)
      T_sum = ZERO
      Umean = ZERO
      Vmean = ZERO
@@ -337,7 +334,6 @@ SUBROUTINE INITIALIZATION
      Emin = ZERO
      HrmsSum = ZERO
      HavgSum = ZERO
-# endif
      DelxU=0.0_SP
      DelxHU=0.0_SP
      DelxV=0.0_SP
