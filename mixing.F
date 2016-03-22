@@ -42,7 +42,6 @@
 !    either expressed or implied, of the FreeBSD Project.
 !  
 !-------------------------------------------------------------------------------------
-# if defined (MIXING)
 !-------------------------------------------------------------------------------------
 !
 !    MIXING_STUFF is subroutine to calculate mixing related, time-averaged properties
@@ -68,10 +67,8 @@ SUBROUTINE MIXING_STUFF
 	ENDIF    !ykchoi
 
 END SUBROUTINE MIXING_STUFF
-# endif
 
 
-# if defined (MIXING)
 !-------------------------------------------------------------------------------------
 !
 !    CALCULATE_MEAN is subroutine to calculate mean u v required by 
@@ -177,5 +174,3 @@ END SUBROUTINE MIXING_STUFF
       ENDIF  ! end average time
 
       END SUBROUTINE CALCULATE_MEAN
-
-# endif
