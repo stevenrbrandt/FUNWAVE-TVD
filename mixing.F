@@ -129,8 +129,8 @@ END SUBROUTINE MIXING_STUFF
 	  SigWaveHeight = 4.004*SQRT( ETA2mean )  !ykchoi
 
 ! wave height
-       DO J=Jbeg,Jend
-       DO I=Ibeg,Iend
+       DO J=1,N
+       DO I=1,M
         IF(Num_Zero_Up(I,J)>=2)THEN
           WaveHeightAve(I,J)=HavgSum(I,J)/Num_Zero_Up(I,J)
           WaveHeightRMS(I,J)=SQRT(HrmsSum(I,J)/Num_Zero_Up(I,J))
@@ -152,8 +152,8 @@ END SUBROUTINE MIXING_STUFF
 	  ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum
 
 ! wave height
-       DO J=Jbeg,Jend
-       DO I=Ibeg,Iend
+       DO J=1,N
+       DO I=1,M
          if(Eta(i,j)>Emax(i,j)) Emax(i,j) = Eta(i,j)
          if(Eta(i,j)<Emin(i,j)) Emin(i,j) = Eta(i,j)
          Tmpe = Eta(i,j)-ETAmean(i,j)
