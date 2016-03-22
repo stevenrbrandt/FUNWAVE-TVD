@@ -128,8 +128,6 @@ END SUBROUTINE MIXING_STUFF
 
 	  SigWaveHeight = 4.004*SQRT( ETA2mean )  !ykchoi
 
-        CALL PREVIEW_MEAN
-
 ! wave height
        DO J=Jbeg,Jend
        DO I=Ibeg,Iend
@@ -142,6 +140,8 @@ END SUBROUTINE MIXING_STUFF
 !        HrmsSum(I,J)=ZERO
        ENDDO
        ENDDO
+
+        CALL PREVIEW_MEAN
 
       ELSE
 
