@@ -919,7 +919,7 @@ SUBROUTINE READ_INPUT
 !	CALL READ_FLOAT(EtaBlowVal,FILE_NAME,'EtaBlowVal',ierr)
 !  fyshi set blowup value is 100xmax_depth in init.F  
 	CALL READ_FLOAT(STEADY_TIME,FILE_NAME,'STEADY_TIME',ierr)
-	CALL READ_LOGICAL(OUT_WaveHeightSig,FILE_NAME,'WaveHeightSig',ierr)
+!	CALL READ_LOGICAL(OUT_WaveHeightSig,FILE_NAME,'WaveHeightSig',ierr)
 
 ! 
 # if defined (PARALLEL)
@@ -1337,10 +1337,6 @@ SUBROUTINE PREVIEW
           call PutFile(TMP_NAME,WaveHeightRMS)
           TMP_NAME = TRIM(FDIR)//'havg_'//TRIM(FILE_NAME)
           call PutFile(TMP_NAME,WaveHeightAve)
-        ENDIF
-
-!ykchoi
-        IF(OUT_WaveHeightSig)THEN
           TMP_NAME = TRIM(FDIR)//'SigH_'//TRIM(FILE_NAME)
           call PutFile(TMP_NAME,SigWaveHeight)
         ENDIF
