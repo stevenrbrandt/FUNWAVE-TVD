@@ -63,7 +63,7 @@ SUBROUTINE MIXING_STUFF
            WaveHeightAve,Emax,Emin,Num_Zero_Up,Ibeg,Iend,Jbeg,Jend, &
            HrmsSum,HavgSum, &
 	     !ykchoi
-	     ETA2sum, ETA2mean, SigWaveHeight,OUTPUT_MIX)
+	     ETA2sum, ETA2mean, SigWaveHeight)
 	ENDIF    !ykchoi
 
 END SUBROUTINE MIXING_STUFF
@@ -86,7 +86,7 @@ END SUBROUTINE MIXING_STUFF
                 WaveHeightAve,Emax,Emin,Num_Zero_Up,Ibeg,Iend,Jbeg,Jend, &
                 HrmsSum,HavgSum, &
 	          !ykchoi
-			  ETA2sum,ETA2mean,SigWaveHeight,OUTPUT_MIX)
+			  ETA2sum,ETA2mean,SigWaveHeight)
 ! calculate mean for smagorinsky's mixing and wave height
 
       USE PARAM
@@ -128,7 +128,8 @@ END SUBROUTINE MIXING_STUFF
 	  ETA2sum=ZERO     !ykchoi
 
 	  SigWaveHeight = 4.004*SQRT( ETA2mean )  !ykchoi
-	  OUTPUT_MIX = 1  !ykchoi
+
+        CALL PREVIEW_MEAN
 
 ! wave height
        DO J=Jbeg,Jend
