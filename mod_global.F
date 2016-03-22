@@ -123,6 +123,7 @@ MODULE GLOBAL
                   SCREEN_INTV,SCREEN_COUNT
        REAL(SP) :: HOTSTART_INTV,HOTSTART_COUNT
        INTEGER :: icount=0  ! for output file number
+       INTEGER :: icount_mean=0  ! for output mean file number
        INTEGER :: icount_hotstart=0
        INTEGER :: FileNumber_HOTSTART
        
