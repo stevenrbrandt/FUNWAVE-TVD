@@ -1387,6 +1387,7 @@ SUBROUTINE PREVIEW_MEAN
 
      CHARACTER(LEN=80)::FILE_NAME=' '
      CHARACTER(LEN=80)::FDIR=' '
+     CHARACTER(LEN=80)::TMP_NAME=' '
 
      FDIR=TRIM(RESULT_FOLDER)
 
@@ -1435,7 +1436,7 @@ SUBROUTINE PREVIEW_MEAN
           TMP_NAME = TRIM(FDIR)//'Hsig_'//TRIM(FILE_NAME)
           call PutFile(TMP_NAME,SigWaveHeight)
         ENDIF
-       ENDIF              
+                    
 
 END SUBROUTINE PREVIEW_MEAN
 
