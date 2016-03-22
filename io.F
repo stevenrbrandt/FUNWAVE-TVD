@@ -1240,6 +1240,7 @@ SUBROUTINE PREVIEW
      IMPLICIT NONE
 
      CHARACTER(LEN=80)::FILE_NAME=' '
+     CHARACTER(LEN=80)::FILE_NAME_MEAN=' '
      CHARACTER(LEN=80)::TMP_NAME=' '
      CHARACTER(LEN=80)::FDIR=' '
 
@@ -1315,37 +1316,6 @@ SUBROUTINE PREVIEW
         call PutFile(TMP_NAME,VorticityMax)                                                                              
      ENDIF            
      
-!!ykchoi
-     IF( time >= STEADY_TIME )THEN
-!!ykchoi
-       IF( OUTPUT_MIX .eq. 1 ) THEN     !ykchoi
-        IF(OUT_Umean)THEN
-          TMP_NAME = TRIM(FDIR)//'umean_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,Umean)
-        ENDIF
-        IF(OUT_Vmean)THEN
-          TMP_NAME = TRIM(FDIR)//'vmean_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,Vmean)
-        ENDIF
-        IF(OUT_ETAmean)THEN
-          TMP_NAME = TRIM(FDIR)//'etamean_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,ETAmean)
-        ENDIF
-        IF(OUT_WaveHeight)THEN
-          TMP_NAME = TRIM(FDIR)//'hrms_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,WaveHeightRMS)
-          TMP_NAME = TRIM(FDIR)//'havg_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,WaveHeightAve)
-          TMP_NAME = TRIM(FDIR)//'SigH_'//TRIM(FILE_NAME)
-          call PutFile(TMP_NAME,SigWaveHeight)
-        ENDIF
-
-	  OUTPUT_MIX = 0     !ykchoi
-       ENDIF               !ykchoi
-      ENDIF
-!ykchoi
-
-
      IF(OUT_U)THEN
         TMP_NAME = TRIM(FDIR)//'u_'//TRIM(FILE_NAME)
         call PutFile(TMP_NAME,U)
@@ -1403,6 +1373,72 @@ SUBROUTINE PREVIEW
 101   continue
 
 END SUBROUTINE PREVIEW
+
+!-------------------------------------------------------------------------------------
+!
+!    PREVIEW_MEAN is subroutine for print-out of mean field data
+!
+!  HISTORY:
+!    03/22/2016  Fengyan Shi
+!-------------------------------------------------------------------------------------
+SUBROUTINE PREVIEW_MEAN
+     USE GLOBAL
+     IMPLICIT NONE
+
+     CHARACTER(LEN=80)::FILE_NAME=' '
+     CHARACTER(LEN=80)::FDIR=' '
+
+     FDIR=TRIM(RESULT_FOLDER)
+
+     ICOUNT_MEAN=ICOUNT_MEAN+1
+
+# if defined (PARALLEL)
+        if (myid.eq.0)then
+        WRITE(3,102)'PRINTING MEAN FILE', icount_mean
+        WRITE(*,102)'PRINTING MEAN FILE', icount_mean
+        endif
+# else
+        WRITE(*,102)'PRINTING MEAN FILE', icount_mean
+# endif
+
+102     FORMAT(A20,I6)
+
+	   itmp1=mod(icount_mean/10000,10)
+	   itmp2=mod(icount_mean/1000,10)
+	   itmp3=mod(icount_mean/100,10)
+	   itmp4=mod(icount_mean/10,10)
+	   itmp5=mod(icount_mean,10)
+
+        write(file_name(1:1),'(I1)')itmp1
+        write(file_name(2:2),'(I1)')itmp2
+        write(file_name(3:3),'(I1)')itmp3
+        write(file_name(4:4),'(I1)')itmp4
+    	write(file_name(5:5),'(I1)')itmp5  
+
+        IF(OUT_Umean)THEN
+          TMP_NAME = TRIM(FDIR)//'umean_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,Umean)
+        ENDIF
+        IF(OUT_Vmean)THEN
+          TMP_NAME = TRIM(FDIR)//'vmean_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,Vmean)
+        ENDIF
+        IF(OUT_ETAmean)THEN
+          TMP_NAME = TRIM(FDIR)//'etamean_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,ETAmean)
+        ENDIF
+        IF(OUT_WaveHeight)THEN
+          TMP_NAME = TRIM(FDIR)//'Hrms_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,WaveHeightRMS)
+          TMP_NAME = TRIM(FDIR)//'Havg_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,WaveHeightAve)
+          TMP_NAME = TRIM(FDIR)//'Hsig_'//TRIM(FILE_NAME)
+          call PutFile(TMP_NAME,SigWaveHeight)
+        ENDIF
+       ENDIF              
+
+END SUBROUTINE PREVIEW_MEAN
+
 
 # if defined (PARALLEL)
 !-------------------------------------------------------------------------------------
