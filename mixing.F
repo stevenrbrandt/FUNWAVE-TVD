@@ -120,8 +120,8 @@ END SUBROUTINE MIXING_STUFF
         Vmean=Vsum/T_sum
         ETAmean=ETAsum/T_sum
 	  
-	  !ykchoi
-	  ETA2sum = ETA*ETA*DT + ETA2sum
+	  !ykchoi includes ETAmean, fyshi added 03/22/2016 
+	  ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum 
 	  ETA2mean = ETA2sum/T_sum
 
         T_sum=T_sum-T_INTV_mean   ! T_sum=ZERO? (ykchoi)
@@ -151,8 +151,8 @@ END SUBROUTINE MIXING_STUFF
         Usum=U*DT+Usum
         Vsum=V*DT+Vsum
         ETAsum=ETA*DT+ETAsum
-	  !ykchoi
-	  ETA2sum=ETA*ETA*DT+ETA2sum
+	  !ykchoi, fyshi added ETAmean 03/22/2016
+	  ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum
 
 ! wave height
        DO J=Jbeg,Jend
