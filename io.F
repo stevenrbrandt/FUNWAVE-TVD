@@ -276,7 +276,12 @@ SUBROUTINE READ_INPUT
         icount = icount-1
        ENDIF
 
+! add water level 03/29/2016
 
+        CALL READ_FLOAT(WaterLevel,FILE_NAME,'WaterLevel',ierr)
+        IF(ierr==1)THEN
+          WaterLevel = 0.0
+        ENDIF
 
 # if defined (WIND)
 ! wind
