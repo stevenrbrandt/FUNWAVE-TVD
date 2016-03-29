@@ -267,6 +267,9 @@ MODULE GLOBAL
        REAL(SP),DIMENSION(:,:),ALLOCATABLE::Ubar0,Vbar0,Eta0,&
                                Ubar,Vbar,Eta
 
+! water level, fyshi 03/29/2016
+       REAL(SP) :: WaterLevel = 0.0
+
 # if defined(COUPLING)
 ! coupling
        CHARACTER(LEN=80) COUPLING_FILE

@@ -276,6 +276,8 @@ SUBROUTINE READ_INPUT
         icount = icount-1
        ENDIF
 
+
+
 # if defined (WIND)
 ! wind
       CALL READ_LOGICAL(WindForce,FILE_NAME,'WindForce',ierr)
