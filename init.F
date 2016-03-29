@@ -689,6 +689,11 @@ SUBROUTINE INITIALIZATION
      ENDDO
      ENDDO
 
+! add waterlevel 03/29/2016
+
+      Depth = Depth + WaterLevel
+      DEP_WK = DEP_WK + WaterLevel
+
 ! blowup threshold
 	EtaBlowVal=100.0*MAXVAL( abs(Depth(Ibeg:Iend,Jbeg:Jend)) )
 # if defined (PARALLEL)

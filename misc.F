@@ -402,3 +402,36 @@ END SUBROUTINE CHECK_BLOWUP
     return
     end SUBROUTINE wall_time_secs
 
+SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN,VAR_OUT)  
+  USE PARAM,ONLY : SP
+  REAL(SP),PARAMETER :: a1=0.68750_SP    ! 44/64
+  REAL(SP),PARAMETER :: a2=0.234375_SP   ! 15/64
+  REAL(SP),PARAMETER :: a3=-0.09375_SP   ! -6/64
+  REAL(SP),PARAMETER :: a4=1.0_SP        ! 1/64
+  IMPLICIT NONE
+  INTEGER,          INTENT(IN) :: M,N
+  REAL(SP),DIMENSION(M,N),INTENT(IN) :: VAR_IN
+  REAL(SP),DIMENSION(M,N),INTENT(OUT) :: VAR_OUT
+  INTEGER, DIMENSION(M,N),INTENT(IN) :: MASK_IN
+  REAL(SP) :: p0,pp1,pp2,pp3,pn1,pn2,pn3
+  INTEGER :: I,J
+
+  DO J=1+Nghost,N-Nghost
+  DO I=1+Nghot,M-Nghost
+    IF(MASK(I,J)==1) THEN
+      p0=VAR_IN(I,J)
+      pp1=VAR_IN(I+1,J)*MASK(I+1,J)+(1.0-MASK(I+1,J))*p0
+      pp2=VAR_IN(I+2,J)*MASK(I+2,J)+(1.0-MASK(I+2,J))*p0
+      pp3=VAR_IN(I+3,J)*MASK(I+3,J)+(1.0-MASK(I+3,J))*p0
+      pn1=VAR_IN(I-1,J)*MASK(I-1,J)+(1.0-MASK(I-1,J))*p0
+      pn2=VAR_IN(I-2,J)*MASK(I-2,J)+(1.0-MASK(I-2,J))*p0
+      pn3=VAR_IN(I-3,J)*MASK(I-3,J)+(1.0-MASK(I-3,J))*p0
+
+      VAR_OUT(I,J) = a1*p0+a2*(pp1+pn1)+a3*(pp2+pn2)+a3*(pp3+pn3)
+
+    ENDIF
+  ENDDO
+  ENDDO
+
+END SUBROUTINE SHAPIRO_3
+
