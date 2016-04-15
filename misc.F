@@ -403,7 +403,7 @@ END SUBROUTINE CHECK_BLOWUP
     end SUBROUTINE wall_time_secs
 
 #if defined (FILTERING)
-SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN,VAR_OUT)  
+SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN_OUT)  
   USE PARAM,ONLY : SP
   REAL(SP),PARAMETER :: a1=0.68750_SP    ! 44/64
   REAL(SP),PARAMETER :: a2=0.234375_SP   ! 15/64
@@ -411,8 +411,7 @@ SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN,VAR_OUT)
   REAL(SP),PARAMETER :: a4=1.0_SP        ! 1/64
   IMPLICIT NONE
   INTEGER,          INTENT(IN) :: M,N,Nghost
-  REAL(SP),DIMENSION(M,N),INTENT(IN) :: VAR_IN
-  REAL(SP),DIMENSION(M,N),INTENT(OUT) :: VAR_OUT
+  REAL(SP),DIMENSION(M,N),INTENT(INOUT) :: VAR_IN_OUT
   REAL(SP),DIMENSION(M,N) :: VAR
   INTEGER, DIMENSION(M,N),INTENT(IN) :: MASK_IN
   REAL(SP) :: p0,pp1,pp2,pp3,pn1,pn2,pn3
@@ -422,13 +421,13 @@ SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN,VAR_OUT)
   DO J=1+Nghost,N-Nghost
   DO I=1+Nghot,M-Nghost
     IF(MASK(I,J)==1) THEN
-      p0=VAR_IN(I,J)
-      pp1=VAR_IN(I+1,J)*MASK(I+1,J)+(1.0-MASK(I+1,J))*p0
-      pp2=VAR_IN(I+2,J)*MASK(I+2,J)+(1.0-MASK(I+2,J))*p0
-      pp3=VAR_IN(I+3,J)*MASK(I+3,J)+(1.0-MASK(I+3,J))*p0
-      pn1=VAR_IN(I-1,J)*MASK(I-1,J)+(1.0-MASK(I-1,J))*p0
-      pn2=VAR_IN(I-2,J)*MASK(I-2,J)+(1.0-MASK(I-2,J))*p0
-      pn3=VAR_IN(I-3,J)*MASK(I-3,J)+(1.0-MASK(I-3,J))*p0
+      p0=VAR_IN_OUT(I,J)
+      pp1=VAR_IN_OUT(I+1,J)*MASK(I+1,J)+(1.0-MASK(I+1,J))*p0
+      pp2=VAR_IN_OUT(I+2,J)*MASK(I+2,J)+(1.0-MASK(I+2,J))*p0
+      pp3=VAR_IN_OUT(I+3,J)*MASK(I+3,J)+(1.0-MASK(I+3,J))*p0
+      pn1=VAR_IN_OUT(I-1,J)*MASK(I-1,J)+(1.0-MASK(I-1,J))*p0
+      pn2=VAR_IN_OUT(I-2,J)*MASK(I-2,J)+(1.0-MASK(I-2,J))*p0
+      pn3=VAR_IN_OUT(I-3,J)*MASK(I-3,J)+(1.0-MASK(I-3,J))*p0
 
       VAR(I,J) = a1*p0+a2*(pp1+pn1)+a3*(pp2+pn2)+a3*(pp3+pn3)
 
@@ -449,7 +448,7 @@ SUBROUTINE SHAPIRO_3(M,N,Nghost,MASK_IN,VAR_IN,VAR_OUT)
       pn2=VAR(I,J-2)*MASK(I,J-2)+(1.0-MASK(I,J-2))*p0
       pn3=VAR(I,J-3)*MASK(I,J-3)+(1.0-MASK(I,J-3))*p0
 
-      VAR_OUT(I,J) = a1*p0+a2*(pp1+pn1)+a3*(pp2+pn2)+a3*(pp3+pn3)
+      VAR_IN_OUT(I,J) = a1*p0+a2*(pp1+pn1)+a3*(pp2+pn2)+a3*(pp3+pn3)
 
     ENDIF
   ENDDO
