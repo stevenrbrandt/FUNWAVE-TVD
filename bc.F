@@ -474,6 +474,38 @@ SUBROUTINE EXCHANGE
     V=V*MASK
     HU=HU*MASK
     HV=HV*MASK
+
+# if defined (FILTERING)
+     filter_count = filter_count + 1 
+# if defined (CARTESIAN)
+     IF (filter_count > filter_interval) THEN
+       filter_count =0
+       CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,Eta)
+       CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,U)
+       CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,V)
+
+    VTYPE=1
+    CALL PHI_COLL(Mloc,Nloc,Ibeg,Iend,Jbeg,Jend,Nghost,Eta,VTYPE,PERIODIC)
+    VTYPE=2
+    CALL PHI_COLL(Mloc,Nloc,Ibeg,Iend,Jbeg,Jend,Nghost,U,VTYPE,PERIODIC)
+    VTYPE=3
+    CALL PHI_COLL(Mloc,Nloc,Ibeg,Iend,Jbeg,Jend,Nghost,V,VTYPE,PERIODIC)
+
+    H=Eta*Gamma3+Depth
+
+     DO J=Jbeg,Jend
+     DO I=Ibeg,Iend   
+       IF(MASK(I,J)==1)THEN
+        HU(I,J)=Max(H(I,J),MinDepthFrc)*U(I,J)
+        HV(I,J)=Max(H(I,J),MinDepthFrc)*V(I,J)
+       ENDIF
+     ENDDO
+     ENDDO
+
+     ENDIF ! end filter_count
+# endif
+# endif
+
     
 END SUBROUTINE EXCHANGE
 
