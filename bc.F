@@ -480,7 +480,9 @@ SUBROUTINE EXCHANGE
 # if defined (CARTESIAN)
      IF (filter_count > filter_interval) THEN
        filter_count =0
+
        CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,Eta)
+
        CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,U)
        CALL SHAPIRO_3(Mloc,Nloc,Nghost,MASK,V)
 
@@ -505,7 +507,6 @@ SUBROUTINE EXCHANGE
      ENDIF ! end filter_count
 # endif
 # endif
-
     
 END SUBROUTINE EXCHANGE
 
