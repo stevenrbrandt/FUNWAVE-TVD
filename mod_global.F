@@ -76,6 +76,10 @@ MODULE GLOBAL
        REAL(SP):: PLOT_INTV_STATION,PLOT_COUNT_STATION
 
 
+# if defined(FILTERING)
+       INTEGER :: filter_count=0, filter_interval = 1
+# endif
+
 ! define parameters
        CHARACTER(LEN=80) TITLE
        CHARACTER(LEN=80) ReadType
