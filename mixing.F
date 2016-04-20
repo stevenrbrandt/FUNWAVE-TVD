@@ -109,6 +109,10 @@ END SUBROUTINE MIXING_STUFF
       
       T_sum=T_sum+DT
       IF(T_sum.GE.T_INTV_mean)THEN
+
+	ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum   !ykchoi
+	ETA2mean = ETA2sum/T_sum
+
         Usum=U*DT+Usum
         Vsum=V*DT+Vsum
         ETAsum=ETA*DT+ETAsum
@@ -116,9 +120,11 @@ END SUBROUTINE MIXING_STUFF
         Vmean=Vsum/T_sum
         ETAmean=ETAsum/T_sum
 	  
-	  !ykchoi includes ETAmean, fyshi added 03/22/2016 
-	  ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum 
-	  ETA2mean = ETA2sum/T_sum
+	  !ykchoi includes ETAmean, fyshi added 03/22/2016, ykchoi move the 
+          ! two statements right after IF because ETA2sum should use the previsou
+          ! ETAmean. 04/20/2016
+	  !ETA2sum = (Eta-ETAmean)*(Eta-ETAmean)*DT + ETA2sum 
+	  !ETA2mean = ETA2sum/T_sum
 
         T_sum=T_sum-T_INTV_mean   ! T_sum=ZERO? (ykchoi)
         Usum=ZERO
