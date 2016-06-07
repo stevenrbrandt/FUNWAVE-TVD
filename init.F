@@ -158,11 +158,6 @@ SUBROUTINE ALLOCATE_VARIABLES
       ALLOCATE(Ui(Mloc,Nloc), Vi(Mloc,Nloc),ETAi(Mloc,Nloc),&
         UbarOld(Mloc,Nloc),VbarOld(Mloc,Nloc),EtaOld(Mloc,Nloc) )
 # endif
-      IF(WAVEMAKER(1:6)=='WK_IRR')THEN
-       ALLOCATE(D_gen_ir(Nfreq,Ntheta),rlamda_ir(Nfreq,Ntheta),phase_ir(Nfreq,Ntheta),&
-                Beta_gen_ir(Nfreq),omgn_ir(Nfreq), &
-                Cm(Mloc,Nloc,Nfreq),Sm(Mloc,Nloc,Nfreq))
-      ENDIF
 
       ALLOCATE(WaveMaker_Mass(Mloc,Nloc))
       WaveMaker_Mass = ZERO
