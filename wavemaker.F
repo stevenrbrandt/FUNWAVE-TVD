@@ -192,6 +192,11 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
        ALLOCATE (WAVE_COMP(NumFreq,NumDir),Beta_gen2D(NumFreq,NumDir),D_gen2D(NumFreq,NumDir),  &
           Phase2D(NumFreq,NumDir), &
           Freq(NumFreq),Dire(NumDir),rlamda2D(NumFreq,NumDir))
+
+       ! define cm sm here to make consistence with irregular wave
+       ALLOCATE (Cm(Mloc,Nloc,NumFreq),Sm(Mloc,Nloc,NumFreq))
+       ALLOCATE (OMGN2D(NumFreq))
+ 
        READ(1,*)PeakPeriod
        DO J=1,NumFreq
           READ(1,*)Freq(J)
@@ -218,9 +223,26 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
        ENDDO
        ENDDO
 
+
+!      make efficient calculation fyshi 07/07/2016
+
+       DO J=1,NumFreq
+          OMGN2D(J) = 2.0_SP*PI*Freq(J)
+       ENDDO
+
+      FreqPeak = 1.0_SP/PeakPeriod
+
+      CALL CALCULATE_Cm_Sm(Mloc,Nloc,DX,DY,Xc_WK,Ibeg,Jbeg,NumFreq,NumDir,&
+               D_gen2D,Phase2D,Width_WK,rlamda2D,beta_gen2D,Cm,Sm)
+
       IF(SHOW_BREAKING)THEN
        T_brk=WAVE_COMP(NumWaveComp,1) 
       ENDIF
+
+       DEALLOCATE (WAVE_COMP,Beta_gen2D,D_gen2D,  &
+          Phase2D, &
+          Freq,Dire,rlamda2D)
+
 
      ENDIF ! end wk_data2d
        
@@ -243,6 +265,14 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
 ! wei and kirby, 1999, irregular wavemaker
       
      IF(WaveMaker(1:6)=='WK_IRR') THEN
+
+!        move allocation here from init.F 06/07/2016
+
+       ALLOCATE(D_gen_ir(Nfreq,Ntheta),rlamda_ir(Nfreq,Ntheta), &
+                phase_ir(Nfreq,Ntheta),&
+                Beta_gen_ir(Nfreq),omgn_ir(Nfreq), &
+                Cm(Mloc,Nloc,Nfreq),Sm(Mloc,Nloc,Nfreq))
+
 # if defined (CARTESIAN)
       CALL WK_WAVEMAKER_IRREGULAR_WAVE & 
        (Nfreq,Ntheta,delta_WK,DEP_WK,FreqPeak,FreqMax,FreqMin,GammaTMA,Hmo,ThetaPeak, &
@@ -259,6 +289,9 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
                D_gen_ir,Phase_ir,Width_WK,rlamda_ir,beta_gen_ir,Cm,Sm)
 # endif
 
+       ! 06/07/2016 fyshi
+       DEALLOCATE(D_gen_ir,rlamda_ir,phase_ir,&
+                Beta_gen_ir)
 
       IF(SHOW_BREAKING)THEN
        T_brk=1.0_SP/FreqMax
