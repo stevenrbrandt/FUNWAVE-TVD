@@ -116,17 +116,15 @@ SUBROUTINE SourceTerms
        ENDIF
 
        IF(WAVEMAKER(1:9)=='WK_DATA2D')THEN
-           WK_Source=ZERO
-           DO kf=1,NumFreq
-            DO kd=1,NumDir
-             WK_Source=WK_Source &
-               +TANH(PI/(Time_ramp*PeakPeriod)*TIME)*D_gen2D(kf,kd) &
-                 *EXP(-Beta_gen2D(kf,kd)*(xmk-Xc_WK)**2)&
-                 *SIN(rlamda2D(kf,kd)*(ymk-ZERO) &
-                      -2.0_SP*PI*Freq(kf)*TIME &
-                      -Phase2D(kf,kd)) 
-            ENDDO
-           ENDDO
+
+        ! make the efficient scheme using Cm and Sm 06/07/2016 fyshi
+          WK_Source=ZERO
+
+          DO kf=1,NumFreq
+           WK_Source=WK_Source+TANH(PI/(Time_ramp/FreqPeak)*TIME)*(Cm(I,J,kf) &
+                       *COS(OMGN2D(KF)*TIME) &
+                       +Sm(I,J,kf)*SIN(OMGN2D(KF)*TIME))
+          ENDDO
           WaveMaker_Mass(I,J)=WK_Source
        ENDIF
 
