@@ -216,6 +216,7 @@ MODULE GLOBAL
                   Ywidth_WK,Yc_WK
         REAL(SP),DIMENSION(:,:),ALLOCATABLE :: D_gen_ir,rlamda_ir,phase_ir
         REAL(SP),DIMENSION(:),ALLOCATABLE :: Beta_gen_ir,omgn_ir
+        REAL(SP),DIMENSION(:),ALLOCATABLE :: omgn2D
         REAL(SP),DIMENSION(:,:),ALLOCATABLE :: Wavemaker_Mass
         REAL(SP) :: FreqMin,FreqMax,FreqPeak,GammaTMA,Hmo,ThetaPeak,&
                     Sigma_Theta
