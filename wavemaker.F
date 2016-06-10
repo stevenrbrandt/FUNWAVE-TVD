@@ -239,8 +239,13 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
        T_brk=WAVE_COMP(NumWaveComp,1) 
       ENDIF
 
+!  cannot deallocate phase2d, I could not find any reason why cannot.
+!  Phase2D is only used here, deallocation will cause minor discontinuity 
+!  at processor interface
+!  leave it now 06/10/2016
+
        DEALLOCATE (WAVE_COMP,Beta_gen2D,D_gen2D,  &
-          Phase2D, &
+!          Phase2D, &
           Freq,Dire,rlamda2D)
 
 
