@@ -183,6 +183,13 @@ SUBROUTINE SourceTerms
                       *(U4(I,J)-U1p(I,J)) &
 ! wavemaker
                    +WaveMaker_Mass(I,J)*U(I,J)
+
+       IF(FRICTION_SPONGE) THEN
+          ! note that, compared to wei et al, we used flux. so need multiply D
+          SourceX(I,J) = SourceX(I,J) &
+                 - CD_4_SPONGE(I,J)*U(I,J)*SQRT(U(I,J)*U(I,J)+V(I,J)*V(I,J)) &
+                   *Depth(I,J)
+       ENDIF
           
        SourceY(I,J)=GRAV*(Eta(I,J))/DY*(Depthy(I,J+1)-Depthy(I,J))*MASK(I,J) &
                           ! friction
@@ -203,6 +210,12 @@ SUBROUTINE SourceTerms
                       *(V4(I,J)-V1p(I,J))  &
 ! wavemaker
                    +WaveMaker_Mass(I,J)*V(I,J)
+       IF(FRICTION_SPONGE) THEN
+          ! note that, compared to wei et al, we used flux. so need multiply D
+          SourceY(I,J) = SourceY(I,J) &
+                   -CD_4_SPONGE(I,J)*V(I,J)*SQRT(U(I,J)*U(I,J)+V(I,J)*V(I,J)) &
+                    *Depth(I,J)             
+       ENDIF
 
 # if defined (WIND)
        IF(WindForce)THEN
