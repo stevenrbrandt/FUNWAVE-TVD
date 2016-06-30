@@ -54,15 +54,14 @@ Program FUNWAVE_TVD
 !             - VARIABLE_UPDATING
 !             - EXCHANGE
 !             - ESTIMATE_DT
-!                PRE/COR                 RUNGE-KUTTA
-!                                      -DISPERSION
-!             - FLUXES                 -FLUXES
-!             - SourceTerms            -SourceTerms
-!             - PREDICTOR              -ESTIMATE_HUV
-!             - EXCHANGE               -EXCHANGE
+!             - RUNGE-KUTTA
+!             - DISPERSION
+!             - FLUXES          
+!             - SourceTerms      
+!             - ESTIMATE_HUV
+!             - EXCHANGE 
 !             - FLUXES                 
 !             - SourceTerms again
-!             - CORRECTOR
 !
 !             - STATISTICS
 !             - PREVIEW
