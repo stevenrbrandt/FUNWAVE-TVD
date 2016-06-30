@@ -820,11 +820,12 @@ SUBROUTINE INITIALIZATION
      IF(FRICTION_SPONGE)THEN
 
        IF(.NOT.ALLOCATED(CD_4_SPONGE)) ALLOCATE(CD_4_SPONGE(Mloc,Nloc))
+       CD_4_SPONGE = ZERO
 
        CALL CALCULATE_FRICTION_SPONGE(Mloc,Nloc,Nghost,DX,DY,&
                             Sponge_west_width,Sponge_east_width,&
                             Sponge_south_width,Sponge_north_width, &
-                            R_sponge,A_sponge,CD,CD_4_SPONGE)
+                            R_sponge,A_sponge,CD_4_SPONGE)
      ENDIF
 
 
