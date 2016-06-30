@@ -209,12 +209,15 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
                           Sponge_west_width,Sponge_east_width,&
                           Sponge_south_width,Sponge_north_width, &
                           R_sponge,A_sponge
-     REAL(SP),DIMENSION(M,N),INTENT(INOUT)::SPONGE
+     REAL(SP),DIMENSION(M,N),INTENT(OUT)::SPONGE
      REAL(SP)::ri,lim
      INTEGER::Iwidth
      REAL(SP) :: DXg,DYg,xx
      REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2,tmp_2d_3,tmp_2d_4 
 
+
+! note that I used SPONGE represent CD from input, do not mess up 
+! with the sponge defined in the direction sponge 
 
 # if defined (CARTESIAN)
      DXg=DX
@@ -223,6 +226,8 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
      DXg=DX(1,1)
      DYg=DY(1,1)
 # endif
+
+     SPONGE = ZERO
 
 ! west
 
@@ -234,19 +239,12 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
 # endif
      DO J=1,N
      DO I=1,M
-       IF(SPONGE(I,J)>0.0_SP)THEN
-         lim=SPONGE(I,J)
-       ELSE
          lim=0.0_SP
-       ENDIF
 # if defined(PARALLEL)
-!       ri = R_Sponge**(50*(i+npx*Mglob/px-1)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-i-npx*Mglob/px))
 # else
-!       ri=R_sponge**(50*(I-1)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-I))
 # endif
-!       tmp_2d_1(i,j)=MAX(CDsponge**ri-1.0,lim)
        tmp_2d_1(i,j)=MAX(CDsponge*TANH(ri/10.0),lim)
 
      ENDDO
@@ -263,19 +261,12 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
 # endif
      DO J=1,N
      DO I=1,M
-       IF(SPONGE(I,J)>0.0_SP)THEN
-         lim=SPONGE(I,J)
-       ELSE
          lim=0.0_SP
-       ENDIF
 # if defined(PARALLEL)
-!       ri = R_Sponge**(50*(M-i+(px-npx-1)*Mglob/px)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-M+I-(px-npx-1)*Mglob/px))
 # else
-!       ri=R_sponge**(50*(M-I)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-M+I))
 # endif
-!       tmp_2d_2(i,j)=MAX(CDsponge**ri-1.0_SP,lim)
        tmp_2d_2(i,j)=MAX(CDsponge*TANH(ri/10.0),lim)
      ENDDO
      ENDDO
@@ -307,13 +298,10 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
          lim=0.0_SP
        ENDIF
 # if defined(PARALLEL)
-!       ri=R_sponge**(50*(J+npy*Nglob/py-1)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-J-npy*Nglob/py))
 # else
-!       ri=R_sponge**(50*(J-1)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-J))
 # endif
-!       tmp_2d_1(i,j)=MAX(CDsponge**ri-1.0_SP,lim)
        tmp_2d_1(i,j)=MAX(CDsponge*TANH(ri/10.0),lim)
      ENDDO
      ENDDO
@@ -336,13 +324,10 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
          lim=0.0_SP
        ENDIF
 # if defined(PARALLEL)
-!       ri = R_Sponge**(50*(N-J+(py-npy-1)*Nglob/py)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-N+J-(py-npy-1)*Nglob/py))
 # else
-!       ri=R_sponge**(50*(N-J)/(Iwidth-1))
        ri=MAX(0.0,REAL(Iwidth-N+J))
 # endif
-!       tmp_2d_2(i,j)=MAX(CDsponge**ri-1.0_SP,lim)
        tmp_2d_2(i,j)=MAX(CDsponge*TANH(ri/10.0),lim)
      ENDDO
      ENDDO
