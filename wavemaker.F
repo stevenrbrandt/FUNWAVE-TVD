@@ -62,6 +62,10 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
 ! internal wavemaker of wei and kirby
 
      IF(WaveMaker(1:6)=='WK_REG') THEN
+
+! Reniel complaint about regular wave case with wrong Yc
+! it turns out this part is a redefinition of Yc_WK, remove it (07/08/2016)
+
 # if defined (PARALLEL)
 # if defined (CARTESIAN)
      Yc_WK=(INT((Nloc-1)/2)+Nghost)*DY
