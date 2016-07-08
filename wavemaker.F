@@ -66,19 +66,19 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
 ! Reniel complaint about regular wave case with wrong Yc
 ! it turns out this part is a redefinition of Yc_WK, remove it (07/08/2016)
 
-# if defined (PARALLEL)
-# if defined (CARTESIAN)
-     Yc_WK=(INT((Nloc-1)/2)+Nghost)*DY
-# else
-     Yc_WK=(INT((Nloc-1)/2)+Nghost)*DY(1,1)
-# endif
-# else
-# if defined (CARTESIAN)
-     Yc_WK=INT(Nglob/2)*DY
-# else
-     Yc_WK=INT(Nglob/2)*DY(1,1)
-# endif
-# endif
+!# if defined (PARALLEL)
+!# if defined (CARTESIAN)
+!     Yc_WK=(INT((Nloc-1)/2)+Nghost)*DY
+!# else
+!     Yc_WK=(INT((Nloc-1)/2)+Nghost)*DY(1,1)
+!# endif
+!# else
+!# if defined (CARTESIAN)
+!     Yc_WK=INT(Nglob/2)*DY
+!# else
+!     Yc_WK=INT(Nglob/2)*DY(1,1)
+!# endif
+!# endif
     
      IF(PERIODIC)THEN
 
