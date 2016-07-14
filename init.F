@@ -997,7 +997,13 @@ SUBROUTINE INITIALIZATION
 ! depth gradient, even if the slope cap is on. Making depth locally flat can avoid
 ! this happening. This scheme is also used in update_mask subroutine
 ! 01/21/2012  
-
+! HOWEVER, this truncation can affect the model accuracy as pointed by 
+! Choi (private communication, in Thacker bowl test case, 07/03/2016). 
+! In the following, I keep an option to use more accurate solution. 
+! In Makefile, define -DIGNORE_BIG_SLOPE to ignore big slopes
+# if defined (IGNORE_BIG_SLOPE)
+    ! do not truncate depthx and depthy
+# else
       DO J=2,Nloc-1
       DO I=2,Mloc-1
         IF(MASK(I,J)<1)THEN
@@ -1008,6 +1014,7 @@ SUBROUTINE INITIALIZATION
         ENDIF
       ENDDO
       ENDDO
+# endif
 
       IF(SHOW_BREAKING)THEN
        T_brk=20.0_SP
