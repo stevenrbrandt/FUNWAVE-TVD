@@ -101,13 +101,20 @@ SUBROUTINE UPDATE_MASK
 ! to avoid extreme depth gradient caused by depthx and depthy which were not
 ! treated in initialization, I reset depthx and depthy when drying 
 ! 01/21/2012
-
+! HOWEVER, this truncation can affect the model accuracy as pointed by 
+! Choi (private communication, in Thacker bowl test case, 07/03/2016). 
+! In the following, I keep an option to use more accurate solution. 
+! In Makefile, define -DIGNORE_BIG_SLOPE to ignore big slopes
+# if defined (IGNORE_BIG_SLOPE)
+    ! do not truncate depthx and depthy
+# else
         IF(MASK(I,J)<1)THEN
          DepthX(I,J)=Depth(I-1,J)
          DepthX(I+1,J)=Depth(I+1,J)
          DepthY(I,J)=Depth(I,J-1)
          DepthY(I,J+1)=Depth(I,J+1)
-        ENDIF    
+        ENDIF  
+# endif  
 
      ENDDO
      ENDDO
