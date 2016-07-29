@@ -75,6 +75,8 @@ MODULE GLOBAL
        INTEGER,DIMENSION(:),ALLOCATABLE :: ista,jsta,nsta
        REAL(SP):: PLOT_INTV_STATION,PLOT_COUNT_STATION
 
+! timer
+       REAL(SP) :: tbegin,tend
 
 # if defined(FILTERING)
        INTEGER :: filter_count=0, filter_interval = 1
