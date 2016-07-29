@@ -137,7 +137,7 @@ Program FUNWAVE_TVD
      IMPLICIT NONE
 
      INTEGER::ISTAGE
-     REAL(SP) :: tbegin,tend
+!     REAL(SP) :: tbegin,tend  ! moved to mod_global 07/29/2016
 
 # if defined (PARALLEL)
      CALL MPI_INIT ( ier )
