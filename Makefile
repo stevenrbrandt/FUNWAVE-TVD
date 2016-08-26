@@ -17,6 +17,7 @@
 #             FLAG_8 = -DCOUPLING
 #             FLAG_9 = -DZALPHA
 #             FLAG_10 = -DMANNING
+#             FLAG_11 = -DSPHERICAL_IJ_STATION
 
 #--------------------------------------------------------------------------
 #  mpi defs 
