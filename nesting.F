@@ -52,18 +52,21 @@
 !-------------------------------------------------------------------------------------
 SUBROUTINE COUPLING_INITIAL
     USE GLOBAL
-    IMPLICIT NONE     
-     IF(.not.check_exist(TRIM(COUPLING_FILE)))THEN
+    USE INPUT_READ
+    IMPLICIT NONE   
+  
+ INQUIRE(FILE=TRIM(COUPLING_FILE),EXIST=FILE_EXIST)
+  IF(.NOT.FILE_EXIST)THEN
 # if defined (PARALLEL)
-      if (myid==0)then
-        WRITE(*,*)TRIM(COUPLING_FILE), ' specified in input.txt but does not exist in folder.'
-      endif
-      call MPI_FINALIZE ( ier )
+   IF(MYID==0)  &
+   WRITE(*,*) TRIM(COUPLING_FILE), ' specified in input.txt but CANNOT BE FOUND. STOP'
+   CALL MPI_FINALIZE (ier)
+   STOP
 # else
-        WRITE(*,*)TRIM(COUPLING_FILE), ' specified in input.txt but does not exist in folder.'
-      STOP
+    WRITE(*,*) TRIM(COUPLING_FILE), ' specified in input.txt but CANNOT BE FOUND. STOP'
+    STOP
 # endif
-     ENDIF
+  ENDIF
 
        OPEN(11,FILE=TRIM(COUPLING_FILE))
 
