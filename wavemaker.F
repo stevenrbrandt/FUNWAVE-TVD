@@ -645,11 +645,24 @@ SUBROUTINE CALCULATE_DATA2D_Cm_Sm
        DO J=1,Nloc
        DO I=1,Mloc
 # if defined (PARALLEL)
+# if defined (CARTESIAN)
          X_maker=(I-Ibeg+npx*Mglob/px)*DX
          Y_maker=(J-Jbeg+npy*Nglob/py)*DY 
 # else
+         X_maker=(I-Ibeg+npx*Mglob/px)*DX(I,J)
+         Y_maker=(J-Jbeg+npy*Nglob/py)*DY(I,J)
+# endif
+
+# else
+
+# if defined (CARTESIAN)
          X_maker=(I-Ibeg)*DX
          Y_maker=(J-Jbeg)*DY
+# else
+         X_maker=(I-Ibeg)*DX(I,J)
+         Y_maker=(J-Jbeg)*DY(I,J)
+# endif
+
 # endif
 
          DO KKK=1,NumDir
@@ -936,11 +949,22 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
        DO I=1,Mloc
 
 # if defined (PARALLEL)
+# if defined (CARTESIAN)
          X_maker=(I-Ibeg+npx*Mglob/px)*DX
          Y_maker=(J-Jbeg+npy*Nglob/py)*DY 
 # else
+         X_maker=(I-Ibeg+npx*Mglob/px)*DX(I,J)
+         Y_maker=(J-Jbeg+npy*Nglob/py)*DY(I,J)
+# endif
+
+# else
+# if defined (CARTESIAN)
          X_maker=(I-Ibeg)*DX
          Y_maker=(J-Jbeg)*DY
+# else
+         X_maker=(I-Ibeg)*DX(I,J)
+         Y_maker=(J-Jbeg)*DY(I,J)
+# endif
 # endif
 
          DO KKK=1,NumDir
