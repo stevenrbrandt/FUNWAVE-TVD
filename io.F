@@ -102,6 +102,7 @@ SUBROUTINE READ_INPUT
 !jychoi 14.12.23]
     IMPLICIT NONE
     CHARACTER(LEN=80) FILE_NAME
+    CHARACTER(LEN=80) MKFOLDER
     INTEGER::LINE
     INTEGER :: ierr
     INTEGER :: I_comp
@@ -199,6 +200,17 @@ SUBROUTINE READ_INPUT
 # else
       WRITE(3,'(A15,A50)')'RESULT_FOLDER:', RESULT_FOLDER
 # endif
+
+! create result folder
+      MKFOLDER = "mkdir -p "//TRIM(RESULT_FOLDER)
+# if defined (PARALLEL)
+      IF (myid.eq.0) THEN
+        CALL SYSTEM(TRIM(MKFOLDER))
+      ENDIF
+# else
+      CALL SYSTEM(TRIM(MKFOLDER))
+# endif
+
 ! station files
       CALL READ_INTEGER(NumberStations,FILE_NAME,'NumberStations',ierr)
       IF(NumberStations>0)THEN
