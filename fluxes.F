@@ -60,7 +60,7 @@ SUBROUTINE FLUXES
 
 !  Choi s tests show this is unstable combination, switched off 08/31/2016 
 !     IF(HIGH_ORDER(1:9)=='FOURTHMIN') THEN   !ykchoi (08/28/2016)
-!       CALL CONSTRUCTION_HO
+!       CALL CONSTRUCTION_HO_minmod
 !       CALL WAVE_SPEED(Mloc,Nloc,Mloc1,Nloc1,UxL,UxR,VyL,VyR,HxL,HxR,HyL,HyR, &
 !            SxL,SxR,SyL,SyR)
 
@@ -635,6 +635,7 @@ END SUBROUTINE CONSTRUCTION
 !     06/20/2010 Fengyan Shi
 !     06/01/2011 Jeff Harris, 
 !                replaced limiter function, saving 1/3 time
+!     08/31/2016 Choi removed kappa because 3rd order and 2nd order are identical
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCT_Y(M,N,N1,DY,Vin,Din,OutL,OutR,Kappa)
@@ -650,40 +651,6 @@ SUBROUTINE CONSTRUCT_Y(M,N,N1,DY,Vin,Din,OutL,OutR,Kappa)
      REAL(SP),INTENT(IN) :: Kappa
      REAL(SP),INTENT(OUT),DIMENSION(M,N1)::OutL,OutR
 
-![ykchoi (08/28/2016)
-!     DO J=2,N
-!     DO I=1,M
-!# if defined (CARTESIAN)
-!       OutL(I,J)=Vin(I,J-1)+0.25*DY      &
-!               *((1.0_SP-kappa)*Din(I,J-1)+(1.0_SP+kappa)*Din(I,J-1))
-!       OutR(I,J)=Vin(I,J)-0.25*DY     &
-!               *((1.0_SP+kappa)*Din(I,J)+(1.0_SP-kappa)*Din(I,J))
-!# else
-!       OutL(I,J)=Vin(I,J-1)+0.25*DY(I,J-1)      &
-!               *((1.0_SP-kappa)*Din(I,J-1)+(1.0_SP+kappa)*Din(I,J-1))
-!       OutR(I,J)=Vin(I,J)-0.25*DY(I,J)     &
-!               *((1.0_SP+kappa)*Din(I,J)+(1.0_SP-kappa)*Din(I,J))
-!# endif
-!     ENDDO
-!     ENDDO
-
-!     DO I=1,M
-!# if defined (CARTESIAN)
-!       OutL(I,N1)=Vin(I,N)+0.25*DY      &
-!               *((1.0_SP-kappa)*Din(I,N)+(1.0_SP+kappa)*Din(I,N))
-!       OutR(I,1)=Vin(I,1)-0.25*DY     &
-!               *((1.0_SP+kappa)*Din(I,1)+(1.0_SP-kappa)*Din(I,1))
-!# else
-!       OutL(I,N1)=Vin(I,N)+0.25*DY(I,N)      &
-!               *((1.0_SP-kappa)*Din(I,N)+(1.0_SP+kappa)*Din(I,N))
-!       OutR(I,1)=Vin(I,1)-0.25*DY(I,1)     &
-!               *((1.0_SP+kappa)*Din(I,1)+(1.0_SP-kappa)*Din(I,1))
-!# endif
-!       OutL(I,1)=OutR(I,1)
-!       OutR(I,N1)=OutL(I,N1)
-!
-!     ENDDO
-!ykchoi]
 
 ![ykchoi (08/28/2016)
 ! The "kappa" is meaningless in above routines.
@@ -725,6 +692,7 @@ END SUBROUTINE CONSTRUCT_Y
 !      06/20/2010 Fengyan Shi
 !      06/01/2011 Jeff Harris, replaced limiter function, saving 1/3 time
 ! add third order in the code. 
+!     08/31/2016 Choi removed kappa because 3rd order and 2nd order are identical
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCT_X(M,M1,N,DX,Vin,Din,OutL,OutR,Kappa)
@@ -739,38 +707,6 @@ SUBROUTINE CONSTRUCT_X(M,M1,N,DX,Vin,Din,OutL,OutR,Kappa)
      REAL(SP),INTENT(IN),DIMENSION(M,N)::Vin,Din
      REAL(SP),INTENT(IN)::Kappa
      REAL(SP),INTENT(OUT),DIMENSION(M1,N)::OutL,OutR
-
-!     DO J=1,N
-!     DO I=2,M
-!# if defined (CARTESIAN)
-!       OutL(I,J)=Vin(I-1,J)+0.25*DX      &
-!               *((1.0_SP-kappa)*Din(I-1,J)+(1.0_SP+kappa)*Din(I-1,J))
-!       OutR(I,J)=Vin(I,J)-0.25*DX     &
-!               *((1.0_SP+kappa)*Din(I,J)+(1.0_SP-kappa)*Din(I,J))
-!# else
-!       OutL(I,J)=Vin(I-1,J)+0.25*DX(I-1,J)      &
-!               *((1.0_SP-kappa)*Din(I-1,J)+(1.0_SP+kappa)*Din(I-1,J))
-!       OutR(I,J)=Vin(I,J)-0.25*DX(I,J)     &
-!               *((1.0_SP+kappa)*Din(I,J)+(1.0_SP-kappa)*Din(I,J))
-!# endif
-!     ENDDO
-!     ENDDO
-
-!     DO J=1,N
-!# if defined (CARTESIAN)
-!       OutL(M1,J)=Vin(M,J)+0.25*DX      &
-!               *((1.0_SP-kappa)*Din(M,J)+(1.0_SP+kappa)*Din(M,J))
-!       OutR(1,J)=Vin(1,J)-0.25*DX     &
-!               *((1.0_SP+kappa)*Din(1,J)+(1.0_SP-kappa)*Din(1,J))
-!# else
-!       OutL(M1,J)=Vin(M,J)+0.25*DX(M,J)      &
-!               *((1.0_SP-kappa)*Din(M,J)+(1.0_SP+kappa)*Din(M,J))
-!       OutR(1,J)=Vin(1,J)-0.25*DX(1,J)     &
-!               *((1.0_SP+kappa)*Din(1,J)+(1.0_SP-kappa)*Din(1,J))
-!# endif
-!       OutL(1,J)=OutR(1,J)
-!       OutR(M1,J)=OutL(M1,J)
-!     ENDDO
 
 ![ykchoi (08/28/2016)
 ! The "kappa" is meaningless in above routines.
@@ -811,6 +747,9 @@ END SUBROUTINE CONSTRUCT_X
 !      09/07/2010 Fengyan Shi
 !             use dummy variables
 !      09/07/2015 Young-Kwang Choi, added MASK9u and MASK9v 
+!      08/31/2016 Choi noticed 4th-order + minmod is not stable
+!                 I changed construction_ho to _minmod to keep
+!                 this subroutine for further tests
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCTION_HO_minmod
@@ -1011,6 +950,9 @@ END SUBROUTINE CONSTRUCTION_HO_minmod
 !    HISTORY: 
 !    06/20/2010 Fengyan Shi, University of Delaware
 !    02/14/2011 Jeff Harris, replaced limiter function, saving 1/3 time
+!      08/31/2016 Choi noticed 4th-order + minmod is not stable
+!                 I changed construction_ho to _minmod to keep
+!                 this subroutine for further tests
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCT_HO_X_minmod(M,N,M1,Ibeg,Iend,Jbeg,Jend,DX,MASK,Vin,OutL,OutR)
@@ -1126,6 +1068,9 @@ END SUBROUTINE CONSTRUCT_HO_X_minmod
 !    HISTORY: 
 !      06/20/2010 Fengyan Shi
 !      02/14/2011 Jeff Harris, replaced limiter function, saving 1/3 time
+!      08/31/2016 Choi noticed 4th-order + minmod is not stable
+!                 I changed construction_ho to _minmod to keep
+!                 this subroutine for further tests
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCT_HO_Y_minmod(M,N,N1,Ibeg,Iend,Jbeg,Jend,DY,MASK,Vin,OutL,OutR)
@@ -1286,6 +1231,8 @@ END FUNCTION MINMOD_LIMITER
 ! Reference
 ! Hybrid finite-volume finite-difference scheme for the solution of Boussinesq equations
 ! Erduran et al. (2005)
+!   08/31/21016  fyshi changed the subroutine name HO_vanleer to HO
+!                to make a consistency
 ! ---------------------------------------------------------------------------------------
 SUBROUTINE CONSTRUCTION_HO
      USE GLOBAL
@@ -1301,11 +1248,11 @@ SUBROUTINE CONSTRUCTION_HO
      MASK9v(1:Mloc,Nloc1)=MASK9(1:Mloc,Nloc)
 
 ! construct in x-direction
-     CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U,UxL,UxR)
-     CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V,VxL,VxR)
-     CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,HU,HUxL,HUxR)
-     CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,HV,HVxL,HVxR)
-     CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,Eta,EtaRxL,EtaRxR)
+     CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U,UxL,UxR)
+     CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V,VxL,VxR)
+     CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,HU,HUxL,HUxR)
+     CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,HV,HVxL,HVxR)
+     CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,Eta,EtaRxL,EtaRxR)
 
      HxL=EtaRxL+Depthx
      HxR=EtaRxR+Depthx
@@ -1313,8 +1260,8 @@ SUBROUTINE CONSTRUCTION_HO
 # if defined (CARTESIAN)
      IF(DISPERSION)THEN
 
-      CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4xL,U4xR)
-	CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4xL,V4xR)  
+      CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4xL,U4xR)
+	CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4xL,V4xR)  
 
      ENDIF
 
@@ -1338,8 +1285,8 @@ SUBROUTINE CONSTRUCTION_HO
 # if defined(ZALPHA)
      IF(DISPERSION)THEN
 
-      CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4xL,U4xR)
-	CALL CONSTRUCT_HO_X_vanLeer(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4xL,V4xR)
+      CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4xL,U4xR)
+	CALL CONSTRUCT_HO_X(Mloc,Nloc,Mloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4xL,V4xR)
 
      ENDIF
 
@@ -1380,11 +1327,11 @@ SUBROUTINE CONSTRUCTION_HO
 	  Gamma3
       
 ! construct in y-direction
-     CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U,UyL,UyR)
-     CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V,VyL,VyR)
-     CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,HV,HVyL,HVyR)
-     CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,HU,HUyL,HUyR)
-     CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,Eta,EtaRyL,EtaRyR)
+     CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U,UyL,UyR)
+     CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V,VyL,VyR)
+     CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,HV,HVyL,HVyR)
+     CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,HU,HUyL,HUyR)
+     CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,Eta,EtaRyL,EtaRyR)
 
      HyL=EtaRyL+Depthy
      HyR=EtaRyR+Depthy
@@ -1392,8 +1339,8 @@ SUBROUTINE CONSTRUCTION_HO
 # if defined (CARTESIAN)
      IF(DISPERSION)THEN
 
-       CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4yL,V4yR)
-	 CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4yL,U4yR)
+       CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4yL,V4yR)
+	 CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4yL,U4yR)
 
      ENDIF
 
@@ -1418,8 +1365,8 @@ SUBROUTINE CONSTRUCTION_HO
 # if defined (ZALPHA)
      IF(DISPERSION)THEN
 
-       CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4yL,V4yR)
-	 CALL CONSTRUCT_HO_Y_vanLeer(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4yL,U4yR)
+       CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,V4,V4yL,V4yR)
+	 CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U4,U4yL,U4yR)
 
      ENDIF
 
