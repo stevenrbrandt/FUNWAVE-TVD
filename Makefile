@@ -9,7 +9,7 @@
 #--------------------------------------------------------------------------
 
             FLAG_1 = -DDOUBLE_PRECISION 
-            FLAG_2 = -DPARALLEL
+#            FLAG_2 = -DPARALLEL
             FLAG_3 = -DSAMPLES
             FLAG_4 = -DCARTESIAN
 #              FLAG_6 = -DINTEL
