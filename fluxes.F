@@ -517,6 +517,7 @@ SUBROUTINE CONSTRUCTION
 # endif
 # endif
 
+# if defined (CARTESIAN)
 ! ykchoi (15. 08. 06.)
 ! Following GxL, GxR terms should be modified as Shi et al.(2012) publication
 
@@ -529,6 +530,14 @@ SUBROUTINE CONSTRUCTION
 	  ( UxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*U4xR(1:Mloc1,1:Nloc) )*   &
 	  ( VxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*V4xR(1:Mloc1,1:Nloc) )*   &
 	  Gamma3
+
+# else
+
+     GxL=HxL*UxL*VxL*Gamma3
+     GxR=HxR*UxR*VxR*Gamma3
+
+# endif
+
 
 ! construct in y-direction
      CALL CONSTRUCT_Y(Mloc,Nloc,Nloc1,DY,U,DelyU,UyL,UyR,Kappa)
@@ -576,6 +585,8 @@ SUBROUTINE CONSTRUCTION
 
 # endif
 
+
+# if defined(CARTESIAN)
 ! ykchoi (15. 08. 06.)
 ! Following FyL, FyR terms should be modified as Shi et al.(2012) publication
 
@@ -589,6 +600,12 @@ SUBROUTINE CONSTRUCTION
 	 ( UyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*U4yR(1:Mloc,1:Nloc1) )*   &
 	 ( VyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*V4yR(1:Mloc,1:Nloc1) )*   &
 	 Gamma3
+
+# else
+     FyL=Gamma3*HyL*UyL*VyL*Gamma3
+     FyR=Gamma3*HyR*UyR*VyR*Gamma3
+# endif
+! $$$ fyshi
 
 # if defined (CARTESIAN)
 
@@ -843,6 +860,8 @@ SUBROUTINE CONSTRUCTION_HO_minmod
 # endif
 # endif
 
+
+# if defined (CARTESIAN)
 ! ykchoi (15. 08. 06.)
 ! Following GxL, GxR terms should be modified as Shi et al.(2012) publication
 
@@ -855,6 +874,13 @@ SUBROUTINE CONSTRUCTION_HO_minmod
 	  ( UxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*U4xR(1:Mloc1,1:Nloc) )*   &
 	  ( VxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*V4xR(1:Mloc1,1:Nloc) )*   &
 	  Gamma3
+
+# else
+
+     GxL=Gamma3*HxL*UxL*VxL
+     GxR=Gamma3*HxR*UxR*VxR
+
+# endif
       
 ! construct in y-direction
      CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,DY,MASK,U,UyL,UyR)
@@ -926,6 +952,8 @@ SUBROUTINE CONSTRUCTION_HO_minmod
 # endif
 # endif
 
+
+# if defined(CARTESIAN)
 ! ykchoi (15. 08. 06.)
 ! Following FyL, FyR terms should be modified as Shi et al.(2012) publication
 
@@ -938,6 +966,13 @@ SUBROUTINE CONSTRUCTION_HO_minmod
 	 ( UyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*U4yR(1:Mloc,1:Nloc1) )*   &
 	 ( VyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*V4yR(1:Mloc,1:Nloc1) )*   &
 	 Gamma3
+
+# else
+
+     FyL=Gamma3*HyL*UyL*VyL
+     FyR=Gamma3*HyR*UyR*VyR
+
+# endif
 
 	deallocate( MASK9u, MASK9v )   !ykchoi 
      
@@ -1316,6 +1351,8 @@ SUBROUTINE CONSTRUCTION_HO
 # endif
 # endif
 
+# if defined (CARTESIAN)
+
 	GxL(1:Mloc1,1:Nloc)=HxL(1:Mloc1,1:Nloc)*    &
 	  ( UxL(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*U4xL(1:Mloc1,1:Nloc) )*   &
 	  ( VxL(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*V4xL(1:Mloc1,1:Nloc) )*   &
@@ -1325,6 +1362,13 @@ SUBROUTINE CONSTRUCTION_HO
 	  ( UxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*U4xR(1:Mloc1,1:Nloc) )*   &
 	  ( VxR(1:Mloc1,1:Nloc) + Gamma1*MASK9u(1:Mloc1,1:Nloc)*V4xR(1:Mloc1,1:Nloc) )*   &
 	  Gamma3
+
+# else
+
+     GxL=Gamma3*HxL*UxL*VxL
+     GxR=Gamma3*HxR*UxR*VxR
+
+# endif
       
 ! construct in y-direction
      CALL CONSTRUCT_HO_Y(Mloc,Nloc,Nloc1,Ibeg,Iend,Jbeg,Jend,MASK,U,UyL,UyR)
@@ -1396,6 +1440,8 @@ SUBROUTINE CONSTRUCTION_HO
 # endif
 # endif
 
+# if defined(CARTESIAN)
+
 	FyL(1:Mloc,1:Nloc1)=HyL(1:Mloc,1:Nloc1)*   &
 	 ( UyL(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*U4yL(1:Mloc,1:Nloc1) )*   &
 	 ( VyL(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*V4yL(1:Mloc,1:Nloc1) )*   &
@@ -1405,6 +1451,13 @@ SUBROUTINE CONSTRUCTION_HO
 	 ( UyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*U4yR(1:Mloc,1:Nloc1) )*   &
 	 ( VyR(1:Mloc,1:Nloc1) + Gamma1*MASK9v(1:Mloc,1:Nloc1)*V4yR(1:Mloc,1:Nloc1) )*   &
 	 Gamma3
+
+# else
+
+     FyL=Gamma3*HyL*UyL*VyL
+     FyR=Gamma3*HyR*UyR*VyR
+
+# endif
 
 	deallocate( MASK9u, MASK9v )
      
