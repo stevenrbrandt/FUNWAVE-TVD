@@ -53,21 +53,24 @@ SUBROUTINE FLUXES
      USE GLOBAL
      IMPLICIT NONE
 
-      !IF(HIGH_ORDER(1:3)=='FOU') THEN       !ykchoi (08/28/2016)
-     IF(HIGH_ORDER(1:9)=='FOURTHMIN') THEN   !ykchoi (08/28/2016)
-       CALL CONSTRUCTION_HO
+      IF(HIGH_ORDER(1:3)=='FOU') THEN       !ykchoi (08/28/2016)
+
+      ! for the fourth-order, Choi used 4th + combined minmod and van leer
+      ! it is more stable than 4th + minmod
+
+!  Choi s tests show this is unstable combination, switched off 08/31/2016 
+!     IF(HIGH_ORDER(1:9)=='FOURTHMIN') THEN   !ykchoi (08/28/2016)
+!       CALL CONSTRUCTION_HO
+!       CALL WAVE_SPEED(Mloc,Nloc,Mloc1,Nloc1,UxL,UxR,VyL,VyR,HxL,HxR,HyL,HyR, &
+!            SxL,SxR,SyL,SyR)
+
+       CALL CONSTRUCTION_HO   ! note choi used the name construction_ho_vanleer
+                              ! I changed back for consistency
+
        CALL WAVE_SPEED(Mloc,Nloc,Mloc1,Nloc1,UxL,UxR,VyL,VyR,HxL,HxR,HyL,HyR, &
             SxL,SxR,SyL,SyR)
 
-![ykchoi (08/28/2016)
-     ELSEIF(HIGH_ORDER(1:9)=='FOURTHVAN') THEN
-       CALL CONSTRUCTION_HO_vanLeer
-       CALL WAVE_SPEED(Mloc,Nloc,Mloc1,Nloc1,UxL,UxR,VyL,VyR,HxL,HxR,HyL,HyR, &
-            SxL,SxR,SyL,SyR)
-
-!ykchoi]
-      !ELSE                                      !ykchoi (08/28/2016)
-     ELSEIF(HIGH_ORDER(1:9)=='SECONDVAN') THEN   !ykchoi (08/28/2016)
+      ELSE                                     
        CALL DelxyFun
        CALL CONSTRUCTION 
        CALL WAVE_SPEED(Mloc,Nloc,Mloc1,Nloc1,UxL,UxR,VyL,VyR,HxL,HxR,HyL,HyR, &
@@ -810,7 +813,7 @@ END SUBROUTINE CONSTRUCT_X
 !      09/07/2015 Young-Kwang Choi, added MASK9u and MASK9v 
 !
 !-------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCTION_HO
+SUBROUTINE CONSTRUCTION_HO_minmod
      USE GLOBAL
      IMPLICIT NONE
 # if defined (CARTESIAN)
@@ -999,7 +1002,7 @@ SUBROUTINE CONSTRUCTION_HO
 
 	deallocate( MASK9u, MASK9v )   !ykchoi 
      
-END SUBROUTINE CONSTRUCTION_HO
+END SUBROUTINE CONSTRUCTION_HO_minmod
 
 !-------------------------------------------------------------------------------------
 !
@@ -1010,7 +1013,7 @@ END SUBROUTINE CONSTRUCTION_HO
 !    02/14/2011 Jeff Harris, replaced limiter function, saving 1/3 time
 !
 !-------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCT_HO_X(M,N,M1,Ibeg,Iend,Jbeg,Jend,DX,MASK,Vin,OutL,OutR)
+SUBROUTINE CONSTRUCT_HO_X_minmod(M,N,M1,Ibeg,Iend,Jbeg,Jend,DX,MASK,Vin,OutL,OutR)
      USE PARAM
      IMPLICIT NONE
      INTEGER, INTENT(IN)::M,N,M1,Ibeg,Iend,Jbeg,Jend
@@ -1113,7 +1116,7 @@ SUBROUTINE CONSTRUCT_HO_X(M,N,M1,Ibeg,Iend,Jbeg,Jend,DX,MASK,Vin,OutL,OutR)
      ENDDO
      ENDDO
 
-END SUBROUTINE CONSTRUCT_HO_X
+END SUBROUTINE CONSTRUCT_HO_X_minmod
 
 
 !-------------------------------------------------------------------------------------
@@ -1125,7 +1128,7 @@ END SUBROUTINE CONSTRUCT_HO_X
 !      02/14/2011 Jeff Harris, replaced limiter function, saving 1/3 time
 !
 !-------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCT_HO_Y(M,N,N1,Ibeg,Iend,Jbeg,Jend,DY,MASK,Vin,OutL,OutR)
+SUBROUTINE CONSTRUCT_HO_Y_minmod(M,N,N1,Ibeg,Iend,Jbeg,Jend,DY,MASK,Vin,OutL,OutR)
      USE PARAM
      IMPLICIT NONE
      INTEGER, INTENT(IN)::M,N,N1,Ibeg,Iend,Jbeg,Jend
@@ -1229,7 +1232,7 @@ SUBROUTINE CONSTRUCT_HO_Y(M,N,N1,Ibeg,Iend,Jbeg,Jend,DY,MASK,Vin,OutL,OutR)
      ENDDO
      ENDDO     
 
-END SUBROUTINE CONSTRUCT_HO_Y
+END SUBROUTINE CONSTRUCT_HO_Y_minmod
 
 
 !-------------------------------------------------------------------------------------
@@ -1284,7 +1287,7 @@ END FUNCTION MINMOD_LIMITER
 ! Hybrid finite-volume finite-difference scheme for the solution of Boussinesq equations
 ! Erduran et al. (2005)
 ! ---------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCTION_HO_vanLeer
+SUBROUTINE CONSTRUCTION_HO
      USE GLOBAL
      IMPLICIT NONE
 
@@ -1458,14 +1461,14 @@ SUBROUTINE CONSTRUCTION_HO_vanLeer
 
 	deallocate( MASK9u, MASK9v )
      
-ENDSUBROUTINE CONSTRUCTION_HO_vanLeer
+ENDSUBROUTINE CONSTRUCTION_HO
 
 ! --------------- ykchoi (08/28/2016)
 ! Reference
 ! Hybrid finite-volume finite-difference scheme for the solution of Boussinesq equations
 ! Erduran et al. (2005)
 ! ---------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCT_HO_X_vanLeer(M,N,M1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
+SUBROUTINE CONSTRUCT_HO_X(M,N,M1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
      USE PARAM
      IMPLICIT NONE
      INTEGER,INTENT(IN) :: M,N,M1,Ibeg,Iend,Jbeg,Jend
@@ -1573,14 +1576,14 @@ SUBROUTINE CONSTRUCT_HO_X_vanLeer(M,N,M1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
 
      ENDDO 
 
-END SUBROUTINE CONSTRUCT_HO_X_vanLeer
+END SUBROUTINE CONSTRUCT_HO_X
 
 ! --------------- ykchoi (08/28/2016)
 ! Reference
 ! Hybrid finite-volume finite-difference scheme for the solution of Boussinesq equations
 ! Erduran et al. (2005)
 ! ---------------------------------------------------------------------------------------
-SUBROUTINE CONSTRUCT_HO_Y_vanLeer(M,N,N1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
+SUBROUTINE CONSTRUCT_HO_Y(M,N,N1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
      USE PARAM
      IMPLICIT NONE
      INTEGER,INTENT(IN) :: M,N,N1,Ibeg,Iend,Jbeg,Jend
@@ -1688,4 +1691,4 @@ SUBROUTINE CONSTRUCT_HO_Y_vanLeer(M,N,N1,Ibeg,Iend,Jbeg,Jend,MASK,Vin,OutL,OutR)
 
      ENDDO     
 
-END SUBROUTINE CONSTRUCT_HO_Y_vanLeer
+END SUBROUTINE CONSTRUCT_HO_Y
