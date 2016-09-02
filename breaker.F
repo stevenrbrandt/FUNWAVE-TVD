@@ -217,9 +217,10 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 
      IF(AGE(I,J)>ZERO.AND.AGE(I,J)<T_brk.AND.ETAt(I,J)>tmp2)THEN
        cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
+!   dont know why the previous code use the minimum, I change back 09/02/2016
 !       nu_break(I,J)=MIN(cap1*ABS(ETAt(I,J)),&
 !                         cap1*tmp2)
-        nu_break(I,J)=cap1*tmp2+nu_bkg
+        nu_break(I,J)=cap1*ABS(ETAt(I,J))
      ELSE
        nu_break(I,J)=ZERO+nu_bkg
      ENDIF
