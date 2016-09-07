@@ -217,10 +217,16 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 
      IF(AGE(I,J)>ZERO.AND.AGE(I,J)<T_brk.AND.ETAt(I,J)>tmp2)THEN
        cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
-!   dont know why the previous code use the minimum, I change back 09/02/2016
+!   note 09/07/2016
+!   Kennedy et al used a transition for nu, the transition is basically
+!   used to avoid instabilities. Here I use a static nu instead of
+!   a function of eta_t which causes a numerical instability.
+!   you can also try nu_break(I,J) = cap1*tmp2 + nu_bkg 
+!   
 !       nu_break(I,J)=MIN(cap1*ABS(ETAt(I,J)),&
 !                         cap1*tmp2)
-        nu_break(I,J)=cap1*ABS(ETAt(I,J))
+!        nu_break(I,J)=cap1*ABS(ETAt(I,J))+nu_bkg
+         nu_break(I,J)=cap1*tmp3*(Cbrk2+(Cbrk1-Cbrk2)*(T_brk-AGE(I,J))/T_brk)+nu_bkg
      ELSE
        nu_break(I,J)=ZERO+nu_bkg
      ENDIF
