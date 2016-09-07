@@ -482,4 +482,13 @@ SUBROUTINE GET_Eta_U_V_HU_HV
      ENDDO
      ENDDO
 
+!------------ykchoi 07/26/2016
+!   --- is this for after correction of Froude cap?
+     IF( .NOT. DISPERSION) THEN 			
+
+	  Ubar = HU
+	  Vbar = HV
+
+     ENDIF
+
 END SUBROUTINE GET_Eta_U_V_HU_HV
