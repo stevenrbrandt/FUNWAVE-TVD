@@ -217,16 +217,25 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 
      IF(AGE(I,J)>ZERO.AND.AGE(I,J)<T_brk.AND.ETAt(I,J)>tmp2)THEN
        cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
-!   note 09/07/2016
+!   note 09/17/2016
 !   Kennedy et al used a transition for nu, the transition is basically
-!   used to avoid instabilities. Here I use a static nu instead of
-!   a function of eta_t which causes a numerical instability.
-!   you can also try nu_break(I,J) = cap1*tmp2 + nu_bkg 
+!   used to avoid instabilities. Choi and I did some tests:
+!   1) use a static nu instead of a function of eta_t which 
+!      causes a numerical instability. However, instabilities still
+!      occur for some 2D cases. 
+!   2) use a static nu as a function of Cbrk2. 
+!      nu_break(I,J) = cap1*tmp2 + nu_bkg
+!      This is the setting
+!      I used before the transition scheme. It worked well but
+!      we should re-calibrate Cbrk2. 
 !   
-!       nu_break(I,J)=MIN(cap1*ABS(ETAt(I,J)),&
-!                         cap1*tmp2)
-!        nu_break(I,J)=cap1*ABS(ETAt(I,J))+nu_bkg
+# if defined (VIS_KENNEDY)
+        nu_break(I,J)=cap1*ABS(ETAt(I,J))+nu_bkg
+# elif defined (VIS_STATIC_TRANS)
          nu_break(I,J)=cap1*tmp3*(Cbrk2+(Cbrk1-Cbrk2)*(T_brk-AGE(I,J))/T_brk)+nu_bkg
+# else
+        nu_break(I,J) = cap1*tmp2 + nu_bkg
+# endif
      ELSE
        nu_break(I,J)=ZERO+nu_bkg
      ENDIF
