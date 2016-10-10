@@ -134,6 +134,10 @@ Program FUNWAVE_TVD
 !
 !-------------------------------------------------------------------------------------
      USE GLOBAL
+# if defined (VESSEL)
+     USE VESSEL_MODULE
+# endif
+
      IMPLICIT NONE
 
      INTEGER::ISTAGE
@@ -161,6 +165,10 @@ Program FUNWAVE_TVD
 
 # if defined (COUPLING)
      TIME=TIME_COUPLING_1
+# endif
+
+# if defined (VESSEL)
+     CALL VESSEL_INITIAL
 # endif
 
 ! time integration
@@ -198,6 +206,10 @@ Program FUNWAVE_TVD
 	U0=U   !ykchoi(15. 08. 06.)
 	V0=V   !ykchoi
 
+# if defined (VESSEL)
+       CALL VESSEL_FORCING
+# endif
+
      ! 3-ORDER RUNGE-KUTTA TIME STEPPING
      DO ISTAGE=1,3
 
@@ -214,7 +226,6 @@ Program FUNWAVE_TVD
 # endif
 
        CALL SourceTerms   ! put sourceterms after fluxes in order to get eta_t
-
 
        CALL ESTIMATE_HUV(ISTAGE)     
 
@@ -255,6 +266,13 @@ Program FUNWAVE_TVD
 
 # if defined (COUPLING)
      CLOSE(11)
+# endif
+
+# if defined (VESSEL)
+
+DO Kves = 201,200+NumVessel
+    CLOSE(Kves)
+ENDDO
 # endif
 
      ! record wall time at the end
