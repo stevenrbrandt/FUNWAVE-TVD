@@ -55,6 +55,9 @@
 ! --------------------------------------------------
 SUBROUTINE SourceTerms
      USE GLOBAL
+# if defined (VESSEL)
+     USE VESSEL_MODULE
+# endif
      IMPLICIT NONE
      REAL,DIMENSION(Mloc,Nloc) :: nu_vis
      LOGICAL :: PQ_scheme = .TRUE.
@@ -381,6 +384,12 @@ SUBROUTINE SourceTerms
 
      ENDDO
      ENDDO
+
+# if defined (VESSEL)
+      SourceX = SourceX + VesselPressureX
+      SourceY = SourceY + VesselPressureY
+# endif
+
 
 END SUBROUTINE SourceTerms
 
