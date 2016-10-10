@@ -99,6 +99,7 @@ SUBROUTINE READ_INPUT
 # if defined(INTEL)
      USE IFPORT
 # endif
+
 !jychoi 14.12.23]
     IMPLICIT NONE
     CHARACTER(LEN=80) FILE_NAME
@@ -939,6 +940,7 @@ SUBROUTINE READ_INPUT
       CALL READ_LOGICAL(OUT_Gy,FILE_NAME,'Gy',ierr)
       CALL READ_LOGICAL(OUT_AGE,FILE_NAME,'AGE',ierr)
       CALL READ_LOGICAL(OUT_TMP,FILE_NAME,'TMP',ierr)
+
 !ykchoi
 !	CALL READ_FLOAT(EtaBlowVal,FILE_NAME,'EtaBlowVal',ierr)
 !  fyshi set blowup value is 100xmax_depth in init.F  
@@ -1261,6 +1263,10 @@ END SUBROUTINE STATIONS
 !-------------------------------------------------------------------------------------
 SUBROUTINE PREVIEW
      USE GLOBAL
+# if defined (VESSEL)
+     USE VESSEL_MODULE
+# endif
+
      IMPLICIT NONE
 
      CHARACTER(LEN=80)::FILE_NAME=' '
@@ -1388,6 +1394,13 @@ SUBROUTINE PREVIEW
       ENDIF
      
      ENDIF
+
+# if defined (VESSEL)
+     IF(OUT_VESSEL)THEN
+        TMP_NAME = TRIM(FDIR)//'Pves_'//TRIM(FILE_NAME)
+        call PutFile(TMP_NAME,VesselPressureTotal)
+     ENDIF
+# endif
 
      IF(OUT_TMP)THEN
         TMP_NAME = TRIM(FDIR)//'tmp_'//TRIM(FILE_NAME)
