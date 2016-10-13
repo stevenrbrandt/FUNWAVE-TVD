@@ -213,7 +213,7 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
      REAL(SP)::ri,lim
      INTEGER::Iwidth
      REAL(SP) :: DXg,DYg,xx
-     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2,tmp_2d_3,tmp_2d_4 
+     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2
 
 
 ! note that I used SPONGE represent CD from input, do not mess up 
@@ -228,6 +228,8 @@ SUBROUTINE CALCULATE_FRICTION_SPONGE(M,N,Nghost,DX,DY,&
 # endif
 
      SPONGE = ZERO
+     tmp_2d_2 = ZERO
+     tmp_2d_1 = ZERO
 
 ! west
 
@@ -380,8 +382,11 @@ SUBROUTINE CALCULATE_DIFFUSION_SPONGE(M,N,Nghost,DX,DY,&
      REAL(SP)::ri,lim
      INTEGER::Iwidth
      REAL(SP) :: DXg,DYg,xx
-     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2,tmp_2d_3,tmp_2d_4 
+     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2
 
+
+     tmp_2d_2 = ZERO
+     tmp_2d_1 = ZERO
 
 # if defined (CARTESIAN)
      DXg=DX
@@ -551,7 +556,10 @@ SUBROUTINE CALCULATE_SPONGE(M,N,Nghost,DX,DY,&
      REAL(SP)::ri,lim
      INTEGER::Iwidth
      REAL(SP) :: DXg,DYg,xx
-     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2,tmp_2d_3,tmp_2d_4 
+     REAL(SP),DIMENSION(M,N) :: tmp_2d_1,tmp_2d_2 
+
+     tmp_2d_2 = ZERO
+     tmp_2d_1 = ZERO
 
 # if defined (CARTESIAN)
      DXg=DX
