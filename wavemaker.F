@@ -717,6 +717,10 @@ END SUBROUTINE CALCULATE_DATA2D_Cm_Sm
 !      11/09/2010 Fengyan Shi
 !      05/12/2011 Fengyan Shi, removed conversion between Hrms and Hmo based on
 !                              Joe Geiman test
+!      10/18/2016 Fengyan Shi, Young-Kwang Choi questioned about Geimans conversion.
+!                              The derivation was checked again and found it is 
+!                              necessary to convert from Hmo to Hrms, unless the 
+!                              input wave height is Hrms. I reorganized the code. 
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE CALCULATE_TMA_Cm_Sm & 
@@ -880,9 +884,12 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
           enddo
 	
 
+!  total energy is E=Hmo^2/16, the fraction should be E/Ef 
         alpha_spec=Hmo**2/16.0_SP/Ef
 
         do ktheta=1,mtheta
+
+! this is Hmo for each bin
         Hmo_each(ktheta)=4.0_SP*SQRT((alpha_spec*Ef100*AG(ktheta)))
 
         enddo
@@ -894,10 +901,13 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
 
 ! here should convert Hmo to Hrms
 !  Hrms=1./sqrt(2)*Hmo
-! 05/12/2011 Joe has reported that the conversion should be removed
-!        ap=Hmo_each(ktheta)/SQRT(2.0_SP)/2.0_SP
+! 05/12/2011 Joe has reported that the conversion should be removed. On 10/18/2016
+!  fyshi converted it back, fyshi and Choi checked it. 
 
-        ap=Hmo_each(ktheta)/2.0_SP
+        ap=Hmo_each(ktheta)/SQRT(2.0_SP)/2.0_SP
+
+!        ap=Hmo_each(ktheta)/2.0_SP  ! Joes suggestion
+
         theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
         alpha=-0.39_SP
         alpha1=alpha+1.0_SP/3.0_SP
