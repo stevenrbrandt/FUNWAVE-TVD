@@ -1026,6 +1026,10 @@ END SUBROUTINE CALCULATE_TMA_Cm_Sm
 !
 !    HISTORY: 
 !      11/8/2010 Fengyan Shi
+!      10/18/2016 Fengyan Shi, Young-Kwang Choi questioned about Geimans conversion.
+!                              The derivation was checked again and found it is 
+!                              necessary to convert from Hmo to Hrms, unless the 
+!                              input wave height is Hrms. I reorganized the code.
 !
 !-------------------------------------------------------------------------------------
 SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE & 
@@ -1184,8 +1188,9 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
 ! here should convert Hmo to Hrms
 !  Hrms=1./sqrt(2)*Hmo
 ! 05/12/2011 Joe has reported that the conversion should be removed
-!        ap=Hmo_each(ktheta)/SQRT(2.0_SP)/2.0_SP
-        ap=Hmo_each(ktheta)/2.0_SP
+!  fyshi converted it back, fyshi and Choi checked it.
+         ap=Hmo_each(ktheta)/SQRT(2.0_SP)/2.0_SP
+!        ap=Hmo_each(ktheta)/2.0_SP  ! this is the one suggested by Geiman
         theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
         alpha=-0.39_SP
         alpha1=alpha+1.0_SP/3.0_SP
