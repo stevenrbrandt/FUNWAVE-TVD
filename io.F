@@ -206,10 +206,18 @@ SUBROUTINE READ_INPUT
       MKFOLDER = "mkdir -p "//TRIM(RESULT_FOLDER)
 # if defined (PARALLEL)
       IF (myid.eq.0) THEN
+# if defined (INTEL)
+        RES = SYSTEM(TRIM(MKFOLDER))
+# else
         CALL SYSTEM(TRIM(MKFOLDER))
+# endif
       ENDIF
 # else
+# if defined(INTEL)
+      RES = SYSTEM(TRIM(MKFOLDER))
+# else
       CALL SYSTEM(TRIM(MKFOLDER))
+# endif
 # endif
 
 ! station files

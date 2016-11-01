@@ -61,7 +61,7 @@ MODULE VESSEL_MODULE
   USE GLOBAL,ONLY : myid,ier, npx,npy,PX,PY
   USE MPI
 # endif
-IMPLICIT NONE
+  IMPLICIT NONE
   SAVE
 
     INTEGER :: NumVessel,Kves

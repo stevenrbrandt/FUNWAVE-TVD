@@ -57,7 +57,6 @@
 !-----------------------------------------------------------------------------------
 
     SUBROUTINE TRIDy_periodic ( a, c, d, f)
-
     USE PARAM
 
 # if defined (PARALLEL)
@@ -66,7 +65,6 @@
     USE MPI
 # endif
     USE GLOBAL, ONLY : Mloc, Nloc, Ibeg, Iend, Jbeg, Jend
-
     IMPLICIT NONE
 
 # if defined (PARALLEL)
