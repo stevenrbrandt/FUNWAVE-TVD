@@ -52,7 +52,6 @@
 MODULE GLOBAL
        USE PARAM
        IMPLICIT NONE
-
        SAVE
 
 # if defined (PARALLEL)
