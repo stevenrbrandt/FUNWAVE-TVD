@@ -587,6 +587,8 @@ SUBROUTINE READ_INPUT
          ENDIF
 # if defined (INTEL)
           Phase_Ser(J)=rand()*2.0_SP*3.1415926
+# elif defined (CRAY)
+          Phase_Ser(J)=rand()*2.0_SP*3.1415926
 # else
           Phase_Ser(J)=rand(0)*2.0_SP*3.1415926
 # endif
