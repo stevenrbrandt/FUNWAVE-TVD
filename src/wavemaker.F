@@ -221,6 +221,8 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
        DO I=1,NumDir
 # if defined (INTEL)
           Phase2D(J,I)=rand()*2.0_SP*pi
+# elif define (CRAY)
+          Phase2D(J,I)=rand()*2.0_SP*pi
 # else
           Phase2D(J,I)=rand(0)*2.0_SP*pi
 # endif
@@ -771,6 +773,8 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
        DO kf=1,NumFreq
 # if defined (INTEL)
           Phase_Ser(kf)=rand()*2.0_SP*3.1415926
+# elif defined (CRAY)
+          Phase_Ser(kf)=rand()*2.0_SP*3.1415926
 # else
           Phase_Ser(kf)=rand(0)*2.0_SP*3.1415926
 # endif
@@ -1285,6 +1289,8 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
         do ktheta=1,mtheta
         do kf=1,mfreq
 # if defined (INTEL)
+          phi1(kf,ktheta)=rand()*2.0_SP*pi
+# elif defined (CRAY)
           phi1(kf,ktheta)=rand()*2.0_SP*pi
 # else
           phi1(kf,ktheta)=rand(0)*2.0_SP*pi
