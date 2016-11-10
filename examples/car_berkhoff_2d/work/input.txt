@@ -34,7 +34,7 @@ Xslp = 10.0
   ! -------------------PRINT---------------------------------
   ! PRINT*,
   ! result folder
-RESULT_FOLDER = /Users/fengyanshi/tmp5/
+RESULT_FOLDER = /Users/rdchlmm9/FUNWAVE-TVD/examples/car_berkhoff_2d/
 
   ! ------------------DIMENSION-----------------------------
   ! global grid dimension

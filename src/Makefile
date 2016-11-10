@@ -1,7 +1,7 @@
 #-----------BEGIN MAKEFILE-------------------------------------------------
             SHELL         = /bin/sh
-            DEF_FLAGS     = -P -C -traditional 
-            EXEC          = mytvd
+            DEF_FLAGS     = -P -traditional 
+            EXEC          = funwave_gnu
 #==========================================================================
 #--------------------------------------------------------------------------
 #        PRECISION          DEFAULT PRECISION: SINGLE                     
@@ -9,7 +9,7 @@
 #--------------------------------------------------------------------------
 
             FLAG_1 = -DDOUBLE_PRECISION 
-#            FLAG_2 = -DPARALLEL
+            FLAG_2 = -DPARALLEL
             FLAG_3 = -DSAMPLES
             FLAG_4 = -DCARTESIAN
 #              FLAG_6 = -DINTEL
@@ -24,8 +24,7 @@
 #--------------------------------------------------------------------------
          CPP      = /usr/bin/cpp 
          CPPFLAGS = $(DEF_FLAGS)
-         FC       = mpif90
-#         FC        = /usr/local/mpi/intel/openmpi-1.8.4/bin/mpif90
+         FC       = /usr/local/bin/mpif90
          DEBFLGS  = 
          OPT      = 
          CLIB     = 
@@ -82,7 +81,7 @@ OBJS = $(SRCS:.F=.o)
 
 $(EXEC):	$(OBJS)
 		$(FC) $(FFLAGS) $(LDFLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-#	mv $(EXEC) ../work/.
+		mv $(EXEC) ../bin/
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -100,4 +99,4 @@ clean:
 		/bin/rm -f *.o *.mod
 
 clobber:	clean
-		/bin/rm -f *.f90 *.o mytvd
+		/bin/rm -f *.f90 *.o $(EXEC)
