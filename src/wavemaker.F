@@ -221,7 +221,7 @@ SUBROUTINE WAVEMAKER_INITIALIZATION
        DO I=1,NumDir
 # if defined (INTEL)
           Phase2D(J,I)=rand()*2.0_SP*pi
-# elif define (CRAY)
+# elif defined (CRAY)
           Phase2D(J,I)=rand()*2.0_SP*pi
 # else
           Phase2D(J,I)=rand(0)*2.0_SP*pi
@@ -759,6 +759,8 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
      INTEGER :: kf,kff,kb,N_spec,ktotal,k_n,ktheta,mcenter
      INTEGER :: Iter,KK,KKK
      REAL(SP) :: Celerity,Fkdif,Zlev,Fact,X_maker,Y_maker
+     
+     REAL(SP) :: sumAG   !ykchoi (11/07/2016)
 
        NumFreq = mfreq
        NumDir = mtheta
@@ -833,60 +835,43 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
         ENDIF
         enddo
 
+! sometimes Freq(mfreq) < Freq(mfreq-1) happens, ykchoi (11/07/2016)
+! yes, there is a problem that the split using Ef/REAL(mfreq+1) sometimes cannot
+! guarantee to get the final frequency (Freq(mfreq), which results in a random number
+! fyshi (11/14/2016)
+ 
+	  IF ( Freq(mfreq) < Freq(mfreq-1) ) THEN
+	      Freq(mfreq) = Freq(mfreq-1)
+	  ENDIF
+
 ! --- directional wave
         sigma_theta=sigma_theta_input*pi/180.0_SP
         N_spec=20.0_SP/sigma_theta
 
         ktotal=mtheta
 
-	  theta_1=-pi/3.0_SP
-          AG(1)=(theta_1+pi)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(1)=AG(1)+1.0_SP/pi/k_n  &
-             *exp(-(k_n*sigma_theta)**2/2.0_SP) &
-             *(sin(k_n*theta_1))
-          enddo
-	
-        do ktheta=2,(mtheta-1)/2
-          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-1.0_SP)
-          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-2.0_SP)
-          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(ktheta)=AG(ktheta)+1./pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.)   &
-            *(sin(k_n*theta_p)-sin(k_n*theta_m))
-          enddo
-        enddo
+![-------- ykchoi (11/07/2016)
+! ------- Wrapped normal directional spreading function (Borgman, 1984)
+! --- the normal directional spreading does give a smoother distribution. 
+! --- see note of Choi 11/07/2016. should update this in the manual. fyshi(11/14/2016)
 
-	  theta_10=-2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
-	  theta_11=2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
-          mcenter=(mtheta-1)/2+1
-          AG(mcenter)=(theta_11-theta_10)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(mcenter)=AG(mcenter)+1./pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.)     &
-            *(sin(k_n*theta_11)-sin(k_n*theta_10))
-          enddo	
+        sumAG=0.0_SP;
+        do ktheta=1,mtheta
 
-        do ktheta=mcenter+1,mtheta-1
-          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-0.0_SP)
-          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1)*(ktheta-1.0_SP)
-          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(ktheta)=AG(ktheta)+1.0/pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.0_SP) &
-            *(sin(k_n*theta_p)-sin(k_n*theta_m))
-          enddo
-        enddo
+           theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
+	             + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP);
 
-	  theta_21=pi/3.0_SP
-          AG(mtheta)=(pi-theta_21)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(mtheta)=AG(mtheta)+1.0_SP/pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.0_SP)  &
-            *(sin(-k_n*theta_21))
-          enddo
-	
+           AG(ktheta) = 1.0_SP/( 2.0_SP*pi );
+	     do k_n=1,N_spec
+	        AG(ktheta) = AG(ktheta) +   &
+                ( 1.0_SP/pi )*exp( -0.5_SP*( real(k_n)*sigma_theta )**2 )   &
+	                                               *cos( k_n*(theta - theta_input) );
+	     enddo
+	     sumAG = sumAG + AG(ktheta);
+	  
+	  enddo
+	  AG(:) = AG(:)/sumAG;    !Because integral of AG should be 1.
+
 
 !  total energy is E=Hmo^2/16, the fraction should be E/Ef 
         alpha_spec=Hmo**2/16.0_SP/Ef
@@ -912,7 +897,10 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
 
 !        ap=Hmo_each(ktheta)/2.0_SP  ! Joes suggestion
 
-        theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
+!        theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
+        theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
+	         + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)   !ykchoi (11/07/2016)
+
         alpha=-0.39_SP
         alpha1=alpha+1.0_SP/3.0_SP
 
@@ -1064,6 +1052,8 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
                  omgn_tmp
      INTEGER :: kf,kff,kb,N_spec,ktotal,k_n,ktheta,mcenter
 
+     REAL(SP) :: sumAG   !ykchoi (11/07/2016)
+
        EF=0.0_SP
 ! ---  get freq(100) and Hmo_each
 
@@ -1122,60 +1112,84 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
 	  
         enddo
 
+! sometimes Freq(mfreq) < Freq(mfreq-1) happens, ykchoi (11/07/2016)
+	  IF ( Freq(mfreq) < Freq(mfreq-1) ) THEN
+	      Freq(mfreq) = Freq(mfreq-1)
+	  ENDIF
+
 ! --- directional wave
         sigma_theta=sigma_theta_input*pi/180.0_SP
         N_spec=20.0_SP/sigma_theta
 
         ktotal=mtheta
 
-	  theta_1=-pi/3.0_SP
-          AG(1)=(theta_1+pi)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(1)=AG(1)+1.0_SP/pi/k_n  &
-             *exp(-(k_n*sigma_theta)**2/2.0_SP) &
-             *(sin(k_n*theta_1))
-          enddo
-	
-        do ktheta=2,(mtheta-1)/2
-          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-1.0_SP)
-          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-2.0_SP)
-          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(ktheta)=AG(ktheta)+1./pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.)   &
-            *(sin(k_n*theta_p)-sin(k_n*theta_m))
-          enddo
-        enddo
+!-------- ykchoi (11/07/2016)
+! ------- Wrapped normal directional spreading function (Borgman, 1984)
+       sumAG=0.0_SP;
+       do ktheta=1,mtheta
 
-	  theta_10=-2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
-	  theta_11=2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
-          mcenter=(mtheta-1)/2+1
-          AG(mcenter)=(theta_11-theta_10)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(mcenter)=AG(mcenter)+1./pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.)     &
-            *(sin(k_n*theta_11)-sin(k_n*theta_10))
-          enddo	
+          theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
+	           + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP);
 
-        do ktheta=mcenter+1,mtheta-1
-          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-0.0_SP)
-          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1)*(ktheta-1.0_SP)
-          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(ktheta)=AG(ktheta)+1.0/pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.0_SP) &
-            *(sin(k_n*theta_p)-sin(k_n*theta_m))
-          enddo
-        enddo
+          AG(ktheta) = 1.0_SP/( 2.0_SP*pi );
+	    do k_n=1,N_spec
+	       AG(ktheta) = AG(ktheta) + ( 1.0_SP/pi )*exp( -0.5_SP*( real(k_n)*sigma_theta )**2 )   &
+	                                              *cos( k_n*(theta - theta_input) );
+	    enddo
+	    sumAG = sumAG + AG(ktheta);
+	  
+	 enddo
+	 AG(:) = AG(:)/sumAG;   !Because integral of AG should be 1.
 
-	  theta_21=pi/3.0_SP
-          AG(mtheta)=(pi-theta_21)/(2.0_SP*pi)
-          do k_n=1,N_spec
-            AG(mtheta)=AG(mtheta)+1.0_SP/pi/k_n  &
-            *exp(-(k_n*sigma_theta)**2/2.0_SP)  &
-            *(sin(-k_n*theta_21))
-          enddo
-	
+!	  theta_1=-pi/3.0_SP
+!          AG(1)=(theta_1+pi)/(2.0_SP*pi)
+!          do k_n=1,N_spec
+!            AG(1)=AG(1)+1.0_SP/pi/k_n  &
+!             *exp(-(k_n*sigma_theta)**2/2.0_SP) &
+!             *(sin(k_n*theta_1))
+!          enddo
+!	
+!        do ktheta=2,(mtheta-1)/2
+!          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-1.0_SP)
+!          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-2.0_SP)
+!          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
+!          do k_n=1,N_spec
+!            AG(ktheta)=AG(ktheta)+1./pi/k_n  &
+!            *exp(-(k_n*sigma_theta)**2/2.)   &
+!            *(sin(k_n*theta_p)-sin(k_n*theta_m))
+!          enddo
+!        enddo
+!
+!	  theta_10=-2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
+!	  theta_11=2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)
+!          mcenter=(mtheta-1)/2+1
+!          AG(mcenter)=(theta_11-theta_10)/(2.0_SP*pi)
+!          do k_n=1,N_spec
+!            AG(mcenter)=AG(mcenter)+1./pi/k_n  &
+!            *exp(-(k_n*sigma_theta)**2/2.)     &
+!            *(sin(k_n*theta_11)-sin(k_n*theta_10))
+!          enddo	
+!
+!        do ktheta=mcenter+1,mtheta-1
+!          theta_p=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1.0_SP)*(ktheta-0.0_SP)
+!          theta_m=theta_1+2.0_SP/3.0_SP*pi/(ktotal-1)*(ktheta-1.0_SP)
+!          AG(ktheta)=(theta_p-theta_m)/(2.0_SP*pi)
+!          do k_n=1,N_spec
+!            AG(ktheta)=AG(ktheta)+1.0/pi/k_n  &
+!            *exp(-(k_n*sigma_theta)**2/2.0_SP) &
+!            *(sin(k_n*theta_p)-sin(k_n*theta_m))
+!          enddo
+!        enddo
+!
+!	  theta_21=pi/3.0_SP
+!          AG(mtheta)=(pi-theta_21)/(2.0_SP*pi)
+!          do k_n=1,N_spec
+!            AG(mtheta)=AG(mtheta)+1.0_SP/pi/k_n  &
+!            *exp(-(k_n*sigma_theta)**2/2.0_SP)  &
+!            *(sin(-k_n*theta_21))
+!          enddo
+!
+!-------- ykchoi (11/07/2016) ]	
 
         alpha_spec=Hmo**2/16.0_SP/Ef
 
@@ -1195,7 +1209,16 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
 !  fyshi converted it back, fyshi and Choi checked it.
          ap=Hmo_each(ktheta)/SQRT(2.0_SP)/2.0_SP
 !        ap=Hmo_each(ktheta)/2.0_SP  ! this is the one suggested by Geiman
-        theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
+        
+!	  theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
+
+!ykchoi(11/07/16)
+! yes, this statement makes a distribution symmetric, checked by fyshi(11/14/2016)
+
+        theta = -pi/3.0_SP + theta_input*pi/180.0_SP &
+	         + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)   
+ 
+
         alpha=-0.39_SP
         alpha1=alpha+1.0_SP/3.0_SP
         omgn(kf)=2.0_SP*pi*Freq(kf)
