@@ -975,6 +975,7 @@ END SUBROUTINE READ_INPUT
 !-------------------------------------------------------------------------------------
 SUBROUTINE STATIONS
      USE GLOBAL
+     USE INPUT_READ
      IMPLICIT NONE
 
      INTEGER :: iunit
@@ -993,6 +994,21 @@ SUBROUTINE STATIONS
                 jsta(NumberStations),&
                 nsta(NumberStations))
 ! calculate how many output components
+
+! check existing
+
+ INQUIRE(FILE=TRIM(STATIONS_FILE),EXIST=FILE_EXIST)
+  IF(.NOT.FILE_EXIST)THEN
+# if defined (PARALLEL)
+   IF(MYID==0)  &
+   WRITE(*,*) TRIM(STATIONS_FILE), 'CANNOT BE FOUND. STOP'
+   CALL MPI_FINALIZE (ier)
+   STOP
+# else
+    WRITE(*,*) TRIM(STATIONS_FILE), 'CANNOT BE FOUND. STOP'
+    STOP
+# endif
+  ENDIF  ! exist
               
        open(100,FILE=TRIM(STATIONS_FILE))
        do i=1,NumberStations
