@@ -506,6 +506,22 @@ SUBROUTINE INITIALIZATION
 ! bathymetry
 
   IF(DEPTH_TYPE(1:3)=='DAT')THEN
+
+! check existing
+
+ INQUIRE(FILE=TRIM(DEPTH_FILE),EXIST=FILE_EXIST)
+  IF(.NOT.FILE_EXIST)THEN
+# if defined (PARALLEL)
+   IF(MYID==0)  &
+   WRITE(*,*) TRIM(DEPTH_FILE), 'CANNOT BE FOUND. STOP'
+   CALL MPI_FINALIZE (ier)
+   STOP
+# else
+    WRITE(*,*) TRIM(DEPTH_FILE), 'CANNOT BE FOUND. STOP'
+    STOP
+# endif
+  ENDIF  ! exist
+
 # if defined (PARALLEL)
      call GetFile (DEPTH_FILE,Depth)
 # else
