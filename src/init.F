@@ -510,19 +510,11 @@ SUBROUTINE INITIALIZATION
      call GetFile (DEPTH_FILE,Depth)
 # else
      OPEN(1,FILE=TRIM(DEPTH_FILE))
-     IF(DepthFormat(1:3)=='ELE')THEN
+
        DO J=Jbeg,Jend
         READ(1,*)(Depth(I,J),I=Ibeg,Iend)
        ENDDO
 
-     ELSEIF(DepthFormat(1:3)=='NOD')THEN
-       DO J=Jbeg,Jend1
-        READ(1,*)(DepthNode(I,J),I=Ibeg,Iend1)
-       ENDDO
-     ELSE
-       WRITE(*,*)'DepthFormat specified wrong, STOP'
-       STOP
-     ENDIF
      CLOSE(1)
 # endif
   ENDIF
@@ -534,7 +526,6 @@ SUBROUTINE INITIALIZATION
      ENDDO
     ENDDO
 
-    DepthFormat(1:3)='ELE'
   ENDIF
 
 # if defined (PARALLEL)
@@ -559,7 +550,7 @@ SUBROUTINE INITIALIZATION
     CALL DISTRIBUTE_VarGlob (VarGlob,Depth)
 
     DEALLOCATE (VarGlob)
-    DepthFormat(1:3)='ELE'
+
   ENDIF
 
 # else
@@ -587,14 +578,11 @@ SUBROUTINE INITIALIZATION
      ENDDO
 # endif
     ENDDO
-    DepthFormat(1:3)='ELE'
   ENDIF
 # endif
 
 ! depth at ghost cells and re-construct depth at x,y-interfaces
 
-
-    IF(DepthFormat(1:3)=='ELE')THEN
 # if defined(PARALLEL)
 ! done at the last step
 # else
@@ -640,49 +628,19 @@ SUBROUTINE INITIALIZATION
       DepthY(I,Nloc1)=0.5_SP*(3.0_SP*Depth(I,Nloc)-Depth(I,Nloc-1))
      ENDDO
 
-    ELSEIF(DepthFormat(1:3)=='NOD')THEN
-
-! ghost cells
-     DO I=1,Mloc1
-       DO J=1,Nghost
-        DepthNode(I,J)=DepthNode(I,Jbeg)
-       ENDDO
-       DO J=Jend1+1,Nloc1
-        DepthNode(I,J)=DepthNode(I,Jend1)
-       ENDDO
-     ENDDO
-
-     DO J=1,Nloc1
-       DO I=1,Nghost
-        DepthNode(I,J)=DepthNode(Ibeg,J)
-       ENDDO
-       DO I=Iend1+1,Mloc1
-        DepthNode(I,J)=DepthNode(Iend1,J)
-       ENDDO
-     ENDDO    
-
-! reconstruct depth at x,y-interfaces
-     DO J=1,Nloc
-     DO I=1,Mloc1
-      DepthX(I,J)=0.5_SP*(DepthNode(I,J)+DepthNode(I,J+1))
-     ENDDO
-     ENDDO
-     DO J=1,Nloc1
-     DO I=1,Mloc
-      DepthY(I,J)=0.5_SP*(DepthNode(I,J)+DepthNode(I+1,J))
-     ENDDO
-     ENDDO
-      
-    ENDIF
-
 !   dont need to re-construct depth in terms of using well-balanced scheme
 !   01/21/2012
-!   add this to keep consistent with the old version 09/06/2012
-     DO J=1,Nloc
-     DO I=1,Mloc
-       Depth(I,J)=0.25_SP*(Depthx(I,J)+Depthx(I+1,J)+Depthy(I,J)+Depthy(I,J+1))
-     ENDDO
-     ENDDO
+!   initially we tried to reconstruct depth in order to keep consistency
+!   between depth_ele and depth_nod. It turned out it is easy to cause
+!   errors if trying to make artifial high walls for dry points 
+!   (results in large slopes). We decide to remove the option of reading depth_nod
+!   and the reconstruction. fyshi (11/14/2016)
+
+!     DO J=1,Nloc
+!     DO I=1,Mloc
+!       Depth(I,J)=0.25_SP*(Depthx(I,J)+Depthx(I+1,J)+Depthy(I,J)+Depthy(I,J+1))
+!     ENDDO
+!     ENDDO
 
 ! add waterlevel 03/29/2016
 

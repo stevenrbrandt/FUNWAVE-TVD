@@ -234,13 +234,10 @@ SUBROUTINE READ_INPUT
 # endif
       IF(DEPTH_TYPE(1:3)=='DAT')THEN
         CALL READ_STRING(DEPTH_FILE,FILE_NAME,'DEPTH_FILE',ierr)
-        CALL READ_STRING(DepthFormat,FILE_NAME,'DepthFormat',ierr)
 # if defined (PARALLEL)
       if (myid.eq.0) WRITE(3,'(A12,A50)')'DEPTH_FILE:', DEPTH_FILE
-      if (myid.eq.0) WRITE(3,'(A14,A50)')'DEPTH_FORMAT:', DEPTHFORMAT
 # else
       WRITE(3,'(A12,A50)')'DEPTH_FILE:', DEPTH_FILE
-      WRITE(3,'(A14,A50)')'DEPTH_FORMAT:', DEPTHFORMAT
 # endif
       ENDIF
       IF(DEPTH_TYPE(1:3)=='FLA')THEN
