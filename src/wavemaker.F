@@ -839,7 +839,7 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
 ! yes, there is a problem that the split using Ef/REAL(mfreq+1) sometimes cannot
 ! guarantee to get the final frequency (Freq(mfreq), which results in a random number
 ! fyshi (11/14/2016)
- 
+
 	  IF ( Freq(mfreq) < Freq(mfreq-1) ) THEN
 	      Freq(mfreq) = Freq(mfreq-1)
 	  ENDIF
@@ -855,19 +855,19 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
 ! --- the normal directional spreading does give a smoother distribution. 
 ! --- see note of Choi 11/07/2016. should update this in the manual. fyshi(11/14/2016)
 
-        sumAG=0.0_SP;
+        sumAG=0.0_SP
         do ktheta=1,mtheta
 
            theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
-	             + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP);
+	             + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)
 
-           AG(ktheta) = 1.0_SP/( 2.0_SP*pi );
+           AG(ktheta) = 1.0_SP/( 2.0_SP*pi )
 	     do k_n=1,N_spec
 	        AG(ktheta) = AG(ktheta) +   &
                 ( 1.0_SP/pi )*exp( -0.5_SP*( real(k_n)*sigma_theta )**2 )   &
-	                                               *cos( k_n*(theta - theta_input) );
+	           *cos( k_n*(theta - theta_input*pi/180.0_SP))
 	     enddo
-	     sumAG = sumAG + AG(ktheta);
+	     sumAG = sumAG + AG(ktheta)
 	  
 	  enddo
 	  AG(:) = AG(:)/sumAG;    !Because integral of AG should be 1.
@@ -898,6 +898,7 @@ SUBROUTINE CALCULATE_TMA_Cm_Sm &
 !        ap=Hmo_each(ktheta)/2.0_SP  ! Joes suggestion
 
 !        theta=-pi/3.0_SP+theta_input*pi/180.0_SP+2.0_SP/3.0_SP*pi/ktotal*ktheta
+
         theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
 	         + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)   !ykchoi (11/07/2016)
 
@@ -1129,12 +1130,13 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
        do ktheta=1,mtheta
 
           theta = -pi/3.0_SP + theta_input*pi/180.0_SP  & 
-	           + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP);
+	           + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)
 
-          AG(ktheta) = 1.0_SP/( 2.0_SP*pi );
+          AG(ktheta) = 1.0_SP/( 2.0_SP*pi )
 	    do k_n=1,N_spec
-	       AG(ktheta) = AG(ktheta) + ( 1.0_SP/pi )*exp( -0.5_SP*( real(k_n)*sigma_theta )**2 )   &
-	                                              *cos( k_n*(theta - theta_input) );
+	       AG(ktheta) = AG(ktheta) +  & 
+                ( 1.0_SP/pi )*exp( -0.5_SP*( real(k_n)*sigma_theta )**2 )  &
+	        *cos( k_n*(theta - theta_input*pi/180.0_SP) )
 	    enddo
 	    sumAG = sumAG + AG(ktheta);
 	  
