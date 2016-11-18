@@ -1,7 +1,7 @@
 #-----------BEGIN MAKEFILE-------------------------------------------------
             SHELL         = /bin/sh
-            DEF_FLAGS     = -P -traditional 
-            EXEC          = funwave_gnu
+            DEF_FLAGS     = -P -C -traditional 
+            EXEC          = mytvd
 #==========================================================================
 #--------------------------------------------------------------------------
 #        PRECISION          DEFAULT PRECISION: SINGLE                     
@@ -18,13 +18,15 @@
 #             FLAG_9 = -DZALPHA
 #             FLAG_10 = -DMANNING
 #             FLAG_11 = -DSPHERICAL_IJ_STATION
+#             FLAG_12 = -DVESSEL
 
 #--------------------------------------------------------------------------
 #  mpi defs 
 #--------------------------------------------------------------------------
          CPP      = /usr/bin/cpp 
          CPPFLAGS = $(DEF_FLAGS)
-         FC       = /usr/local/bin/mpif90
+         FC       = mpif90
+#         FC        = /usr/local/mpi/intel/openmpi-1.8.4/bin/mpif90
          DEBFLGS  = 
          OPT      = 
          CLIB     = 
@@ -64,7 +66,7 @@
 #  FUNWAVE-TVD Source Code.
 #--------------------------------------------------------------------------
 
-MODS  = mod_param.F	mod_global.F	mod_input.F \
+MODS  = mod_param.F	mod_global.F	mod_input.F mod_vessel.F \
 
 MAIN  = main.F bc.F fluxes.F init.F io.F tridiagnal.F       \
         breaker.F derivatives.F dispersion.F etauv_solver.F \
@@ -81,7 +83,7 @@ OBJS = $(SRCS:.F=.o)
 
 $(EXEC):	$(OBJS)
 		$(FC) $(FFLAGS) $(LDFLAGS) -o $(EXEC) $(OBJS) $(LIBS)
-		mv $(EXEC) ../bin/
+#	mv $(EXEC) ../work/.
 #--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
@@ -99,4 +101,4 @@ clean:
 		/bin/rm -f *.o *.mod
 
 clobber:	clean
-		/bin/rm -f *.f90 *.o $(EXEC)
+		/bin/rm -f *.f90 *.o mytvd
