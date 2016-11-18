@@ -11,6 +11,7 @@
 \usepackage{amssymb}
 \usepackage{epstopdf}
 \usepackage{url}
+\usepackage{color}
 
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
@@ -31,10 +32,12 @@
 \newcommand{\phis}{{\phi}^{*}}
 \newcommand{\thetas}{{\theta}^{*}}
 
-\title{ {\bf FUNWAVE-TVD}\\
+\title{ {\bf \Huge FUNWAVE-TVD}\\
+\vspace{1cm}
 Fully Nonlinear Boussinesq Wave Model with TVD Solver \\
 Documentation and User's Manual \\
-(\bf{ Version 3.0 Revision July 2016})
+{\bf (Version 3.0)} \\ 
+Release Dec 2016
 }
 %\author{Fengyan Shi,  James T. Kirby, Babak Tehranirad \\
 %Center for Applied Coastal Research, University of Delaware, Newark, DE 19716\\
@@ -56,7 +59,7 @@ Documentation and User's Manual \\
 
 {\bf Jeffrey C. Harris},  Department of Ocean Engineering, University of Rhode Island,
 
-\vspace*{1cm}
+\vspace*{0.5cm}
 Guest authors
 
 {\bf Young-Kwang Choi}, Korea Institute of Ocean Science and Technology
@@ -64,14 +67,21 @@ Guest authors
 {\bf Matt Malej},  U.S. Army Engineer Research and Development Center
 
 
-\vspace*{6cm}
+\vspace*{2.2cm}
      
-\begin{center}
 
-{\Large 
-Center for Applied Coastal Research \\ University of Delaware \\
-Research Report NO. CACR-11-03}
-\end{center}     
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{./figures/CACR_cover.pdf}
+%\caption{Solitary wave calculated in a larger domain Grid\_A (upper) and in a nested smaller domain Grid\_B (lower) at t=100s, 200s, 300s, and 400s.}
+%\label{nesting}
+\end{figure}
+
+%\begin{center}
+%{\Large 
+%Center for Applied Coastal Research \\ University of Delaware \\
+%Research Report NO. CACR-11-03}
+%\end{center}     
 \thispagestyle{empty}
 
 \newpage
@@ -81,28 +91,29 @@ Research Report NO. CACR-11-03}
 \vspace*{0.5cm}
   This model development  was a part of the surfzone optics project   sponsored  by  
  the Office of Naval Research, Coastal Geosciences Program through grant N00014-10-1-0088. 
- % The work of benchmark tests 
-%was sponsored by the NTHMP project. 
+ The work of wave runup benchmark tests 
+was sponsored by the National Tsunami Hazard Mitigation Program(NTHMP). 
+
+Special thanks to  Drs. Seung-Nam Seo and Young-Kwang Choi from Korea Institute of Ocean Science and Technology (KIOST) who conducted line-by-line checking on the code and provided some important revisions on Version 3.0. Some examples were contributed by Drs. Seo and Choi. 
 
 \thispagestyle{empty}
 
 \newpage
 \begin{abstract}
 
-The report documents a new version of the fully nonlinear Boussinesq wave model (FUNWAVE) initially developed by Kirby et al. (1998). The development of the present version was motivated by recent needs for modeling of  surfzone-scale optical properties in a Boussinesq model framework,  and  modeling of  Tsunami wave in both a regional/coastal scale for prediction of coastal inundation and a basin scale for wave propagation.  This version  features  several theoretical and numerical improvements, including 1) a more complete set of fully nonlinear Boussinesq equations; 2) MUSCL-TVD solver with adaptive Runge-Kutta time stepping; 3) Shock-capturing wave breaking scheme; 4) wetting-drying moving boundary condition with incorporation of HLL construction method into the scheme; 5) an option for parallel computation.  
+The report documents a new version of the fully nonlinear Boussinesq wave model (FUNWAVE) initially developed by Kirby et al. (1998). The development of the present version was motivated by recent needs for modeling of  surfzone-scale optical properties in a Boussinesq model framework,  and  modeling of  Tsunami wave in both a regional/coastal scale for prediction of coastal inundation and a basin scale for wave propagation.  This version  features  several theoretical and numerical improvements, including 1) a more complete set of fully nonlinear Boussinesq equations; 2) MUSCL-TVD solver with adaptive Runge-Kutta time stepping; 3) Both viscosity wave breaking scheme and shock-capturing breaking scheme; 4) wetting-drying moving boundary condition with incorporation of HLL construction method into the scheme; 5) an option for parallel computation.  
 The documentation provides derivations of the conservation form of theoretical equations, re-arrangement of pressure gradient term in order to obtain a numerically well-balanced form, detailed numerical schemes, users' manual and examples.  Users can also refer to Shi et al. (2012a) for the Cartesian version and Kirby et al. (2012) for the spherical version of the model.  
 
- The examples in the previous report (Shi et al., 2011)  have been updated using the present version (Version 3.0). The tsunami benchmark tests in spherical coordinates are reported separately in Tehranirad et al. (2013). 
+ The examples in the previous report (Shi et al., 2011)  have been updated using the present version (Version 3.0). This version also includes new examples contributed by Drs. Seung-Nam Seo and Young-Kwang Choi. The tsunami benchmark tests in spherical coordinates are reported separately in Tehranirad et al. (2013). 
  
- Special thanks to  Dr. Seung-Nam Seo and Young-Kwang Choi from Korea Institute of Ocean Science and Technology (KIOST) who conducted line-by-line checking of the code and provided some important revisions on Version 3.0.  
 
 \end{abstract}
 
 \vspace*{0cm}
 
-{\bf Source code download:} 
+{\bf Source code update:} 
 
- \url{https://github.com/fengyanshi/FUNWAVE-TVD}
+ {\color{blue} \url{https://github.com/fengyanshi/FUNWAVE-TVD}}
 
 \thispagestyle{empty}
 
@@ -194,7 +205,7 @@ In addition, Version 2.2 added the eddy-viscosity type breaking algorithm (Kenne
 
 \section*{Differences between Version 3.0 and Version 2.2}
 
-In Version 3.0, the codes were reorganized into the modular form. Several bugs have been found and fixed (thanks to Young-Kwang Choi's work).  We completely removed the option for the implicit iteration procedure because it is unnecessary based on tests. The periodic boundary condition was implemented in the parallel code using the Sherman-Morrison algorithm. 
+In Version 3.0, the codes were reorganized into the modular form. Several bugs have been found and fixed (thanks to Young-Kwang Choi's work).  We completely removed the option for the implicit iteration procedure because it is unnecessary based on tests. The periodic boundary condition was implemented in the parallel code using the Sherman-Morrison algorithm. New examples are added. 
 
 \newpage
 
@@ -202,24 +213,24 @@ In Version 3.0, the codes were reorganized into the modular form. Several bugs h
 
 Boussinesq wave models  have become a useful tool  for modeling surface wave transformation from deep water  to the swash zone, as well as  wave-induced circulation inside the surfzone.  Improvements in the range of model applicability have been obtained with respect to classical restrictions to both weak dispersion and weak nonlinearity.  Madsen et al (1991) and Nwogu (1993) demonstrated that the order of approximation in reproducing frequency dispersion effects could be increased using either judicious choices for the form (or reference point) for Taylor series expansions for the vertical structure of dependent variables, or operators effecting a rearrangement of dispersive terms in already-developed model equations.  These approaches, combined with use either of progressively higher order truncated series expansions (Gobbi et al, 2000;  Agnon et al, 1999) or multiple level representations (Lynett and Liu, 2004), have effectively eliminated the restriction of this class of model to relatively shallow water, allowing for their application to the entire shoaling zone or deeper.  At the same time, the use of so-called "fully-nonlinear" formulations (e.g., Wei et al (1995) and many others) effectively eliminates the restriction to weak nonlinearity by removing the wave height to water depth ratio as a scaling or expansion parameter in the development of approximate governing equations.  This approach has improved model applicability in the surf and swash zones particularly, where surface fluctuations are of the order of mean water depth at least and which can represent the total vertical extent of the water column in swash conditions.  Representations of dissipative wave-breaking events, which do not naturally arise as weak discontinuous solutions in the dispersive Boussinesq formulation, have been developed usually following an eddy viscosity formulation due to Zelt (1991), and have been shown to be highly effective in describing surf zone wave height decay.  The resulting class of models has been shown to be highly effective in modeling wave-averaged surf zone flows over both simple (Chen et al, 2003; Feddersen et al, 2011) and complex (Geiman et al, 2011) bathymetries.  Kim et al (2009) have further extended the formulation to incorporate a consistent representation of boundary layer turbulence effects on vertical flow structure.
 
-Existing approaches to development of numerical implementations for Boussinesq models include a wide range of finite difference, finite volume, or finite element formulations.  In this paper, we describe the development of a new numerical approach for the FUNWAVE model (Kirby et al, 1998), which has been widely used as a public domain open-source code since it's initial development.  FUNWAVE was originally developed using an unstaggered finite difference formulation for spatial derivatives together with an iterated 4th order Adams-Bashforth-Moulton (ABM) scheme for time stepping (Wei and Kirby, 1995), applied to the fully nonlinear model equations of Wei et al (1995).  In this scheme, spatial differencing is handled using a mixed-order approach, employing fourth-order accurate centered differences for first derivatives and second-order accurate differences for third derivatives. This choice was made in order to move leading order truncation errors to one order higher  than the $O(\mu^2)$ dispersive terms (where $\mu$ is ratio of a characteristic water depth to a horizontal length, a dimensionless parameter characterizing frequency dispersion), while maintaining the tridiagonal structure of spatial derivatives within time-derivative terms.  This scheme is straightforward to develop and has been widely utilized in other Boussinesq models.  Kennedy et al  (2000) and Chen et al (2000) describe further aspects of the model system aimed at generalizing it for use in modeling surf  zone flows.  Breaking is handled using a generalization to two horizontal dimensions of the eddy viscosity model of Zelt (1991).  Similar approaches have been  used by other Boussinesq model developers, such as Nwogu and Demirbilek (2001), who used a more sophisticated eddy viscosity model in which the eddy viscosity is expressed in terms of turbulent kinetic energy and a length scale. The presence of a moving shoreline in the swash zone is handled using a ``slot'' or porous-beach method, in which the entire domain remains wetted using a network of slots at grid resolution which are narrow but which extend down to a depth lower than the minimum expected excursion of the modelled free surface.  These generalizations form the basis for the existing public domain version of the code (Kirby et al, 1998).  Subsequently, several extensions have been made in research versions of the code.  Kennedy et al (2001) improved nonlinear performance of the model by utilizing an adaptive reference level for vertical series expansions, which is allowed to move up and down with local surface fluctuations.  Chen et al (2003) extended the model to include longshore periodic boundary conditions and described it's application to modeling longshore currents on relatively straight coastlines.  Shi et al (2001) generalized the model coordinate system to non-orthogonal curvilinear coordinates.  Finally, Chen et al (2003) and Chen (2006) provided revised model equations which correct deficiencies in the representation of higher order advection terms, leading to a set of model equations which, in the absence of dissipation effects, conserve depth-integrated potential vorticity to $O(\mu^2)$, consistent with the level of approximation in the model equations.
+Existing approaches to development of numerical implementations for Boussinesq models include a wide range of finite difference, finite volume, or finite element formulations.  In this paper, we describe the development of a new numerical approach for the FUNWAVE model (Kirby et al, 1998), which has been widely used as a public domain open-source code since its initial development.  FUNWAVE was originally developed using an unstaggered finite difference formulation for spatial derivatives together with an iterated 4th order Adams-Bashforth-Moulton (ABM) scheme for time stepping (Wei and Kirby, 1995), applied to the fully nonlinear model equations of Wei et al (1995).  In this scheme, spatial differencing is handled using a mixed-order approach, employing fourth-order accurate centered differences for first derivatives and second-order accurate differences for third derivatives. This choice was made in order to move leading order truncation errors to one order higher  than the $O(\mu^2)$ dispersive terms (where $\mu$ is ratio of a characteristic water depth to a horizontal length, a dimensionless parameter characterizing frequency dispersion), while maintaining the tridiagonal structure of spatial derivatives within time-derivative terms.  This scheme is straightforward to develop and has been widely utilized in other Boussinesq models.  Kennedy et al  (2000) and Chen et al (2000) describe further aspects of the model system aimed at generalizing it for use in modeling surf  zone flows.  Breaking is handled using a generalization to two horizontal dimensions of the eddy viscosity model of Zelt (1991).  Similar approaches have been  used by other Boussinesq model developers, such as Nwogu and Demirbilek (2001), who used a more sophisticated eddy viscosity model in which the eddy viscosity is expressed in terms of turbulent kinetic energy and a length scale. The presence of a moving shoreline in the swash zone is handled using a ``slot'' or porous-beach method, in which the entire domain remains wetted using a network of slots at grid resolution which are narrow but which extend down to a depth lower than the minimum expected excursion of the modelled free surface.  These generalizations form the basis for the existing public domain version of the code (Kirby et al, 1998).  Subsequently, several extensions have been made in research versions of the code.  Kennedy et al (2001) improved nonlinear performance of the model by utilizing an adaptive reference level for vertical series expansions, which is allowed to move up and down with local surface fluctuations.  Chen et al (2003) extended the model to include longshore periodic boundary conditions and described it's application to modeling longshore currents on relatively straight coastlines.  Shi et al (2001) generalized the model coordinate system to non-orthogonal curvilinear coordinates.  Finally, Chen et al (2003) and Chen (2006) provided revised model equations which correct deficiencies in the representation of higher order advection terms, leading to a set of model equations which, in the absence of dissipation effects, conserve depth-integrated potential vorticity to $O(\mu^2)$, consistent with the level of approximation in the model equations.
 
 The need for a new formulation for FUNWAVE arose from recognition of several crucial problems with the existing code.  First, the original model proved to be ``noisy'', or at least weakly unstable to high wavenumbers near the grid Nyquist limit.  In addition, both the implementation of the eddy viscosity model for surf zone wave breaking and the interaction of runup with beach slots proved to be additional sources of noise in model calculations.  In the original unstaggered grid finite difference scheme,  these effects led to the need for periodic application of dissipative filters, with the frequency of filtering increased in areas with active breaking.  The overall grid-based noise generation was found to stem from several sources.  First, Kennedy (2001, personal communications), during development of a High Performance Fortran (HPF) version of the code on an early linux cluster, discovered that the noise was partially due to implementation of boundary conditions and could be alleviated to an extent.  At the same time, the curvilinear model developed by Shi et al (2001) was implemented using a staggered grid for spatial differencing, and the resulting code was found to be less susceptible to the general grid noise problem.  A comparison of noise levels in the original FUNWAVE, the staggered grid scheme of Shi et al, and the corrected boundary condition formulation of Kennedy may be found in Zhen (2004).  
 
-Additional sources of noise related either to the eddy viscosity formulation or interaction between the flow and beach "slots" remain less well analyzed or understood.  In addition, the performance of the slots themselves has been called into question in several cases involving inundation over complex bathymetry.   Slots which are too wide relative to the model grid spacing may admit too much fluid before filling during runup, and cause both a reduction in amplitude and a phase lag in modeled runup events. At the other extreme, slots which are too narrow tend to induce a great deal of numerical noise, leading to the need for intermittent or even fairly frequent filtering of swash zone solutions.   Poor model performance in comparison to data for the case of Swigler and Lynett (2011), described below in section 4.3, was the determining factor in the decision to pursue a new model formulation.
+Additional sources of noise related either to the eddy viscosity formulation or interaction between the flow and beach "slots" remain less well analyzed or understood.  In addition, the performance of the slots themselves has been called into question in several cases involving inundation over complex bathymetry.   Slots which are too wide relative to the model grid spacing may admit too much fluid before filling during runup, and cause both a reduction in amplitude and a phase lag in modeled runup events. At the other extreme, slots which are too narrow tend to induce a great deal of numerical noise, leading to the need for intermittent or even fairly frequent filtering of swash zone solutions.   Poor model performance in comparison to data for the case of Swigler and Lynett (2011), described below in the example section, was the determining factor in the decision to pursue a new model formulation.
 
 A number of recently development  Boussinesq-type wave models have used a hybrid method  combining the finite-volume and finite-difference TVD (Total Variation Diminishing)-type schemes (Toro, 2009),  and have shown robust performance of the shock-capturing method in simulating breaking waves and coastal inundation (Tonelli and Petti, 2009, 2010, Roeber et al., 2010, Shiach and Mingham, 2009, Erduran et al., 2005, and others). The use of the hybrid method, in which the underlying components of the nonlinear shallow water equations (which form the basis of the Boussinesq model equations) are handled using the TVD finite volume method while dispersive terms are implemented using conventional finite differencing, provides a robust framework for modeling of surf zone flows.  In particular, wave breaking may be handled entirely by the treatment of weak solutions in the shock-capturing TVD scheme, making the implementation of an explicit formulation for breaking wave dissipation unnecessary.   In addition, shoreline movement may be handled quite naturally as part of the Reiman solver underlying the finite volume scheme.
 
 
 In this version, we describe the development of a hybrid finite volume - finite difference scheme for the fully nonlinear Boussinesq model equations of Chen (2006), extended to incorporate a moving reference level as in Kennedy et al (2001).  The use of a moving reference elevation  is more consistent with a time-varying representation of elevation at a moving shoreline in modeling of a swash zone dynamics and coastal inundation.  
 A conservative form of the equations is derived.  Dispersive terms are reorganized  with the aim of constructing a tridiagonal structure of spatial derivatives within time-derivative terms. The surface elevation gradient term are also rearranged to obtain a numerically well-balanced form, which is suitable for any numerical order.    In contrast to previous  high-order temporal schemes, which usually require uniform time-stepping, we use adaptive time stepping based on a third-order Runge-Kutta method.  
-Spatial derivatives are discretized using a combination of finite-volume and finite-difference methods. A high-order MUSCL(Monotone Upstream-centered Schemes for Conservation Laws) reconstruction technique, which is accurate up to the fourth-order,  is used in the Riemann solver.  The wave breaking scheme follows the approach of Tonelli and Petti (2009),  who used the ability of the nonlinear shallow water equations (NLSWE) with a TVD solver to simulate moving hydraulic jumps. Wave breaking is modeled by switching from Boussinesq to NSWE at cells where the Froude number exceeds a certain threshold. A  wetting-drying scheme is used to model a moving shoreline. 
+Spatial derivatives are discretized using a combination of finite-volume and finite-difference methods. A high-order MUSCL(Monotone Upstream-centered Schemes for Conservation Laws) reconstruction technique, which is accurate up to the fourth-order,  is used in the Riemann solver.  The wave breaking scheme follows the approach of Tonelli and Petti (2009),  who used the ability of the nonlinear shallow water equations (NLSWE) with a TVD solver to simulate moving hydraulic jumps. Wave breaking is modeled by switching from Boussinesq to NSWE at cells where the Froude number exceeds a certain threshold. The original eddy viscosity breaking scheme is retained in Version 3.0. A  wetting-drying scheme is used to model a moving shoreline. 
 
 The model was parallelized using the domain decomposition technique. The Message Passing Interface (MPI) with non-blocking communication is used for data communication between processors. 
 
 
 This report  provides derivations of the conservation form of theoretical equations with a well-balanced pressure gradient term, numerical schemes, and users' manual. The last part of report  illustrates the model's applications to  problems of wave breaking and runup  in the context of a standard suite of benchmark tests. 
-In addition, we include a documentation of the spherical Boussinesq model used for Tsunami wave simulations.  The spherical Boussinesq model was based on Kirby et al. (2004, 2012) and implemented in the same model framework. A detailed documentation for the spherical code will be reported separately. 
+In addition, we include a documentation of the spherical Boussinesq model used for Tsunami wave simulations.  The spherical Boussinesq model was based on Kirby et al. (2004, 2012) and implemented in the same model framework. 
 
 \section{Theory}
 
@@ -573,7 +584,7 @@ where
 \ee
 
 \be 
-\psi_y =  \eta_t (V_1^{\prime}-V_4) + H \left( u V_{4,x} + v V_{4,y} + U_4 v_x +V_4 v_y - U_1^{\prime \prime} -  V_2 -  V_3 \right) 
+\psi_y =  \eta_t (V_1^{\prime}-V_4) + H \left( u V_{4,x} + v V_{4,y} + U_4 v_x +V_4 v_y - V_1^{\prime \prime} -  V_2 -  V_3 \right) 
 \ee
 
 The expanded forms of $(U_1^{\prime}, V_1^{\prime}), (U_1^{\prime \prime}, V_1^{\prime \prime}), (U_2, V_2), (U_3, V_3) $ and $ (U_4, V_4)$ can be found in Appendix A. For the term ${\bf R}$, the bottom stress is approximated using a quadratic friction equation. A Smagorinsky (1963)-like subgrid turbulent mixing algorithm is implemented following Chen et al. (1999). 
@@ -584,45 +595,80 @@ The expanded forms of $(U_1^{\prime}, V_1^{\prime}), (U_1^{\prime \prime}, V_1^{
 
 \subsection{Spatial discretization}
 
-A combined finite-volume and finite-difference method was applied to the spatial discretization. For the flux terms and the first-order derivative terms, 
-a high-order MUSCL-TVD scheme  is implemented in the present model. The high-order MUSCL-TVD scheme can be written in a compact form including different orders of accuracy  from the second- to the fourth-order, according to Erduran et al. (2005) who modified Yamamoto et al.'s (1998)  fourth-order approach. 
-In $x$-direction, for example, the combined form of the interface construction can be written as follows:
+A combined finite-volume and finite-difference method is applied to the spatial discretization.
+For the flux terms and the first-order derivative terms,
+both high-order and low-order MUSCL-TVD schemes are implemented.
+In previous version of FUNWAVE-TVD model (lower than Version 3.0), the fourth-order MUSCL-TVD scheme by Yamamoto et al. (1998) was used. However, in some cases, numerical instability occurred in long time simulations.
+
+In present version, the fourth-order MUSCL-TVD scheme by Erduran et al. (2005) who modified Yamamoto et al.'s (1998)  fourth-order approach is applied for high-order scheme.
+In $x$-direction, for example, the interface construction by the fourth-order MUSCL-TVD scheme can be written as follows:
 \be
-\phi^L_{i+1/2} = \phi_i +\frac{1}{4} \left[ (1-\kappa_1)\chi(r) \Delta^* \phi_{i-1/2} + (1+\kappa_1) \chi(1/r) \Delta^* \phi_{i+1/2} \right ]
+\phi^L_{i+1/2} = \phi_i +\frac{1}{6} \left[ \chi(r) \Delta^* \phi_{i-1/2} + 2 \, \chi(1/r) \Delta^* \phi_{i+1/2} \right ]
 \label{left}
 \ee
 \be
-\phi^R_{i-1/2} = \phi_i -\frac{1}{4} \left[ (1+\kappa_1)\chi(r) \Delta^* \phi_{i-1/2} + (1-\kappa_1) \chi(1/r) \Delta^* \phi_{i+1/2} \right ]
+\phi^R_{i-1/2} = \phi_i -\frac{1}{6} \left[ 2 \, \chi(r) \Delta^* \phi_{i-1/2} + \chi(1/r) \Delta^* \phi_{i+1/2} \right ]
 \label{right}
 \ee
 where $\phi^L_{i+1/2} $ is the constructed value at the left-hand side of the interface $i+\frac{1}{2}$ and  $\phi^R_{i-1/2} $ is the value at the right-hand side of the interface $i - \frac{1}{2}$.  The values of $\Delta^* \phi$ are evaluated as follows:
 \ba
 \nonumber
-&&\Delta^* \phi_{i+1/2} = \Delta \phi_{i+1/2} - \kappa_2 \Delta^3 \bar{\phi}_{i+1/2} /6, \\
+&&\Delta^* \phi_{i+1/2} = \Delta \phi_{i+1/2} - \Delta^3 \bar{\phi}_{i+1/2} /6, \\
 \nonumber && \Delta \phi_{i+1/2} = \phi_{i+1} - \phi_{i} ,\\
 \nonumber  && \Delta^3 \bar{\phi}_{i+1/2} = \Delta \bar{\phi}_{i+3/2} - 2 \Delta \bar{\phi}_{i+1/2} + \Delta \bar{\phi}_{i-1/2}, \\
 \nonumber && \Delta \bar{\phi}_{i-1/2} =\mbox{minmod} (\Delta \phi_{i-1/2}, \Delta \phi_{i+1/2}, \Delta \phi_{i+3/2}) , \\
 \nonumber &&  \Delta \bar{\phi}_{i+1/2} =\mbox{minmod} (\Delta \phi_{i+1/2}, \Delta \phi_{i+3/2}, \Delta \phi_{i-1/2}) , \\
 \nonumber && \Delta \bar{\phi}_{i+3/2} =\mbox{minmod} (\Delta \phi_{i+3/2}, \Delta \phi_{i-1/2}, \Delta \phi_{i+1/2}) \\
 \label{minmod}
-\ea 
+\ea
 In (\ref{minmod}), minmod represents the Minmod limiter and is given by
 \be
 \mbox{minmod} (j,k,l) = \mbox{sign} (j) \mbox{max} \{ 0, \mbox{min} [|j|, 2 \mbox{sign} (j) k, 2 \mbox{sign} (j) l ] \} .
 \ee
-$\kappa_1$ and $\kappa_2$ in (\ref{left}) and (\ref{right}) are  control parameters for orders of the scheme in the compact form.  The complete form with $(\kappa_1, \kappa_2) = (1/3, 1)$ is the fourth-order scheme given by Yamamoto et al. (1995). $(\kappa_1, \kappa_2) = (1/3, 0)$ yields a third-order scheme, while the second-order scheme can be retrieved using  $(\kappa_1, \kappa_2) = (-1, 0)$. 
 
-$\chi(r)$ in (\ref{left}) and (\ref{right}) is the limiter function. The original scheme introduced by Yamamoto et al. (1998) uses the Minmod limiter as used in (\ref{minmod}). Erduran et al. (2005) found that the use of the van-Leer limiter for the third-order scheme gives more accurate results. Their finding was confirmed by  using the present model in the benchmark tests for wave runup conducted by Tehranirad et al. (2011).  The van-Leer limiter can be expressed as
+$\chi(r)$ in (\ref{left}) and (\ref{right}) is the limiter function. The original scheme introduced by Yamamoto et al. (1998) uses the Minmod limiter as used in (\ref{minmod}).
+Erduran et al. (2005) found that the use of the van-Leer limiter for the third-order part gives more accurate results.
+The van-Leer limiter can be expressed as
 \be
-\chi(r) = \frac{r+|r|}{1+r}
+\chi(r) = \frac{r+|r|}{1+r},
 \ee
 where
 \be
 r = \frac{\Delta^* \phi_{i+1/2}}{\Delta ^* \phi_{i-1/2}}.
 \ee
 
-The numerical fluxes are computed using a HLL approximate Riemann solver
+For the low-order scheme, the second-order MUSCL-TVD scheme with van-Leer limiter is applied.
+The reconstruction at cell interface can be written as (Zhou et al., 2001)
+%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+  \phi = \phi_i + (x-x_i) \sigma \phi_i.
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%
+or,
+\begin{eqnarray}
+  \phi_{i+1/2}^{L} = \phi_{i} + \frac{1}{2} \Delta x \, \sigma \phi_{i}, \quad
+  \phi_{i-1/2}^{R} = \phi_{i} - \frac{1}{2} \Delta x \, \sigma \phi_{i},
+\end{eqnarray}
+%%%%%%%%%%%%%%%%%%%%%
+where
+\begin{equation}
+  \sigma \phi_i
+  = \Upsilon \bigg(
+  \frac{\phi_{i+1}-\phi_{i}}{x_{i+1}-x_{i}},
+  \frac{\phi_{i}-\phi_{i-1}}{x_{i}-x_{i-1}}
+  \bigg).
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%
+The van Leer limiter in the second-order MUSCL-TVD scheme can be written as
+\begin{equation}
+\Upsilon(a,b) = \frac{a|b| + |a|b}{|a|+|b|}.
+\end{equation}
 
+If a numerical solution from the fourth-order scheme can not be converged, for example, in a case of modeling extremely large wave height, the second-order MUSCL-TVD scheme is recommended.
+However, a grid resolution higher than that used for the fourth-order scheme may be required to ensure model accuracy. 
+
+
+The numerical fluxes are computed using a HLL approximate Riemann solver
 \be
 {\bf \Theta} ({\bf \Psi}^L, {\bf \Psi}^R)= \left \{ \begin{array}{ll} {\bf \Theta} ({\bf \Psi}^L) & \mbox{if} \ \ \ s_L \ge 0 \\
 {\bf \Theta}^* ({\bf \Psi}^L, {\bf \Psi}^R) & \mbox{if} \ \ \ s_L < 0 < s_R \\
@@ -683,16 +729,25 @@ It  follows the approach of Tonelli and Petti (2009),  who successfully used the
 The other one is the original eddy-viscosity scheme used in the previous version of FUNWAVE (Kennedy et al., 2000). To fit the eddy-viscosity method in the TVD scheme, the artificial eddy viscosity terms are modified as below
 
 \be
-{\bf R}_{bx} = \frac{\partial }{\partial x} (\nu \frac{\partial P}{\partial x}) + \frac{1}{2} \frac{\partial }{\partial y} (\nu \frac{\partial P}{\partial y} +\nu \frac{\partial Q}{\partial x}) 
+{\bf R}_{bx} = \frac{\partial }{\partial x} (\nu \frac{\partial P}{\partial x}) + \frac{\partial }{\partial y} (\nu \frac{\partial P}{\partial y} )
 \label{rx}
 \ee
 \be
-{\bf R}_{by} = \frac{\partial }{\partial y} (\nu \frac{\partial Q}{\partial y}) + \frac{1}{2} \frac{\partial }{\partial x} (\nu \frac{\partial Q}{\partial x} +\nu \frac{\partial P}{\partial y}) 
+{\bf R}_{by} = \frac{\partial }{\partial y} (\nu \frac{\partial Q}{\partial y}) + \frac{\partial }{\partial x} (\nu \frac{\partial Q}{\partial x}) 
 \label{ry}
 \ee
-where $\nu$ is the artificial eddy viscosity defined by
+%\be
+%{\bf R}_{bx} = \frac{\partial }{\partial x} (\nu \frac{\partial P}{\partial x}) + \frac{1}{2} \frac{\partial }{\partial y} (\nu \frac{\partial P}{\partial y} +\nu \frac{\partial Q}{\partial x}) 
+%\label{rx}
+%\ee
+%\be
+%{\bf R}_{by} = \frac{\partial }{\partial y} (\nu \frac{\partial Q}{\partial y}) + \frac{1}{2} \frac{\partial }{\partial x} (\nu \frac{\partial Q}{\partial x} +\nu \frac{\partial P}{\partial y}) 
+%\label{ry}
+%\ee
+Note that the form of (\ref{rx}) and (\ref{ry}) is slightly different from that in Kennedy et al. (2000). The present form was found to give a more stable numerical solution as the cross-derivatives removed. In (\ref{rx}) and (\ref{ry}), $\nu$ is the artificial eddy viscosity defined by
 \be
 \nu = B \delta_b^2 (h+\eta) \eta_t
+\label{nu}
 \ee
 where $\delta_b = 1.2$. In Kennedy et al. (2000), $B$ varies smoothly from 0 to 1 so as to avoid an impulsive start of breaking and the resulting instability. In the present TVD model, because there is no instability problem found, we adopt a constant value $B=1$ as breaking is initiated
 \be
@@ -737,14 +792,18 @@ where $\alpha_s$ and $\gamma_s$ are two free parameters. $i$ represents grid num
 Recently, some problem was found in application of L-D type sponge layer for long-term simulations. 
  The direct damping method combined with the TVD scheme  generates sawtooth noises with a $2 dx$ wave length. The sawtooth noises are usually not noticeable due to small magnitudes. However, they grow gradually with time and may become significant in a long term simulation. If this problem occurs, we suggest using the following friction-type or viscous type sponge layers. Using the combination of L-D and friction/viscous sponge layers may remove the sawtooth noises and also make the wave damping more efficient. 
  
-The friction-type and viscous type sponge layers directly use the friction terms and diffusion terms existing in the model. The damping coefficients are just the friction coefficient $C_d$ and diffusion coefficient $\nu$ for the friction-type sponge and the viscous type sponge respectively. $C_d$ and $\nu$ used in the sponge layers are generally larger than the regular values used for physics.  Both coefficients are smoothly ramped in space at the sponge layer boundaries. 
-
-Assuming that there is only one sponge layer on the left end of the domain. The friction coefficient for the friction-type sponge layer can be written as
-
+The friction-type and viscous type sponge layers directly use the friction terms and diffusion terms existing in the model. The source term for the friction-type sponge can be described as
 \be
-C_d = C_{max} \left (1-  \mbox{tanh} \frac{10 (i-1)}{I_{\mbox{width}}-1} \right)
+  F_{frc} = - C_{sponge} |{\bf u_\alpha}|  (u_\alpha, v_\alpha) h
+  \label{fric}
 \ee
-where $C_{max}$ is the maximum value of $C_d$ used in the sponger layer. $i$ and $I_{\mbox{width}}$ represent point number and the layer width in points. Similar expressions can be obtained for sponge layers on three other ends of the domain as well as  the viscous sponge layers. 
+Note that depth $h$ is added in (\ref{fric}) to make the source term depth-independent in terms of the flux-type momentum equations. For the diffusion-type sponge, the description of diffusion term follows exactly the eddy-viscosity breaking formulation with spatial varying viscosity coefficients $\nu_{sponge}$. 
+ Both coefficients are smoothly ramped in space at the sponge layer boundaries. For example, 
+for a sponge layer on the left end of the domain,  $C_{sponge}$ can be written as
+\be
+C_{sponge} = C_{max} \left (1-  \mbox{tanh} \frac{10 (i-1)}{I_{\mbox{width}}-1} \right)
+\ee
+where $C_{max}$ is the maximum value of $C_{sponge}$ used in the sponger layer. $i$ and $I_{\mbox{width}}$ represent point number and the layer width in points. Similar expressions can be obtained for sponge layers on three other ends of the domain as well as  the viscous sponge layer. 
  
 The width of the sponge layer is usually taken to be two or three wave lengths for the friction-type and viscous sponge layers. Narrow sponge layers can be used for L-D type sponge layer with a good efficiency but sawtooth noises generated by the method is a concern for long-term simulation. 
 
@@ -834,8 +893,7 @@ e^{-5/4(f/f_p)^{-4}} \gamma^{e^{[-(f/f_p -1)^2 /2\sigma^2]}}
 \ee
 in which $f_p$ is the peak frequency.  $\gamma$ presents a frequency
 spreading parameter, and $\alpha$ and $\sigma$ are coefficients which
-may be found in Bouws {\em et al.} (1985).  In the model,  $\alpha = 8
-\times 10^{-3}$ and 
+may be found in Bouws {\em et al.} (1985).  In the model,  $\alpha = 1.0$ and 
 $$
 \sigma = \left\{ \begin{array}{ll}
  0.07 & \mbox{if $f \leq f_p$}; \\
@@ -896,7 +954,7 @@ where $\rho_a$ and $\rho$ represent air density and  water density, respectively
 
 \subsubsection{Wave height calculation}
 
-For spectral wave simulations, both significant wave height and root-mean-square wave height are calculated using zero-crossing at each grid point. Significant wave height is evaluated using Goda's (2000) formula
+For spectral wave simulations, both average wave height and root-mean-square wave height are calculated using zero-crossing at each grid point. Significant wave height is evaluated using Goda's (2000) formula
 \be
 H_{1/3} = 4.004\sqrt{m_0}
 \label{qoda}
@@ -934,7 +992,7 @@ tridiagonal solver described in Naik et al. (1993).
 
 The code was written using Fortran 90 with the c preprocessor (cpp) statements for separation of the source code. Arrays are dynamically allocated at runtime. Precision is selected using the {\em selected\_real\_kind} Fortran intrinsic function defined in the makefile.  The default precision is single. 
 
-The present version of FUNWAVE-TVD includes a number of options including (1) choice of serial or parallel code (2) Cartesian or spherical coordinate (Tsunami propagation mode), (3) samples, (4) one-way nesting mode,  (5) wave breaking index and aging (bubble and foam mode), and (6) different bottom friction formulas.
+The present version of FUNWAVE-TVD includes a number of options including: choice of serial or parallel code; Cartesian or spherical coordinate (Tsunami propagation mode); samples; one-way nesting mode;  wave breaking index and aging (bubble and foam mode); different bottom friction formulas and etc.
 
 The flow chart is shown in Figure {\ref{chart}}. 
 
@@ -945,7 +1003,7 @@ The flow chart is shown in Figure {\ref{chart}}.
 	\label{chart}
 \end{figure}
 
-Note that, ``ITERATION" is not used any more. The Range-Kutta  time stepping with combined CLF criteria  is found to be more efficient than the iteration method. 
+Note that, ``ITERATION" described in Shi et al. (2011, 2012a,b) is not used any more. The Range-Kutta  time stepping with combined CLF criteria  is found to be more efficient than the iteration method. 
 
 \subsection{Installation and compilation}
 
@@ -970,6 +1028,9 @@ To compile the program, go to /src and modify Makefile if needed. There are seve
 
 \item -DINTEL: if INTEL compiler is used, this option can make use of FPORT for the RAND() function
 
+\item -DCRAY: for CRAY RAND() and system commands
+
+
 \item -DMIXING: include Smagorinsky mixing. 
 
 \item -DCOUPLING: nesting mode.
@@ -990,7 +1051,7 @@ Then execute
 $>$ make
 
 \noindent
-The executable file `funwave' will be generated and  copied from /src to /work/. If you do not find 'funwave' in your /work/, go to /src/ to find the newest executable file and copy it to your /work/ directory.  Note: use `make clean' after modifying Makefile.  
+The executable file such as `funwave' or 'mytvd' will be generated and  copied from /src to /work/. If you do not find 'funwave' in your /work/, go to /src/ to find the newest executable file and copy it to your /work/ directory.  Note: use `make clean' after modifying Makefile.  
 
 To run the model, go to /work. Modify input.txt if needed and run. 
 
@@ -1320,8 +1381,7 @@ SM Abadie, JC Harris, ST Grilli, R Fabre, 2012, Numerical modeling of tsunami wa
 \item UMAX: logical parameter for output of recorded maximum velocity . T or F. 
 \item VORMAX: logical parameter for output of recorded maximum vorticity . T or F. 
 \item MFMAX: logical parameter for output of recorded maximum momentum flux . T or F. 
-
-
+\item WaveHeight: logical parameter for output of wave height, Hsig, Hrms, Havg. T or F.
 
 
 \end{description}
@@ -1704,6 +1764,214 @@ NumberStations = 0\\
 DEPTH\_OUT = T\\
 ETA = T\\
 
+
+\subsection{Wave refraction-diffraction over a mound (Vincent and Briggs, 1989, provided by Choi and Seo)}
+
+Vincent and Briggs (1989) performed experiments on monochromatic waves and frequency-direction spreading random waves which pass over a submerged elliptic shoal by using a directional spectral wave generator (DSWG) in Coastal and Hydraulics Laboratory's wave basin of the U.S. Army Engineer Research and Development Center. 
+
+Figure \ref{vincent_briggs} demonstrates the computational domain based on the experiment layout of Vincent and Briggs (1989). Transect 4 represents one of the measurement transects where data are used to compare the model. FUNWAVE-TVD is set up for four cases, the non-breaking wave case, the breaking cases with the eddy-viscosity breaker and the shock-capturing breaker, and the irregular wave case. Here, we only present the non-breaking case and the breaking case with the eddy-viscosity breaker. The other cases can be found in the directories named by corresponding tests in the example package. 
+
+The grid resolution for this case is $dx = dy = 0.05$ m, resulting in a model dimension of 760 x 500. The total computational time is 120.0 sec. The wavemaker is placed at $x = 10$ m.  Two sponge layers are used on both left and right sides with widths of 7.5 m and 5.0 m, respectively. 
+
+
+ \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{./figures/vincent_briggs_domain.jpg}
+\caption{Computational domain for the case of Vincent and Briggs (1989).}
+\label{vincent_briggs}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{./figures/vincent_briggs_nobrk.eps}
+\caption{Comparison between data (circles) and model (solid line) in the non-breaking case of Vincent and Briggs (1989).}
+\label{vincent_briggs_vis}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.75\textwidth]{./figures/vincent_briggs_vis.eps}
+\caption{Comparison between data (circles) and model (solid line) in the breaking case of Vincent and Briggs (1989).}
+\label{vincent_briggs_nonbrk}
+\end{figure}
+
+%The spectra for random wave generation were formed using TMA (Bouws et al., 1985) for the frequency spectrum and a wrapped normal distribution function for the directional spreading function (Borgman, 1984). 
+
+Figure \ref{vincent_briggs_vis} and \ref{vincent_briggs_nonbrk} show model/data comparisons at Transect 4 for the non-breaking case and the breaking case, respectively.  Parameters and other definitions for the breaking wave case are specified in input.txt, listed below. 
+
+  ! --------------------DEPTH------------------------------------- \\
+DEPTH\_TYPE = DATA \\
+DEPTH\_FILE = ../depth/dep\_ny501mx760.dat  \\
+
+  ! ------------------DIMENSION----------------------------- \\
+Mglob = 760 \\
+Nglob = 501 \\
+
+  ! ----------------- TIME---------------------------------- \\
+  TOTAL\_TIME = 120.0 \\
+PLOT\_INTV = 0.05 \\
+
+  ! -----------------GRID----------------------------------  \\
+  DX = 0.05  \\
+DY = 0.05  \\
+
+  ! ----------------WAVEMAKER------------------------------  \\
+  WAVEMAKER = WK\_REG \\
+  Delta\_WK = 2.0   !(large number to avoid breaking inside wavemaker) \\
+  Xc\_WK = 10.0 \\
+Yc\_WK = 12.5 \\
+Ywidth\_WK = 20000.0 \\
+Tperiod = 1.3  \\
+AMP\_WK = 0.0675 \\
+Theta\_WK = 0.0 \\
+
+  ! ---------------- SPONGE LAYER ------------------------ \\
+  FRICTION\_SPONGE = T \\
+DIRECT\_SPONGE = T \\
+CDsponge = 1.0 \\
+Sponge\_west\_width =  7.5 \\
+Sponge\_east\_width =  5.0 \\
+R\_sponge = 0.85 \\
+A\_sponge = 5.0 \\
+
+! ----------------PHYSICS------------------------------ \\
+DISPERSION = T \\
+Gamma1 = 1.0 \\
+Gamma2 = 1.0  \\
+Gamma3 = 1.0  \\
+Beta\_ref=-0.531 \\
+VISCOSITY\_BREAKING = T \\
+
+!----------------Friction-----------------------------  \\
+Friction\_Matrix=F  \\
+Cd = 0.0 \\
+
+! ----------------NUMERICS---------------------------- \\
+Time\_Scheme = Runge\_Kutta \\
+HIGH\_ORDER = FOURTH \\
+CFL = 0.2 \\
+
+! -----------------OUTPUT----------------------------- \\
+NumberStations = 0  \\
+ETA = T  \\
+
+Cases for Vincent and Briggs' experiments are included in the directory /vincent\_briggs in the example package. The sub-directories are
+
+/01\_eddy\_breaking : breaking case with eddy-viscosity breaker \\
+/02\_shock\_breaking: breaking case with shock-capturing breaker \\
+/03\_nonbreaking: non-breaking case \\
+/04\_irregular: irregular wave case \\
+/depth: depth files \\
+/postprocessing: matlab scripts for post-processing \\
+
+In addition, a readme file, README.txt, is included in the directory to describe how to post-process results and plot figures. 
+
+
+\subsection{Periodic wave over submerged bar (Luth et al., 1994, provided by Choi and Seo)}
+
+It is well known that regular waves decompose into higher frequency free waves as they propagate past a submerged bar, as shown in experimental work by Beji and Battjes (1993), Luth et al. (1994), and Ohyama et al. (1994). Comparisons between several weakly nonlinear Boussinesq-type models and experimental data by Beji and Battjes (1993) and Luth et al. (1994) of waves propagating over a submerged bar were presented by Dingemans (1994).  
+
+The experiments performed by Beji and Battjes (1993) and Luth et al. (1994) have the same geometric characteristics, except for the length scale (Luth et al., 1994 is twice as large as in Beji and Battjes, 1993). In Luth et al. (1994) all gauge locations used in Beji and Battjes (1993) were repeated, and another run of measurements was performed with the gauges at different locations.
+In this section, we compare the present model with two laboratory experimental data sets, Case A and C,  by Luth et al. (1994).  
+
+The layout of the experimental set-up with the locations of the measurement stations (to which we refer by their location, e.g., gauge 2.0 m, gauge 15.7 m, etc.) and the geometry of the flume are illustrated in Figure \ref{luth_layout}.
+
+ \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{./figures/luth_layout.jpg}
+\caption{Sketch of wave flume of Delft experiments. All dimensions in (m).}
+\label{luth_layout}
+\end{figure}
+
+The model is set up in a 54 m long flume based on the experiment layout but extended on both sides in order to include sponge layers. The wavemaker is specified at $x$ = 10.0 m and wave gauges are located at $x$ = 20.0 m + (2.0 m, 4.0 m, ..., 23.0 m), respectively. The grid size $dx = dy = 0.02$ m. 
+
+Figure \ref{luth_A}  and \ref{luth_C} show model/data comparisons of Case A and Case C, respectively. Parameters and other definitions specified for Case A are listed below. 
+
+   ! --------------------DEPTH------------------------------------- \\
+   DEPTH\_TYPE = DATA \\
+   DEPTH\_FILE = ../depth/dep\_ny6mx2700.dat \\
+   
+     ! ------------------DIMENSION----------------------------- \\
+ Mglob = 2700 \\
+Nglob = 3 \\
+
+! -----------------GRID---------------------------------- \\
+DX = 0.02 \\
+DY = 0.02 \\
+
+  ! ----------------WAVEMAKER------------------------------ \\
+  WAVEMAKER = WK\_REG \\
+  DEP\_WK = 0.4 \\
+Xc\_WK = 10.0 \\
+Yc\_WK = 0.0 \\
+Ywidth\_WK = 20000.0  (any number larger than the flume width) \\
+ Tperiod = 2.02 \\
+AMP\_WK = 0.01 \\
+Theta\_WK = 0.0   \\
+
+  ! ---------------- SPONGE LAYER ------------------------ \\
+ FRICTION\_SPONGE = T \\
+DIRECT\_SPONGE = T     \\
+CDsponge = 1.0 \\
+Sponge\_west\_width =  8.0 \\
+Sponge\_east\_width =  8.0  \\
+Sponge\_south\_width = 0.0  \\
+Sponge\_north\_width = 0.0  \\
+R\_sponge = 0.85  \\
+A\_sponge = 5.0  \\
+
+  ! ----------------PHYSICS------------------------------ \\
+  DISPERSION = T \\
+Gamma1 = 1.0 \\
+Gamma2 = 1.0 \\
+Gamma3 = 1.0 \\
+
+
+ !----------------Friction----------------------------- \\
+ Friction\_Matrix=F \\
+Cd = 0.0  \\
+
+ ! ----------------NUMERICS---------------------------- \\
+HIGH\_ORDER = FOURTH
+CFL = 0.2 \\
+
+! -----------------OUTPUT----------------------------- \\
+NumberStations = 10 \\
+STATIONS\_FILE = gauges.txt \\
+ETA = T \\
+
+
+
+The case is included in the example package directory /car\_luth\_AC/.  Model setups for a finer grid resolution ($dx = 0.01m$ are also provided in the example package:
+
+/01\_CaseA : Case A with $dx = 0.02$ m
+
+/01\_CaseA\_finer: Case A with $dx = 0.01$ m
+
+/01\_CaseC : Case C with $dx = 0.02$ m
+
+/01\_CaseC\_finer: Case C with $dx = 0.01$ m
+
+/depth:  depth files
+
+/lab\_data: lab data
+
+/postprocessing: matlab scrips to plot model/data comparisons such as plot\_compare\_A.m, plot\_compare\_C.m, plot\_compare\_A\_finer.m and plot\_compare\_C\_finer.m
+
+ \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{./figures/luth_A.jpg}
+\caption{Comparison of model (solid lines) and data (circles) at measurement gauges (Note that the reference of $x$ shifts 20m vs. experiment). Luth et al. Case A.}
+\label{luth_A}
+\end{figure}
+
+ \begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{./figures/luth_C.jpg}
+\caption{Comparison of model (solid lines) and data (circles) at measurement gauges (Note that the reference of $x$ shifts 20m vs. experiment). Luth et al. Case C.}
+\label{luth_C}
+\end{figure}
 
 \subsection{Solitary wave on a conical island}
 
@@ -2090,6 +2358,39 @@ FroudeCap = 10.0\\
 \end{figure}
 
 
+\section{Dealing with numerical instability}
+
+One of the goals of the new code development is to improve numerical stability for large-scale and long time simulations. It has been indicated, by both our own tests and users' feedback, that the numerical stability of the TVD version of FUNWAVE has been greatly improved in contrast to the previous version. No more filtering is required in FUNWAVE-TVD. However, numerical instability is a general property of numerical algorithms, especially as a higher-order numerical scheme is applied. Here, we would like to share our experiences in dealing with
+numerical instabilities.
+
+\begin{enumerate}
+
+\item Avoid large bathymetric slope. 
+
+A rapidly varying bathymetry may cause numerical noises due to a large $\nabla h$ in the source term. Although the surface gradient term is in a well-balanced form as described in the theory section, an unreasonably large bottom slope may  cause numerical instability. Based on our experiences, $|\nabla h| > 1.0$ should be avoided. 
+
+\item Use FroudeCap to limit a huge velocity occurring in extremely shallow water
+
+The model uses a Froude number cap to avoid an unrealistic flow velocity in extremely shallow water specified as $MinDepthFrc$ by a user.  The unrealistic velocity usually occurs at a wetting-drying interface. The default value for FroudeCap is 10.0. Using a smaller value such as FroudeCap = 3.0 or smaller can avoid the problem and also improve the model efficiency in terms of the CFL algorithm. 
+ Note: a FroudeCap smaller than 1.5 is not suggested because it may cap velocities at flooding water fronts. 
+
+\item  Adjust MinDepthFrc
+
+The default value of the wetting-drying threshold, MinDepthFrc,  is 0.001 m. Using a small value may cause a large velocity at a wetting-drying point, resulting in a small $dt$. It may also cause numerical instability. Use a larger value when a problem occurs. 
+
+\item Use a smaller Courant number
+
+The default value of CFL is 0.5. A smaller value can be used if instability occurs. 
+
+\item Use a lower-order spatial scheme
+
+The MUSCL-TVD schemes up to fourth-order are implemented in the code. Initially we used the scheme introduced by Yamamoto et al. (1998) who applied the Minmod limiter in the fourth-order scheme. Abadie et al. (2012) pointed out that the fourth-order scheme  has an instability problem for simulations in deep water. For this reason, the third-order scheme is suggested if an instability problem occurs. 
+
+In Version 3.0, we implemented the fourth-order scheme of Erduran et al. (2005) who 
+used the van-Leer limiter for the third-order part of the fourth-order scheme. We hope that this scheme can improve the model stability. 
+
+\end{enumerate}
+
 \section{References}
 
 \begin{description}
@@ -2233,231 +2534,296 @@ the compressible Euler and Navier�Stokes equations", {\em Computers and Fluids
 %	\label{parallel}
 %\end{figure}
 
-
-\section{Appendix}
-
-\subsection{Subroutine and function descriptions}
-
-NOTE: The list below is not complete.  
-
-\begin{description}
-
-\item {\bf ALLOCATE\_VARIABLES:}  allocate variables. It is called by MAIN.
-
-\item {\bf BREAKING:}   print  breaking index and breaking age calculated based on  Kennedy et al. (2000).  This option is defined in input.txt. 
-
-\item {\bf BOUNDARY\_CONDITION:}  provide boundary conditions at four side boudaries. It is called by FLUXES.
-
-\item {\bf CAL\_DISPERSION:}  calculate dispersion terms. The first and second derivatives with respect to $x, y$ are also calculated in this subroutine.  In addition, the dispersion values in ghost cells are updated in this subroutine.  It is called by the main program. 
-
-\item {\bf CALCULATE\_Cm\_Sm:}  calculate $C_m$ and $S_m$ used in Wei and Kirby's internal wave maker for irregular waves (TMA). Detailed formulation can be found in Shi et al. (2003). The subroutine is called by INITIALIZATION. 
-
-\item {\bf CALCULATE\_MEAN:} calculate mean u v required by the smagorinsky mixing. Mean $\eta$ is also calculated.
-Called by  MAIN. 
-
-\item {\bf CALCULATE\_SPONGE:}  setup sponge layer. It is called by INITIALIZATION. 
-
-\item {\bf CONSTRUCTION:}  second- and third-order interface construction. It is called by  FLUXES. It calls CONSTRUCT\_X and CONSTRUCT\_Y.
-
-\item {\bf CONSTRUCTION\_HO:}  high order interface construction. It is called by  FLUXES. It calls CONSTRUCT\_HO\_X and CONSTRUCT\_HO\_Y.
-
-\item {\bf CONSTRUCT\_HO\_X:}  high order interface construction of specific variables in $x$ direction. It is called by CONSTRUCTION\_HO.  
-
-\item {\bf CONSTRUCT\_HO\_Y:}  high order interface construction of specific variables in $y$ direction. It is called by CONSTRUCTION\_HO.  
-
-\item {\bf CONSTRUCT\_X:}  construct variables in $x$ direction. It is called by CONSTRUCTION.
-
-\item {\bf CONSTRUCT\_Y:}  construct variables in $y$ direction. It is called by CONSTRUCTION.
-
-\item {\bf CORRECTOR:}  corrector time scheme. It was used for a comparison between Predictor-corrector scheme and Runge-Kutta. It is not suggested using it in the present program.  
-
-\item {\bf DelxFun:}  calculate derivatives with respect to $x$. It is called by DelxFun.  
-
-\item {\bf DelxyFun:}  calculate derivatives with respect to $x$ and $y$.  It is called by FLUXES when the lower order construction is applied. It calls DelxFun and DelyFun.  
-
-\item {\bf DelyFun:}  calculate derivatives with respect to $y$. It is called by DelxyFun.  
-
-\item {\bf DERIVATIVE\_X:}  calculate first-derivative respect to $x$ in second order. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_X\_High:}  calculate first-derivative respect to $x$ in higher-order. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_XX:}  calculate second-derivative respect to $x$. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_XY:}  calculate cross-derivative. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_Y:}  calculate first-derivative respect to $y$ in second order. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_Y\_High:}  calculate first-derivative respect to $y$ in higher-order. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf DERIVATIVE\_YY:}  calculate second-derivative respect to $y$. The subroutine is called by CAL\_DISPERSION.
-
-\item {\bf ESTIMATE\_DT:}  evaluate dt based on CFL criteria. It is called by MAIN. 
-
-\item {\bf ESTIMATE\_HUV:}  Runge-Kutta solver. It is called by MAIN. It calls GET\_Eta\_U\_V\_HU\_HV. 
-
-\item {\bf EXCHANGE:}  update $\eta, u, v, Hu, Hv$ and MASK  in the ghost cells. It is called by MAIN. It calls PHI\_COLL.  
-
-\item {\bf EXCHANGE\_DISPERSION:}  update dispersion variables in the ghost cells. It is called by MAIN. It calls PHI\_COLL. 
-
-\item {\bf FLUX\_AT\_INTERFACE:}  calculate numerical fluxes at four cell interfaces using the averaging method. It is called by FLUXES.
-
-\item {\bf FLUX\_AT\_INTERFACE\_HLLC:}  calculate numerical fluxes at four cell interfaces using HLLC scheme. It is called by FLUXES. It calls HLLC.
-
-\item {\bf FLUXES:}  calculate numerical fluxes. It is called by MAIN. It calls CONSTRUCTION lower order or CONSTRUCTION\_HO for higher order, WAVE\_SPEED, DelxyFun (for lower order), FLUX\_AT\_INTERFACE\_HLLC for HLL scheme or FLUX\_AT\_INTERFACE for averaging scheme, and BOUNDARY\_CONDITION. 
-
-\item {\bf GET\_Eta\_U\_V\_HU\_HV:}  calculate $\eta, u,v,Hu$ and $Hv$. It is called by ESTIMATE\_HUV. The tridiagonal solver is used to get $u$ and $v$. Froude number cap is applied in this subroutine. It calls TRIG (wall boundary) or TRIG\_PERIODIC (periodic boundary).  In the parallel mode, it calls TRIDx and TRIDy. 
-
-\item {\bf GetFile:} read data in the global dimension and distribute to all processors in the parallel mode. Use flag '-DPARALLEL' in Makefile to include this subroutine. 
-
-\item {\bf GatherVariable:}  gather variables from all processors to processor 0  in the parallel mode but with serial tridiagonal solver. Use flag `-DTRID\_NO\_PARALLEL' to include this subroutine. It is called by TRIDxyNoParallel. 
-
-\item {\bf HLLC:}  HLLC scheme. It is called by FLUX\_AT\_INTERFACE\_HLLC. 
-
-\item {\bf INDEX:}  indexing for ghost cells and MPI subdomains.  It is called by MAIN. 
-
-\item {\bf INITIALIZATION:}  initialization subroutine. It is called MAIN. It may call WK\_WAVEMAKER\_REGULAR\_WAVE, WK\_WAVEMAKER\_IRREGULAR\_WAVE, CALCULATE\_Cm\_Sm, CALCULATE\_SPONGE if applied. 
-
-\item {\bf INITIAL\_GAUSIAN:} sample to provide initial Gausian hump. Use flag `-DSAMPLE' in Makefile to include this subroutine.  Parameters  are defined in input.txt. The subroutine is called by INITIALIZATION. 
-
-\item {\bf INITIAL\_HOTSTART:}  initialization when hotstart option is applied. It is called by MAIN.  It may call 
-INITIAL\_UVZ, INITIAL\_SOLITARY\_WAVE,  INITIAL\_N\_WAVE, INITIAL\_RECTANGULAR,
-INITIAL\_WAVE,
-WK\_WAVEMAKER\_REGULAR\_WAVE, WK\_WAVEMAKER\_IRREGULAR\_WAVE, CALCULATE\_Cm\_Sm, CALCULATE\_SPONGE if applied. 
-
-\item {\bf INITIAL\_N\_WAVE:}  sample to provide initial N wave solution. Use flag `-DSAMPLE' in Makefile to include this subroutine. Parameters  are defined in input.txt. The subroutine is called by INITIALIZATION. 
-
-\item {\bf INITIAL\_SOLITARY\_WAVE:}   sample to provide initial solitary wave solution. Use flag `-DSAMPLE' in Makefile to include this subroutine. Parameters  are defined in input.txt. The subroutine is called by INITIALIZATION. It calls SUB\_SLTRY to get parameters.  
-
-\item {\bf INITIAL\_RECTANGULAR:}   sample of given an initial rectangular hump. Use flag `-DSAMPLE' in Makefile to include this subroutine. Parameters  are defined in input.txt. The subroutine is called by INITIALIZATION. 
-
-\item {\bf INITIAL\_UVZ:}  read initial $u, v$, and $ \eta$ data from files defined in input.txt. It is called by INITIALIZATION. It calls GetFile. 
-
-\item {\bf MINMOD\_LIMITER:}  function of minmod limiter. It is used in  CONSTRUCT\_HO\_X,  and CONSTRUCT\_HO\_Y. 
-
-\item {\bf MPI\_INITIAL:}  initialize MPI environment.
-
-\item {\bf OneWayCoupling:} one-way nesting subroutine. The nesting data read from INITIALIZATION.
-
-\item {\bf PHI\_EXCH:}  handle float type data  exchange between processors in the parallel mode. It is called by PHI\_COLL. Use flag `-DPARALLEL' to include this subroutine. 
-
-\item {\bf PHI\_INT\_EXCH:}  handle integer type data  exchange between processors in the parallel mode. It is called by UPDATE\_MASK. Use flag `-DPARALLEL' to include this subroutine. 
-
-\item {\bf PREDICTOR:}  predictor scheme. It was used for a comparison between Predictor-corrector scheme and Runge-Kutta. It is not suggested using it in the present program.  
-
-\item {\bf PREVIEW:}  output subroutine. It is called by MAIN. It calls PutFile.  
-
-\item {\bf PutFile:}   print out output in files. In the parallel mode, it
-gathers data from all processors into processor 0 and prints out in the global dimension. Use flag '-DPARALLEL' in Makefile for the parallel mode. It is called by PREVIEW. 
-
-\item {\bf PHI\_COLL:}  update data in ghost cells. It is called by EXCHANGE.  in the parallel mode, it calls PHI\_EXCH which is a major subroutine to handle data exchange between processors.  
-
-\item {\bf READ\_INPUT:}  read input.txt.  It is called by MAIN. It calls GET\_STRING\_VAL, GET\_LOGICAL\_VAL, GET\_INTEGER\_VAL, 
-GET\_Float\_VAL. Input data are written out in LOG.txt. 
-
-
-\item {\bf READ\_HOTSTART\_DATA:}  read saved data for hot start and initialize other variables.
-
-\item {\bf ScatterVariable:}  scatter variables from processor 0 to all processors in the parallel mode but with serial tridiagonal solver. Use flag `-DTRID\_NO\_PARALLEL' to include this subroutine. It is called by TRIDxyNoParallel. 
-
-\item {\bf SOLITARY\_WAVE\_LEFT\_BOUNDARY:}  nudging boundary condition of solitary wave at left boundary. Use flag `-DSAMPLE' in Makefile to include this subroutine. Parameters  are defined in input.txt. 
-
-\item {\bf SourceTerms:}  calculate all source terms including slope term and dispersion terms. It is called by MAIN. 
-
-\item {\bf STATISTICS:}  calculate statistics of total mass volume, energy, maximum and minimum $\eta, u, v,$ Froude number etc. 
-
-\item {\bf SPONGE\_DAMPING:}  use sponge layers to damp waves  Parameters  are defined in input.txt. 
-
-\item {\bf SUB\_SLTRY:}  provide solitary wave solution of Nogu's equations. It is called by INITIAL\_SOLITARY\_WAVE. Use flag `-DSAMPLE' in Makefile to include this subroutine. 
-
-\item {\bf TRI\_GE:}  tridiagonal solver. It allows diagonal variables not equal to unit. It is called by TRIG\_PERIODIC. 
-
-\item {\bf TRIG:}  tridiagonal solver. It is called by GET\_Eta\_U\_V\_HU\_HV.  It calls TRI\_GE. 
-
-\item {\bf TRIDxyNoParallel:}  no parallel tridiagonal solver but in the parallel mode. It is only for testing. Use flag `-DTRID\_NO\_PARALLEL' to include this subroutine. It calls GatherVariable, TRIG and ScatterVariable. 
-
-\item {\bf TRIG\_PERIODIC:}  cyclic tridiagonal solver. It is called by GET\_Eta\_U\_V\_HU\_HV.  It calls TRI\_GE. 
-
-\item {\bf UPDATE\_MASK:}  update mask according to wetting and drying. Also update mask and mask9 in ghost cells. 
-
-\item {\bf VANLEER\_LIMITER:}   function of Vanleer limiter. It is used in DelxFun and  DelyFun. 
-
-\item {\bf WAVE\_SPEED:}  calculate numerical wave speed needed by the TVD scheme. It is called by MAIN. 
-
-\item {\bf WK\_WAVEMAKER\_IRREGULAR\_WAVE:}  calculate source function for Wei and Kirby's internal wave maker for irregular waves (TMA). Periodic boundary conditions are included.  Parameters  are defined in input.txt. The subroutine is called by INITIALIZATION. 
-
-\item {\bf {\bf WK\_WAVEMAKER\_REGULAR\_WAVE:} } calculate source function for Wei and Kirby's internal wave maker for regular waves. Periodic boundary conditions are included but for certain wave angles (will ask during a run).  Parameters  are defined in input.txt. The subroutine is called by {\bf INITIALIZATION}. 
-
-\item {\bf WRITE\_HOTSTART\_DATA:}  write out data used for hot start. 
-
-\end{description}
-
-\subsection{Permanent variables}
-
-NOTE: The list below is not complete. Some more variables were added in different versions. 
-
-\begin{description}
-
-\item  Depth(): still water depth $h$ at element point
-\item  DepthNode(): still water depth $h$  at node
-\item  DepthX(): still water depth $h$ at x-interface
-\item  DepthY(): still water depth $h$ at y-interface
-\item  Eta():   surface elevation, for dry point, Eta() = MinDepth - Depth(), MinDepth is specified in input.txt. 
-\item  Eta0(): $\eta$ at previous time level
-
-\item  MASK(): 1 - wet,       0 - dry
-\item  MASK\_STRUC(): 0 - permanent dry point
-\item  MASK9: mask to switch from Boussinesq equation to SWE, 1 - Boussinesq, 0 - SWE
-
-\item  U():  depth-averaged $u$ or $ u$ at the reference level ($u_\alpha$) at element
-\item  V():  depth-averaged $v$ or $ v$ at the reference level ($v_\alpha$) at element
-\item  HU(): $(h+\eta)  u$ at element
-\item  HV(): $(h+\eta)  v$ at element
-\item  P(): $(h+\eta) (u + U_4)$ at x-interface
-\item  Q(): $(h+\eta) (v + V_4)$ at y-interface
-\item  Fx(): numerical flux F at x-interface
-\item  Fy(): numerical flux F at y-interface
-\item  Gx(): numerical flux G at x-interface
-\item  Gy(): numerical flux G at y-interface
-\item  Ubar(): $U$
-\item  Vbar(): $V$
-
-\item  U4(): x-component of $U_4$
-\item  V4(): y-component of $V_4$
-\item  U1p(): x-component of $U_1^\prime$
-\item  V1p(): y-component of $V_1^\prime$
-
-\item  EtaRxL(): $\eta$ Left value at x-interface
-\item  EtaRxR(): $\eta$ Right value at x-interface
-\item  EtaRyL(): $\eta$ Left value at y-interface
-\item  EtaRyR(): $\eta$ Right value at y-interface
-\item  HxL():   total depth  Left value at x-interface
-\item  HxR():   total depth  Right value at x-interface
-\item  HyL():   total depth  Left value at y-interface
-\item  HyR():   total depth  Right value at y-interface
-
-\item  HUxL(): $(h+\eta)u$ Left value at x-interface
-\item  HUxR(): $(h+\eta)u$ Right value at x-interface
-\item  HVyL(): $(h+\eta)v$ Left value at y-interface
-\item  HVyR(): $(h+\eta)v$ Right value at y-interface
-
-\item  PL(): $(h+\eta) (u + U_4)$, Left value at x-interface
-\item  PR(): $(h+\eta) (u + U_4)$, Right value at x-interface
-\item  QL(): $(h+\eta) (v + V_4)$, Left value at y-interface
-\item  QR(): $(h+\eta) (v + V_4)$, Right value at y-interface
-
-\item  FxL = HUxL*UxL + 1/2*g*(EtaRxL$^2$ + 2*EtaRxL*Depthx)
-\item  FxR = HUxR*UxR + 1/2*g*(EtaRxR$^2$ + 2*EtaRxR*Depthx)
-\item  FyL = HyL*UyL*VyL
-\item  FyR = HyR*UyR*VyR
-
-\item  GxL = HxL*UxL*VxL
-\item  GxR = HxR*UxR*VxR
-\item  GyL = HVyL*VyL + 1/2*g*(EtaRyL$^2$ + 2*EtaRyL*Depthy)
-\item  GyR = HVyR*VyR + 1/2*g*(EtaRyR$^2$ + 2*EtaRyR*Depthy) 
-
-
-\end{description}
-
+\newpage
+
+\section{Appendix A. Expansions of $(U_1^{'},V_1^{'})$, $(U_1^{''},V_1^{''})$, $(U_2,V_2)$, $(U_3,V_3)$ and $(U_4,V_4)$ }
+
+Note that there are typos in the expansion expressions  in both Shi et al. (2012) and the previous manual lower than Version 3.0 (Thanks to Young-Kwang Choi for pointing out the typos and checking the corresponding code). 
+
+The expanded forms of $(U_1^{'},V_1^{'})$, $(U_1^{''},V_1^{''})$, $(U_2,V_2)$, $(U_3,V_3)$ and $(U_4,V_4)$ can be written as
+
+\begin{equation}
+U_1^{'}=\frac{1}{2}(1-\beta)^2 h^2 (u_{xx} + v_{xy}) - (1-\beta)h \big[ (hu)_{xx} + (hv)_{xy} \big]
+\end{equation}
+
+\begin{equation}
+V_1^{'}=\frac{1}{2}(1-\beta)^2 h^2 (u_{xy} + v_{yy}) - (1-\beta)h \big[ (hu)_{xy} + (hv)_{yy} \big]
+\end{equation}
+
+\begin{eqnarray}
+&&U_1^{''}=-\bigg[
+         \eta \eta_x (u_{tx}+v_{ty}) + \frac{1}{2} \eta^2 ( u_{txx}+v_{txy} )
+         + \eta_x \Big\{ (hu)_{tx} + (hv)_{ty} \Big\}
+         + \eta \Big\{ (hu)_{txx} + (hv)_{txy} \Big\}
+          \bigg]
+         \nonumber \\
+&& \quad \quad \,\,\,
+         - \Big[ \beta(1-\beta) h \eta_t - \beta^2 \eta \eta_t \Big] (u_{xx}+v_{xy})
+         - \Big[ \beta(1-\beta) h \eta - \frac{1}{2} \beta^2 \eta^2 \Big]
+         ( u_{txx} + v_{txy} )
+         \nonumber \\
+&& \quad \quad \,\,\,
+         + \beta \eta_t \Big[ (hu)_{xx} + (hv)_{xy} \Big]
+         + \beta \eta \Big[ (hu)_{txx} + (hv)_{txy} \Big]
+\end{eqnarray}
+
+\begin{eqnarray}
+&&V_1^{''}=-\bigg[
+         \eta \eta_y (u_{tx}+v_{ty}) + \frac{1}{2} \eta^2 ( u_{txy}+v_{tyy} )
+         + \eta_y \Big\{ (hu)_{tx} + (hv)_{ty} \Big\}
+         + \eta \Big\{ (hu)_{txy} + (hv)_{tyy} \Big\}
+          \bigg]
+         \nonumber \\
+&& \quad \quad \,\,\,
+         - \Big[ \beta(1-\beta) h \eta_t - \beta^2 \eta \eta_t \Big] (u_{xy}+v_{yy})
+         - \Big[ \beta(1-\beta) h \eta - \frac{1}{2} \beta^2 \eta^2 \Big]
+         ( u_{txy} + v_{tyy} )
+         \nonumber \\
+&& \quad \quad \,\,\,
+         + \beta \eta_t \Big[ (hu)_{xy} + (hv)_{yy} \Big]
+         + \beta \eta \Big[ (hu)_{txy} + (hv)_{tyy} \Big]
+\end{eqnarray}
+
+\begin{eqnarray}
+&&U_2=\bigg[
+        (\beta-1)(h+\eta) \Big\{
+        u \big[ (hu)_x + (hv)_y \big]_x +  v \big[ (hu)_x + (hv)_y \big]_y \Big\}
+         \nonumber \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \Big\{ u (u_x+v_y)_x + v(u_x+v_y)_y \Big\}   \nonumber  \\
+&& \quad \quad
+        +\frac{1}{2} \Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y)
+        \Big\}^2
+      \bigg]_x
+\end{eqnarray}
+
+\begin{eqnarray}
+&&V_2=\bigg[
+        (\beta-1)(h+\eta) \Big\{
+        u \big[ (hu)_x + (hv)_y \big]_x +  v \big[ (hu)_x + (hv)_y \big]_y \Big\}
+         \nonumber \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \Big\{ u (u_x+v_y)_x + v(u_x+v_y)_y \Big\}   \nonumber  \\
+&& \quad \quad
+        +\frac{1}{2} \Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y)
+        \Big\}^2
+      \bigg]_y
+\end{eqnarray}
+
+\begin{eqnarray}
+&&U_3=-v \omega_1 - \omega_0 \bigg[ \Big\{ \big(
+      \beta - \frac{1}{2} \big) (h+\eta) \Big\}
+      \Big\{ (hu)_x + (hv)_y \Big\}_y   \nonumber \\
+&& \quad \quad
+      +
+      \Big\{
+        \big( \frac{1}{3} - \beta + \frac{1}{2} \beta^2 \big) h^2
+      + \big( \frac{1}{6} - \beta + \beta^2 \big) \eta h
+      + \big( \frac{1}{2} \beta^2 - \frac{1}{6} \big) \eta^2
+      \Big\}
+      (u_x+v_y)_y
+      \bigg]
+\end{eqnarray}
+
+\begin{eqnarray}
+&&V_3=u \omega_1 + \omega_0 \bigg[ \Big\{ \big(
+      \beta - \frac{1}{2} \big) (h+\eta) \Big\}
+      \Big\{ (hu)_x + (hv)_y \Big\}_x   \nonumber \\
+&& \quad \quad
+      +
+      \Big\{
+        \big( \frac{1}{3} - \beta + \frac{1}{2} \beta^2 \big) h^2
+      + \big( \frac{1}{6} - \beta + \beta^2 \big) \eta h
+      + \big( \frac{1}{2} \beta^2 - \frac{1}{6} \big) \eta^2
+      \Big\}
+      (u_x+v_y)_x
+      \bigg]
+\end{eqnarray}
+
+\begin{eqnarray}
+\omega_0 = v_x - u_y
+\end{eqnarray}
+
+\begin{eqnarray}
+&& \omega_1 = \bigg[ (\beta-1) h_x + \beta \eta_x \bigg]
+           \bigg[ \Big\{ (hu)_x + (hv)_y \Big\}_y + \Big\{ (\beta-1)h + \beta \eta \Big\} (u_x+v_y)_y \bigg]   \nonumber  \\
+&& \quad \quad
+         - \bigg[ (\beta-1) h_y + \beta \eta_y \bigg]
+           \bigg[ \Big\{ (hu)_x + (hv)_y \Big\}_x + \Big\{ (\beta-1)h + \beta \eta \Big\} (u_x+v_y)_x \bigg]
+\end{eqnarray}
+
+\begin{eqnarray}
+&&U_4=\bigg( \frac{1}{3} - \beta + \frac{1}{2} \beta^2 \bigg) h^2 (u_{xx} + v_{xy})
+      +
+      \bigg( \beta - \frac{1}{2} \bigg) h \Big\{ (hu)_{xx} + (hv)_{xy} \Big\}
+      \nonumber   \\
+&& \quad \quad
+      +
+      \bigg[ \Big\{
+      \Big(\frac{1}{6} - \beta + \beta^2 \Big) h \eta
+      + \Big( \frac{1}{2} \beta^2 - \frac{1}{6} \Big) \eta^2
+      \Big\} ( u_{xx}+v_{xy} )
+      +
+      \bigg( \beta - \frac{1}{2} \bigg) \eta
+      \Big\{
+      (hu)_{xx}+(hv)_{xy}
+      \Big\}
+      \bigg]   \nonumber \\
+\end{eqnarray}
+
+\begin{eqnarray}
+&&V_4=\bigg( \frac{1}{3} - \beta + \frac{1}{2} \beta^2 \bigg) h^2 (u_{xy} + v_{yy})
+      +
+      \bigg( \beta - \frac{1}{2} \bigg) h \Big\{ (hu)_{xy} + (hv)_{yy} \Big\}
+      \nonumber   \\
+&& \quad \quad
+      +
+      \bigg[ \Big\{
+      \Big(\frac{1}{6} - \beta + \beta^2 \Big) h \eta
+      + \Big( \frac{1}{2} \beta^2 - \frac{1}{6} \Big) \eta^2
+      \Big\} ( u_{xy}+v_{yy} )
+      +
+      \bigg( \beta - \frac{1}{2} \bigg) \eta
+      \Big\{
+      (hu)_{xy}+(hv)_{yy}
+      \Big\}
+      \bigg]   \nonumber \\
+\end{eqnarray}
+
+\newpage
+In detail, 
+\begin{eqnarray}
+&&U_2=  (\beta-1)(h+\eta)_x \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\} 
+        \nonumber \\
+&& \quad \quad
+        + (\beta-1)(h+\eta) \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\}_x
+        \nonumber \\        
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}_x
+        \Big\{ u (u_x+v_y)_x + v(u_x+v_y)_y \Big\}   \nonumber  \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \Big\{ u (u_x+v_y)_x + v(u_x+v_y)_y \Big\}_x   \nonumber  \\
+&& \quad \quad
+        +\Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}
+        \Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}_x
+        \nonumber  \\
+        \nonumber  \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&& \quad 
+     = (\beta-1)(h_x + \eta_x) \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\}
+        \nonumber \\
+&& \quad \quad
+        + (\beta-1)(h+\eta) \bigg\{
+            u_x \Big[ (hu)_{xx} + (hv)_{yx} \Big]
+          + u \Big[ (hu)_{xx} + (hv)_{yx} \Big]_x
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad 
+   \quad \quad \quad \quad \quad \quad \quad \quad 
+          + v_x \Big[ (hu)_{xy} + (hv)_{yy} \Big]
+          + v \Big[ (hu)_{xy} + (hv)_{yy} \Big]_x
+                            \bigg\}
+        \nonumber \\
+&& \quad \quad
+       +\bigg\{ 
+       (1-\beta)^2 h h_x - \beta (1-\beta) (h_x \eta + h \eta_x) + (\beta^2-1) \eta \eta_x
+        \bigg\} 
+        \bigg\{ u ( u_{xx} + v_{yx} ) 
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad 
+   \quad \quad \quad \quad \quad \quad \quad \quad
+        + v ( u_{xy} + v_{yy} ) \bigg\}
+        \nonumber \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \bigg\{ u_x ( u_{xx} + v_{yx} ) + u ( u_{xx} + v_{yx} )_x
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad
+   \quad \quad \quad \quad \quad \quad \quad \quad
+        + v_x ( u_{xy} + v_{yy} ) + v ( u_{xy} + v_{yy} )_x
+        \bigg\}
+        \nonumber \\
+&& \quad \quad        
+        +\Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}
+        \Big\{
+        (hu)_{xx} + (hv)_{yx} + \eta_x (u_x+v_y) + \eta (u_{xx}+v_{yx}) \Big\}
+        \nonumber \\
+\end{eqnarray}
+
+\newpage
+\begin{eqnarray}
+&&V_2=  (\beta-1)(h+\eta)_y \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\}
+        \nonumber \\
+&& \quad \quad
+        + (\beta-1)(h+\eta) \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\}_y
+        \nonumber \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}_y
+        \Big\{ u ( u_{xx} + v_{yx} ) + v ( u_{xy} + v_{yy} ) \Big\}   \nonumber  \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \Big\{ u ( u_{xx} + v_{yx} ) + v ( u_{xy} + v_{yy} ) \Big\}_y   \nonumber  \\
+&& \quad \quad
+        +\Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}
+        \Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}_y
+        \nonumber  \\
+        \nonumber  \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+&& \quad
+     = (\beta-1)(h_y + \eta_y) \bigg\{
+        u \Big[ (hu)_{xx} + (hv)_{yx} \Big] +  v \Big[ (hu)_{xy} + (hv)_{yy} \Big] \bigg\}
+        \nonumber \\
+&& \quad \quad
+        + (\beta-1)(h+\eta) \bigg\{
+            u_y \Big[ (hu)_{xx} + (hv)_{yx} \Big]
+          + u \Big[ (hu)_{xx} + (hv)_{yx} \Big]_y
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad
+   \quad \quad \quad \quad \quad \quad \quad \quad
+          + v_y \Big[ (hu)_{xy} + (hv)_{yy} \Big]
+          + v \Big[ (hu)_{xy} + (hv)_{yy} \Big]_y
+                            \bigg\}
+        \nonumber \\
+&& \quad \quad
+       +\bigg\{
+       (1-\beta)^2 h h_y - \beta (1-\beta) (h_y \eta + h \eta_y) + (\beta^2-1) \eta \eta_y
+        \bigg\}
+        \bigg\{ u ( u_{xx} + v_{yx} )
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad
+   \quad \quad \quad \quad \quad \quad \quad \quad
+        + v ( u_{xy} + v_{yy} ) \bigg\}
+        \nonumber \\
+&& \quad \quad
+        +\bigg\{ \frac{1}{2} (1-\beta)^2 h^2 - \beta (1-\beta) h \eta + \frac{1}{2} (\beta^2-1) \eta^2 \bigg\}
+        \bigg\{ u_y ( u_{xx} + v_{yx} ) + u ( u_{xx} + v_{yx} )_y
+        \nonumber \\
+&& \quad \quad \quad \quad \quad \quad \quad \quad
+   \quad \quad \quad \quad \quad \quad \quad \quad
+        + v_y ( u_{xy} + v_{yy} ) + v ( u_{xy} + v_{yy} )_y
+        \bigg\}
+        \nonumber \\
+&& \quad \quad
+        +\Big\{
+        (hu)_x + (hv)_y + \eta (u_x+v_y) \Big\}
+        \Big\{
+        (hu)_{xy} + (hv)_{yy} + \eta_y (u_x+v_y) + \eta (u_{xy}+v_{yy}) \Big\}
+        \nonumber \\
+\end{eqnarray}
 
 
 
