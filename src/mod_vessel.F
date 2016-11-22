@@ -308,10 +308,13 @@ SUBROUTINE VESSEL_FORCING
 
     DO J=Jbeg,Jend
     DO I=Ibeg,Iend
-       VesselPressureX(I,J) = Grav*H(I,J)*  &
+
+!   I modified the term to negative 11/22/2016 fyshi
+
+       VesselPressureX(I,J) = -Grav*H(I,J)*  &
                (VesselPressureTotal(I+1,J)-VesselPressureTotal(I-1,J))/2.0_SP  &
                /DX
-       VesselPressureY(I,J) = Grav*H(I,J)*  &
+       VesselPressureY(I,J) = -Grav*H(I,J)*  &
                (VesselPressureTotal(I,J+1)-VesselPressureTotal(I,J-1))/2.0_SP  &
                /DY
 
