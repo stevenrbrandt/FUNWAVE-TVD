@@ -174,7 +174,11 @@ Program FUNWAVE_TVD
 ! time integration
 
      ! record wall time
-     CALL WALL_TIME_SECS(tbegin)
+# if defined (PARALLEL)
+     if(myid == 0) tbegin = MPI_Wtime( )
+# else
+     CALL CPU_TIME(tbegin)
+# endif
 
 
    DO WHILE (TIME<TOTAL_TIME)
@@ -276,7 +280,11 @@ ENDDO
 # endif
 
      ! record wall time at the end
-     call WALL_TIME_SECS(tend)
+# if defined (PARALLEL)
+     if(myid.eq.0) tend = MPI_Wtime( )
+# else
+     CALL CPU_TIME (tend)
+# endif
 
 # if defined (PARALLEL)
      if(myid.eq.0) write(*,*) 'Simulation takes',tend-tbegin,'seconds'
