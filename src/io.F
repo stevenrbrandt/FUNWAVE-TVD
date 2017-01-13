@@ -153,9 +153,9 @@ SUBROUTINE READ_INPUT
       CALL READ_INTEGER(Mglob,FILE_NAME,'Mglob',ierr)
       CALL READ_INTEGER(Nglob,FILE_NAME,'Nglob',ierr)
 # if defined (PARALLEL)
-      if (myid.eq.0) WRITE(3,'(A7,I3,A7,I3)') 'Mglob=',Mglob,'Nglob=', Nglob
+      if (myid.eq.0) WRITE(3,'(A7,I8,A7,I8)') 'Mglob=',Mglob,'Nglob=', Nglob
 # else
-      WRITE(3,'(A7,I3,A7,I3)') 'Mglob=',Mglob,'Nglob=', Nglob
+      WRITE(3,'(A7,I8,A7,I8)') 'Mglob=',Mglob,'Nglob=', Nglob
 # endif
 ! grid 
 # if defined (CARTESIAN)
