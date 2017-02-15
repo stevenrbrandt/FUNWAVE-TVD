@@ -946,6 +946,7 @@ SUBROUTINE READ_INPUT
       CALL READ_LOGICAL(OUT_Gx,FILE_NAME,'Gx',ierr)
       CALL READ_LOGICAL(OUT_Gy,FILE_NAME,'Gy',ierr)
       CALL READ_LOGICAL(OUT_AGE,FILE_NAME,'AGE',ierr)
+      CALL READ_LOGICAL(OUT_NU,FILE_NAME,'OUT_NU',ierr)
       CALL READ_LOGICAL(OUT_TMP,FILE_NAME,'TMP',ierr)
 
 !ykchoi
@@ -1409,15 +1410,17 @@ SUBROUTINE PREVIEW
         TMP_NAME = TRIM(FDIR)//'age_'//TRIM(FILE_NAME)
          call PutFile(TMP_NAME,AGE_BREAKING)
       ENDIF
-      IF(VISCOSITY_BREAKING)THEN
-        TMP_NAME = TRIM(FDIR)//'nubrk_'//TRIM(FILE_NAME)
-         call PutFile(TMP_NAME,nu_break)
-        TMP_NAME = TRIM(FDIR)//'etat_'//TRIM(FILE_NAME)
-         call PutFile(TMP_NAME,etat) 
-      ENDIF
-     
      ENDIF
 
+      IF(VISCOSITY_BREAKING)THEN
+       IF(OUT_NU)THEN
+        TMP_NAME = TRIM(FDIR)//'nubrk_'//TRIM(FILE_NAME)
+         call PutFile(TMP_NAME,nu_break)
+       ENDIF
+!        TMP_NAME = TRIM(FDIR)//'etat_'//TRIM(FILE_NAME)
+!         call PutFile(TMP_NAME,etat) 
+      ENDIF
+     
 # if defined (VESSEL)
      IF(OUT_VESSEL)THEN
         TMP_NAME = TRIM(FDIR)//'Pves_'//TRIM(FILE_NAME)

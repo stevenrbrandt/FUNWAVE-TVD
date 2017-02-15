@@ -312,7 +312,7 @@ MODULE GLOBAL
                   OUT_Fx=.FALSE., OUT_Fy=.FALSE.,&
                   OUT_Gx=.FALSE., OUT_Gy=.FALSE.,&
                   OUT_MASK9=.FALSE., OUT_DEPTH=.FALSE., &
-                  OUT_TMP=.FALSE., OUT_AGE=.FALSE., &
+                  OUT_TMP=.FALSE., OUT_AGE=.FALSE.,OUT_NU=.FALSE., &
                   OUT_Hmax=.FALSE., &
                   OUT_Hmin=.FALSE., &
                   OUT_Umax=.FALSE.
