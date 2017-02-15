@@ -233,7 +233,7 @@ SUBROUTINE VESSEL_FORCING
   USE INPUT_READ
   IMPLICIT NONE
   INTEGER :: Ifile,ierr,I,J
-  REAL(SP) :: Xves,Yves,Lves,Wves
+  REAL(SP) :: Xves,Yves,Lves,Wves,Px,Py
 
   VesselPressureTotal = ZERO
 
@@ -289,12 +289,41 @@ SUBROUTINE VESSEL_FORCING
     DO I=1,Mloc
       Lves=(Xco(I)-Xves)*COS(ThetaVessel(Kves)) + (Yco(J)-Yves)*SIN(ThetaVessel(Kves))
       Wves=-(Xco(I)-Xves)*SIN(ThetaVessel(Kves)) + (Yco(J)-Yves)*COS(ThetaVessel(Kves))
+# if defined (TORSVIK)
+      
       IF(ABS(Lves)<=0.5_SP*LengthVessel(Kves).AND. &
          ABS(Wves)<=0.5_SP*WidthVessel(Kves)) THEN
          VesselPressureEach(I,J) = Pvessel(Kves)  &
-                  *COS(PI*Lves/(AlphaVessel(Kves)*LengthVessel(Kves)))**2 &
-                  *COS(PI*Wves/(BetaVessel(Kves)*WidthVessel(Kves)))**2                  
+                  *COS(PI*Lves/(LengthVessel(Kves)))**2 &
+                  *COS(PI*Wves/(WidthVessel(Kves)))**2                  
       ENDIF
+# else
+   ! Ertekin et al. JFM 1986
+
+      Px = ZERO
+      Py = ZERO
+
+      IF(ABS(Lves)>0.5_SP*LengthVessel(Kves)*AlphaVessel(Kves).AND. &
+         ABS(Lves)<0.5_SP*LengthVessel(Kves))THEN
+          
+          Px = COS(PI*(Lves-0.5_SP*AlphaVessel(Kves)*LengthVessel(Kves))  &
+                   /((1.0_SP-AlphaVessel(Kves))*LengthVessel(Kves)))**2
+      ELSEIF(ABS(Lves)<=0.5_SP*LengthVessel(Kves)*AlphaVessel(Kves))THEN
+          Px = 1.0_SP
+      ENDIF
+      IF(ABS(Wves)>0.5_SP*WidthVessel(Kves)*BetaVessel(Kves).AND. &
+         ABS(Wves)<0.5_SP*WidthVessel(Kves)) THEN
+          Py = COS(PI*(Wves-0.5_SP*BetaVessel(Kves)*WidthVessel(Kves))  &
+                  /((1.0_SP-BetaVessel(Kves))*WidthVessel(Kves)))**2
+      ELSEIF(ABS(Wves)<=0.5_SP*WidthVessel(Kves)*BetaVessel(Kves)) THEN
+          Py = 1.0_SP
+      ENDIF
+
+         VesselPressureEach(I,J) = Pvessel(Kves)*Px*Py
+
+# endif
+     
+
     ENDDO
     ENDDO
 
