@@ -50,6 +50,9 @@
 !-------------------------------------------------------------------------------------
 SUBROUTINE OUTPUT
     USE GLOBAL
+# if defined(VESSEL)
+     USE VESSEL_MODULE
+# endif
     IMPLICIT NONE
 
      SCREEN_COUNT=SCREEN_COUNT+DT
@@ -79,6 +82,14 @@ SUBROUTINE OUTPUT
        PLOT_COUNT=PLOT_COUNT-PLOT_INTV
        CALL PREVIEW
       ENDIF
+# if defined (VESSEL)
+      PLOT_COUNT_VESSEL=PLOT_COUNT_VESSEL+DT
+      IF(PLOT_COUNT_VESSEL>=PLOT_INTV_VESSEL)THEN
+       PLOT_COUNT_VESSEL=PLOT_COUNT_VESSEL-PLOT_INTV_VESSEL
+       CALL OUTPUT_VESSEL
+      ENDIF      
+# endif
+
 
 END SUBROUTINE OUTPUT
 
@@ -1684,4 +1695,58 @@ SUBROUTINE PutFile(FILE,PHI)
 END SUBROUTINE PutFile
 
 # endif
+
+# if defined (VESSEL)
+!-------------------------------------------------------------------------------------
+!
+!    OUTPUT_VESSEL is a subroutine to write vessel data
+!
+! HISTORY: 
+!    02/18/2017  Fengyan Shi
+!
+!-------------------------------------------------------------------------------------
+SUBROUTINE OUTPUT_VESSEL
+     USE GLOBAL
+     USE INPUT_READ
+     USE VESSEL_MODULE
+     IMPLICIT NONE
+     CHARACTER(LEN=80)::FDIR=' '
+     LOGICAL :: FirstCallVessel = .TRUE.
+     SAVE FirstCallVessel
+
+# if defined (PARALLEL)
+     IF(myid.eq.0)THEN
+# endif
+
+! initialize stations
+     if (FirstCallVessel) then
+       FDIR=TRIM(RESULT_FOLDER)
+       FirstCallVessel = .FALSE.
+       open(99,FILE=TRIM(FDIR)//'Resis.txt')
+     endif
+
+! write to stations
+
+       write (99,'(60E16.5)') time,(ResistanceX(i),i=1,NumVessel), &
+                                 (ResPosX(i),i=1,NumVessel), &
+                                 (ResNegX(i),i=1,NumVessel), &
+                                 (ResistanceY(i),i=1,NumVessel), &
+                                 (ResPosY(i),i=1,NumVessel), &
+                                 (ResNegY(i),i=1,NumVessel)
+
+! close station files
+     if (TIME.ge.TOTAL_TIME) then
+       CLOSE(99) 
+     endif
+
+# if defined (PARALLEL)
+      ENDIF
+# endif
+
+END SUBROUTINE OUTPUT_VESSEL
+
+# endif
+! end vessel
+
+
 

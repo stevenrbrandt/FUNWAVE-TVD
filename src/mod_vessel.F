@@ -55,7 +55,7 @@
 MODULE VESSEL_MODULE
   USE PARAM
   USE GLOBAL,ONLY : Mloc,Nloc,Nghost,Ibeg,Iend,Jbeg,Jend,DX,DY, &
-                    H
+                    H,ETA
   USE INPUT_READ
 #if defined (PARALLEL)
   USE GLOBAL,ONLY : myid,ier, npx,npy,PX,PY
@@ -73,6 +73,12 @@ MODULE VESSEL_MODULE
                                        VesselPressureX,VesselPressureY
     REAL(SP),DIMENSION(:),ALLOCATABLE ::  Xco,Yco
     LOGICAL :: OUT_VESSEL = .TRUE.
+    REAL(SP),DIMENSION(:),ALLOCATABLE :: ResistanceX,ResistanceY,ResPosX,ResNegX, &
+                                         ResPosY,ResNegY
+    REAL(SP):: PLOT_INTV_VESSEL,PLOT_COUNT_VESSEL
+#if defined (PARALLEL)
+    REAL(SP) :: myvar
+# endif    
 
 
 !INTERFACE READ_FOUR_TYPE_VALUES
@@ -85,7 +91,7 @@ CONTAINS
 ! READ VESSEL
 
 SUBROUTINE VESSEL_INITIAL
-  USE GLOBAL,ONLY : itmp1,itmp2,itmp3,itmp4
+  USE GLOBAL,ONLY : itmp1,itmp2,itmp3,itmp4,SMALL
                     
   USE INPUT_READ
   IMPLICIT NONE
@@ -121,12 +127,27 @@ SUBROUTINE VESSEL_INITIAL
                 TimeVessel1(NumVessel),TimeVessel2(NumVessel), &
                 LengthVessel(NumVessel),WidthVessel(NumVessel), &
                 AlphaVessel(NumVessel),BetaVessel(NumVessel),  &
-                Pvessel(NumVessel),ThetaVessel(NumVessel) )
+                Pvessel(NumVessel),ThetaVessel(NumVessel),&
+                ResistanceX(NumVessel),ResistanceY(NumVessel), &
+                ResPosX(NumVessel),ResNegX(NumVessel), &
+                ResPosY(NumVessel),ResNegY(NumVessel) )
       ALLOCATE (VesselPressureTotal(Mloc,Nloc), VesselPressureEach(Mloc,Nloc),&
                  Xco(Mloc),Yco(Nloc), VesselPressureX(Mloc,Nloc), &
                  VesselPressureY(Mloc,Nloc) )
 
 
+! plot vessel intitial
+     PLOT_COUNT_VESSEL = 0
+     CALL READ_FLOAT(PLOT_INTV_VESSEL,FILE_NAME,'PLOT_INTV_VESSEL',ierr)
+     IF(ierr==1)THEN
+# if defined (PARALLEL)
+      if (myid.eq.0) WRITE(3,'(A50)')'PLOT_INTV_VESSEL not specified, use SMALL'
+# else
+      WRITE(3,'(A50)')'PLOT_INTV_VESSEL not specified, use SMALL'
+# endif
+       PLOT_INTV_VESSEL = SMALL
+     ENDIF
+      
 ! Xco, and Yco
 
 # if defined (PARALLEL)
@@ -233,7 +254,7 @@ SUBROUTINE VESSEL_FORCING
   USE INPUT_READ
   IMPLICIT NONE
   INTEGER :: Ifile,ierr,I,J
-  REAL(SP) :: Xves,Yves,Lves,Wves,Px,Py
+  REAL(SP) :: Xves,Yves,Lves,Wves,Px,Py,DetaX,DetaY
 
   VesselPressureTotal = ZERO
 
@@ -285,6 +306,12 @@ SUBROUTINE VESSEL_FORCING
 
 ! rectangular
     VesselPressureEach = ZERO
+    ResistanceX(Kves)=ZERO
+    ResistanceY(Kves)=ZERO
+    ResPosX(Kves) = ZERO
+    ResNegX(Kves) = ZERO
+    ResPosY(Kves) = ZERO
+    ResNegY(Kves) = ZERO
     DO J=1,Nloc
     DO I=1,Mloc
       Lves=(Xco(I)-Xves)*COS(ThetaVessel(Kves)) + (Yco(J)-Yves)*SIN(ThetaVessel(Kves))
@@ -299,6 +326,9 @@ SUBROUTINE VESSEL_FORCING
       ENDIF
 # else
    ! Ertekin et al. JFM 1986
+
+    IF(ABS(Lves)<=0.5_SP*LengthVessel(Kves).AND. &
+         ABS(Wves)<=0.5_SP*WidthVessel(Kves)) THEN
 
       Px = ZERO
       Py = ZERO
@@ -321,13 +351,55 @@ SUBROUTINE VESSEL_FORCING
 
          VesselPressureEach(I,J) = Pvessel(Kves)*Px*Py
 
+         DetaX = (ETA(I+1,J)-ETA(I-1,J))/2.0_SP
+         DetaY = (ETA(I,J+1)-ETA(I,J-1))/2.0_SP
+
+!         ResistanceX(Kves)=ResistanceX(Kves)  &
+!                 +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+!                  *DetaX*DY
+
+!         ResistanceY(Kves)=ResistanceY(Kves)  &
+!                 +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+!                  *DetaY*DX
+
+         IF(DetaX>=0)THEN
+           ResPosX(Kves) = ResPosX(Kves) &
+                  +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+                  *DetaX*DY
+         ELSE
+           ResNegX(Kves) = ResNegX(Kves) &
+                  +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+                  *DetaX*DY           
+         ENDIF
+
+         IF(DetaY>=0)THEN
+           ResPosY(Kves) = ResPosY(Kves) &
+                  +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+                  *DetaY*DX
+         ELSE
+           ResNegY(Kves) = ResNegY(Kves) &
+                  +VesselPressureEach(I,J)*RHO_WATER*GRAV  &
+                  *DetaY*DX          
+         ENDIF
+
+         ResistanceX(Kves) = ResPosX(Kves) + ResNegX(Kves)
+         ResistanceY(Kves) = ResPosY(Kves) + ResNegY(Kves)
+
+    ENDIF  ! end inside ship rectangule
+
 # endif
      
-
     ENDDO
-    ENDDO
+    ENDDO  ! end grid
 
 120 CONTINUE  ! no more data for vessel Kves
+
+# if defined (PARALLEL)
+     call MPI_ALLREDUCE(ResistanceX(Kves),myvar,1,MPI_SP,MPI_SUM,MPI_COMM_WORLD,ier)
+     ResistanceX(Kves) = myvar
+     call MPI_ALLREDUCE(ResistanceY(Kves),myvar,1,MPI_SP,MPI_SUM,MPI_COMM_WORLD,ier)
+     ResistanceY(Kves) = myvar
+# endif
 
     VesselPressureTotal = VesselPressureTotal+VesselPressureEach
 
