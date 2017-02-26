@@ -94,10 +94,12 @@ SUBROUTINE SourceTerms
           WaveMaker_Mass(I,J)=TANH(PI/(Time_ramp*Tperiod)*TIME)*D_gen &
                  *EXP(-Beta_gen*(xmk-Xc_WK)**2)&
                  *SIN(rlamda*(ymk-ZERO)-2.0_SP*PI/Tperiod*TIME)    
-         ENDIF
        ENDIF
 
-       IF(WAVEMAKER(1:6)=='WK_IRR')THEN
+!  added TMA_1D and JON_1D 02/24/2017
+
+        IF(WaveMaker(1:6)=='WK_IRR'.OR.WaveMaker(1:6)=='TMA_1D'  &
+           .OR.WaveMaker(1:6)=='JON_1D'.OR.WaveMaker(1:6)=='JON_2D')THEN
           WK_Source=ZERO
           DO kf=1,Nfreq
            WK_Source=WK_Source+TANH(PI/(Time_ramp/FreqPeak)*TIME)*(Cm(I,J,kf) &
@@ -105,6 +107,7 @@ SUBROUTINE SourceTerms
                        +Sm(I,J,kf)*SIN(OMGN_IR(KF)*TIME))
           ENDDO
           WaveMaker_Mass(I,J)=WK_Source
+
        ENDIF
 
        IF(WAVEMAKER(1:7)=='WK_TIME')THEN
@@ -130,6 +133,8 @@ SUBROUTINE SourceTerms
           ENDDO
           WaveMaker_Mass(I,J)=WK_Source
        ENDIF
+
+      ENDIF ! end maker domain
 
          ENDDO
          ENDDO
