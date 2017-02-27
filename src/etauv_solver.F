@@ -94,17 +94,21 @@ SUBROUTINE ESTIMATE_HUV(ISTEP)
 # endif
          IF(ABS(xmk-Xc_WK)<Width_WK.AND. &
             ABS(ymk-Yc_WK)<Ywidth_WK/2.0_SP)THEN
-          WK_Source=ZERO
-          DO kf=1,Nfreq
-           WK_Source=WK_Source+TANH(PI/(Time_ramp/FreqPeak)*TIME)*(Cm(I,J,kf) &
-                       *COS(OMGN_IR(KF)*TIME) &
-                       +Sm(I,J,kf)*SIN(OMGN_IR(KF)*TIME))
-          ENDDO
+
+! WaveMaker_Mass was done in sources.F 02/27/2017
+
+!          WK_Source=ZERO
+!          DO kf=1,Nfreq
+!           WK_Source=WK_Source+TANH(PI/(Time_ramp/FreqPeak)*TIME)*(Cm(I,J,kf) &
+!                       *COS(OMGN_IR(KF)*TIME) &
+!                       +Sm(I,J,kf)*SIN(OMGN_IR(KF)*TIME))
+!          ENDDO
 
           R1(I,J)=-1.0_SP/DXg*(F_right*n_right+F_left*n_left) &
                 -1.0_SP/DYg*(F_top*n_top+F_bottom*n_bottom) &
         ! wavemaker
-                +WK_Source      
+                 +WaveMaker_Mass(I,J)
+!                +WK_Source      
          ELSE
          R1(I,J)=-1.0_SP/DXg*(F_right*n_right+F_left*n_left) &
                    -1.0_SP/DYg*(F_top*n_top+F_bottom*n_bottom)
