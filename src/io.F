@@ -1174,7 +1174,7 @@ SUBROUTINE STATIONS
      do i=1,NumberStations
        if (nsta(i).eq.1) then
           iunit=100+i
-          write (iunit,'(20E16.5)') time, eta(ista(i),jsta(i)),&
+          write (iunit,'(20E16.8)') time, eta(ista(i),jsta(i)),&
                           u(ista(i),jsta(i)),v(ista(i),jsta(i))
        endif
      enddo
@@ -1275,7 +1275,7 @@ SUBROUTINE STATIONS_SPHERICAL_IJ
             u_sta=u(ista(i),jsta(i))
             v_sta=v(ista(i),jsta(i)) 
           ENDIF
-          write (iunit,'(20E16.5)') time, eta_sta,&
+          write (iunit,'(20E16.8)') time, eta_sta,&
                           u_sta,v_sta
        endif
      enddo
