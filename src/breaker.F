@@ -107,8 +107,12 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
      REAL(SP),DIMENSION(M,N),INTENT(OUT)::AGE
      REAL(SP)::C,Angle,AGE1,AGE2,AGE3,propx,propy,propxy
 
-     DO J=Nghost+1,N-Nghost
-     DO I=Nghost+1,M-Nghost
+     DO J = Jbeg, Jend
+     DO I = Ibeg, Iend
+
+!     02/28/2017 fyshi
+!     DO J=Nghost+1,N-Nghost
+!     DO I=Nghost+1,M-Nghost
 
      tmp3=SQRT(GRAV*MAX(MinDepthFrc,H(I,J)))
      tmp1=Cbrk1*tmp3
