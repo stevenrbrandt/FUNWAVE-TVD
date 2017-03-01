@@ -891,6 +891,21 @@ SUBROUTINE READ_INPUT
 # else
       WRITE(3,'(A5,F12.2)')'CFL=', CFL
 # endif
+! DT_fixed
+      CALL READ_FLOAT(DT_fixed,FILE_NAME,'DT_fixed',ierr)
+      IF (ierr.ne.1) THEN
+      FIXED_DT = .TRUE.
+# if defined (PARALLEL)
+      if (myid.eq.0) then
+           WRITE(3,'(A80)') 'use fixed DT, but judged by CFL. IF not satisfy CLF, DT/2...'
+           WRITE(3,'(A12,F12.2)')'DT_fixed= ', DT_fixed
+      endif
+# else
+      WRITE(3,'(A80') 'use fixed DT, but judged by CFL. IF not satisfy CLF, DT/2...'
+      WRITE(3,'(A12,F12.2)')'DT_fixed= ', DT_fixed
+# endif
+      ENDIF ! ierr\=1
+  
 ! Froude Number Cap
       CALL READ_FLOAT(FroudeCap,FILE_NAME,'FroudeCap',ierr)
 # if defined (PARALLEL)

@@ -128,8 +128,9 @@ END SUBROUTINE INDEX
 
 SUBROUTINE ESTIMATE_DT(M,N,DX,DY,U,V,H,MinDepthFrc,DT,CFL,TIME)
      USE PARAM
+     USE GLOBAL, ONLY : DT_fixed, FIXED_DT
 # if defined (PARALLEL)
-     USE GLOBAL, ONLY : ier
+     USE GLOBAL, ONLY : ier,myid
 # endif
      IMPLICIT NONE
      INTEGER,INTENT(IN)::M,N
@@ -146,6 +147,7 @@ SUBROUTINE ESTIMATE_DT(M,N,DX,DY,U,V,H,MinDepthFrc,DT,CFL,TIME)
      REAL(SP),INTENT(IN)::CFL,MinDepthFrc
      REAL(SP),INTENT(OUT)::DT
      REAL(SP),INTENT(INOUT)::TIME
+     REAL(SP) :: DT_tmp
 
      TMP3=LARGE
      DO J=1,N
@@ -189,7 +191,18 @@ SUBROUTINE ESTIMATE_DT(M,N,DX,DY,U,V,H,MinDepthFrc,DT,CFL,TIME)
           MPI_COMM_WORLD,ier)
      TMP3 = myvar
 # endif
-     DT=CFL*TMP3
+     DT_tmp=CFL*TMP3
+
+    IF(FIXED_DT)THEN
+
+      DT = DT_fixed
+      DO WHILE (DT > DT_tmp)
+        DT=DT/2.0_SP
+      ENDDO
+    ELSE
+     DT = DT_tmp
+    ENDIF
+
 ! TEMP
      TIME=TIME+DT
 

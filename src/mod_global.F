@@ -124,7 +124,8 @@ MODULE GLOBAL
        REAL(SP) :: Lon_West,Lat_South,Dphi,Dtheta
 # endif
        REAL(SP)::  DT,TIME,TOTAL_TIME,PLOT_INTV,PLOT_COUNT,&
-                  SCREEN_INTV,SCREEN_COUNT
+                  SCREEN_INTV,SCREEN_COUNT, &
+                   DT_fixed
        REAL(SP) :: HOTSTART_INTV,HOTSTART_COUNT
        INTEGER :: icount=0  ! for output file number
        INTEGER :: icount_mean=0  ! for output mean file number
@@ -154,6 +155,7 @@ MODULE GLOBAL
        LOGICAL :: DISP_TIME_LEFT=.FALSE. 
        LOGICAL :: StretchGrid = .FALSE.
                  ! put time derivative dispersion term on left
+       LOGICAL :: FIXED_DT = .FALSE.
 
 ! some local variables
        REAL(SP),DIMENSION(:,:),ALLOCATABLE :: &
