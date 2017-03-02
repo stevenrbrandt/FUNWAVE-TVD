@@ -212,14 +212,14 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 
 ! remove wavebreaking inside wavemaker
 
-         nu_break(I,J) = ZERO
+!         nu_break(I,J) = ZERO
 
-!      IF(ETAt(I,J)>MIN(tmp2,WAVEMAKER_Cbrk*tmp3))THEN
-!         cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
-!         nu_break(I,J)=cap1*WAVEMAKER_Cbrk*tmp3+nu_bkg
-!      ELSE
-!         nu_break(I,J)=ZERO+nu_bkg
-!      ENDIF
+      IF(ETAt(I,J)>MIN(tmp2,WAVEMAKER_Cbrk*tmp3))THEN
+         cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
+         nu_break(I,J)=cap1*WAVEMAKER_Cbrk*tmp3+nu_bkg
+      ELSE
+         nu_break(I,J)=ZERO+nu_bkg
+      ENDIF
 
     ELSE ! outside wavemaker    
 
