@@ -140,7 +140,12 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
         propx=SQRT(DX(I,J)*DX(I,J))/MAX(C,SMALL)
         propy=SQRT(DY(I,J)*DY(I,J))/MAX(C,SMALL)
 # endif
-        ANGLE=ATAN2(ETAy(I,J),ETAx(I,J))
+
+!  I did two changes
+!  1) conversion 180/pi
+!  2) add - to get right quadrants
+!  
+        ANGLE=ATAN2(-ETAy(I,J),-ETAx(I,J))*180.0_SP/PI
 
         IF(ETAt(I,J).GE.tmp2)THEN
 ! 4 quadrants 

@@ -60,7 +60,7 @@ SUBROUTINE SourceTerms
 # endif
      IMPLICIT NONE
      REAL,DIMENSION(Mloc,Nloc) :: nu_vis
-     LOGICAL :: PQ_scheme = .TRUE.
+     LOGICAL :: PQ_scheme = .FALSE.
      REAL(SP) :: xmk,ymk,Dxg,Dyg,WK_Source
      INTEGER :: kd,kf
 
@@ -278,6 +278,10 @@ SUBROUTINE SourceTerms
    IF(VISCOSITY_BREAKING.OR.DIFFUSION_SPONGE.OR.WAVEMAKER_VIS)THEN
 
      IF(PQ_scheme)THEN
+
+!      it turns out P and Q are not exchanged at processor interface
+!      it affects edges, make PQ_scheme=false
+
        SourceX(I,J) = SourceX(I,J) + 0.5_SP/DX*( &
                        nu_vis(I+1,J)* &
                        1.0_SP/DX*(P(I+2,J)-P(I+1,J)) &
