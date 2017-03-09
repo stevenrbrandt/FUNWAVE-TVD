@@ -97,6 +97,7 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
      REAL(SP),INTENT(IN)::Cbrk1,Cbrk2,MinDepthFrc,DT,T_brk
      REAL(SP) :: cap1,cap2
      REAL(SP) :: xmk,ymk,DXg,DYg
+     REAL(SP) :: etat_star,B,T_star
 !     REAL(SP) :: lim_breaker=0.10
 # if defined (CARTESIAN)
      REAL(SP),INTENT(IN)::DX,DY
@@ -107,12 +108,17 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
      REAL(SP),DIMENSION(M,N),INTENT(OUT)::AGE
      REAL(SP)::C,Angle,AGE1,AGE2,AGE3,propx,propy,propxy
 
+    
+
      DO J = Jbeg, Jend
      DO I = Ibeg, Iend
 
 !     02/28/2017 fyshi
 !     DO J=Nghost+1,N-Nghost
 !     DO I=Nghost+1,M-Nghost
+
+! make T_brk as function of depth
+!   T_brk = 10.0_SP*SQRT(MAX(Depth(I,J),MinDepthFrc)/GRAV)
 
      tmp3=SQRT(GRAV*MAX(MinDepthFrc,H(I,J)))
      tmp1=Cbrk1*tmp3
@@ -243,7 +249,23 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 !      we should re-calibrate Cbrk2. 
 !   
 # if defined (VIS_KENNEDY)
-        nu_break(I,J)=cap1*ABS(ETAt(I,J))+nu_bkg
+
+! etat_star
+        etat_star=tmp2
+        T_star=5.0_SP*SQRT(MAX(Depth(I,J),MinDepthFrc)/GRAV)
+        IF(AGE(I,J)>=0.0_SP.AND.AGE(I,J)<T_star)THEN
+          etat_star=tmp1+AGE(I,J)/T_star*(tmp2-tmp1)
+        ENDIF
+! B
+        B = 0.0_SP
+        IF(ETAt(I,J)>etat_star.AND.ETAt(I,J)<=2.0_SP*etat_star)THEN
+         B = ETAt(I,J)/etat_star-1.0_SP
+        ELSEIF(ETAt(I,J)>2.0_SP*etat_star)THEN
+         B = 1.0_SP
+        ENDIF
+        
+        nu_break(I,J)=cap1*ABS(ETAt(I,J))*B+nu_bkg
+
 # elif defined (VIS_STATIC_TRANS)
          nu_break(I,J)=cap1*tmp3*(Cbrk2+(Cbrk1-Cbrk2)*(T_brk-AGE(I,J))/T_brk)+nu_bkg
 # else
