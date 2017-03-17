@@ -113,16 +113,28 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
      DO J = Jbeg, Jend
      DO I = Ibeg, Iend
 
-!     02/28/2017 fyshi
-!     DO J=Nghost+1,N-Nghost
-!     DO I=Nghost+1,M-Nghost
-
 ! make T_brk as function of depth
 !   T_brk = 10.0_SP*SQRT(MAX(Depth(I,J),MinDepthFrc)/GRAV)
 
      tmp3=SQRT(GRAV*MAX(MinDepthFrc,H(I,J)))
      tmp1=Cbrk1*tmp3
      tmp2=Cbrk2*tmp3
+
+# if defined (VIS_DEPTH_RATIO)
+
+      IF(ABS(Eta(I,J))/MAX(DEPTH(I,J),MinDepthFrc)>SWE_ETA_DEP)THEN
+
+       cap1=1.0*(MAX(Depth(I,J),MinDepthFrc)+ETA(I,J))
+
+        IF(ETAt(I,J)>tmp1.AND.ETAt(I,J)<=2.0_SP*tmp1)THEN
+         B = ETAt(I,J)/tmp1-1.0_SP
+        ELSEIF(ETAt(I,J)>2.0_SP*tmp1)THEN
+         B = 1.0_SP
+        ENDIF
+        nu_break(I,J) = cap1*tmp2*(1.0_SP+B) + nu_bkg
+     
+# else
+
      IF(ETAt(I,J).GE.tmp1.AND.(  &
        AGE(I,J).EQ.ZERO.OR.AGE(I,J).GT.T_brk))THEN
       AGE(I,J)=DT
@@ -248,7 +260,7 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
 !      I used before the transition scheme. It worked well but
 !      we should re-calibrate Cbrk2. 
 !   
-# if defined (VIS_KENNEDY)
+# if defined (VIS_KENNEDY_ORIGINAL)
 
 ! etat_star
         etat_star=tmp2
@@ -266,16 +278,36 @@ SUBROUTINE BREAKING(M,N,ETAx,ETAy,ETAT,Cbrk1,Cbrk2,H,MinDepthFrc,&
         
         nu_break(I,J)=cap1*ABS(ETAt(I,J))*B+nu_bkg
 
+# elif defined (VIS_KENNEDY)
+
+! this is a modified Kennedy breaker, I removed etat_star because the TVD is more stable
+! I also modified the transition, the original of which caused instability
+
+        B = 0.0_SP
+        IF(ETAt(I,J)>tmp1.AND.ETAt(I,J)<=2.0_SP*tmp1)THEN
+         B = ETAt(I,J)/tmp1-1.0_SP
+        ELSEIF(ETAt(I,J)>2.0_SP*tmp1)THEN
+         B = 1.0_SP
+        ENDIF
+
+        nu_break(I,J) = cap1*tmp2*(1.0_SP+B) + nu_bkg
+       
+
 # elif defined (VIS_STATIC_TRANS)
          nu_break(I,J)=cap1*tmp3*(Cbrk2+(Cbrk1-Cbrk2)*(T_brk-AGE(I,J))/T_brk)+nu_bkg
 # else
         nu_break(I,J) = cap1*tmp2 + nu_bkg
 # endif
+
+
      ELSE
        nu_break(I,J)=ZERO+nu_bkg
      ENDIF
           
    ENDIF ! end wavemaker
+
+# endif
+  ! end vis_depth_ratio
 
      ENDDO
      ENDDO
