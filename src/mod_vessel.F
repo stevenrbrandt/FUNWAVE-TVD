@@ -76,6 +76,12 @@ MODULE VESSEL_MODULE
     REAL(SP),DIMENSION(:),ALLOCATABLE :: ResistanceX,ResistanceY,ResPosX,ResNegX, &
                                          ResPosY,ResNegY
     REAL(SP):: PLOT_INTV_VESSEL,PLOT_COUNT_VESSEL
+# if defined (VESSEL_PANEL_SOURCE)
+    REAL(SP),DIMENSION(:,:),ALLOCATABLE :: VesselFluxGradient,VesselFluxGradientEach, &
+                                           Gz,W_vertical
+    REAL(SP),DIMENSION(:),ALLOCATABLE :: Uvel,Vvel
+# endif
+
 #if defined (PARALLEL)
     REAL(SP) :: myvar
 # endif    
@@ -131,9 +137,26 @@ SUBROUTINE VESSEL_INITIAL
                 ResistanceX(NumVessel),ResistanceY(NumVessel), &
                 ResPosX(NumVessel),ResNegX(NumVessel), &
                 ResPosY(NumVessel),ResNegY(NumVessel) )
+
+     ALLOCATE (Xco(Mloc),Yco(Nloc))
+
+# if defined (VESSEL_SOURCE_PANEL)
+
+      ALLOCATE (VesselFluxGradient(Mloc,Nloc),VesselFluxGradientEach(Mloc,Nloc), &
+                Gz(Mloc,Nloc),W_vertical(Mloc,Nloc))
+      ALLOCATE (Uvel(NumVessel),Vvel(NumVessel))
+      
+      Gz = ZERO
+      Uvel = ZERO
+      Vvel = ZERO
+
+# else
+
       ALLOCATE (VesselPressureTotal(Mloc,Nloc), VesselPressureEach(Mloc,Nloc),&
-                 Xco(Mloc),Yco(Nloc), VesselPressureX(Mloc,Nloc), &
+                VesselPressureX(Mloc,Nloc), &
                  VesselPressureY(Mloc,Nloc) )
+
+# endif
 
 
 ! plot vessel intitial
@@ -256,7 +279,11 @@ SUBROUTINE VESSEL_FORCING
   INTEGER :: Ifile,ierr,I,J
   REAL(SP) :: Xves,Yves,Lves,Wves,Px,Py,DetaX,DetaY
 
+# if defined (VESSEL_SOURCE_PANEL)
+  VesselFluxGradient = ZERO
+# else
   VesselPressureTotal = ZERO
+# endif
 
   DO Kves = 1,NumVessel
 
@@ -270,9 +297,6 @@ SUBROUTINE VESSEL_FORCING
 
     READ(Ifile,*,END=120)  TimeVessel2(Kves),Xvessel2(Kves),Yvessel2(Kves)
 
-    ThetaVessel(Kves) = ATAN2(Yvessel2(Kves)-Yvessel1(Kves),  &
-                              Xvessel2(Kves)-Xvessel1(Kves))
-
 # if defined (PARALLEL)
    IF(MYID==0)THEN
      WRITE(3,*)'Read Vessel # ', Kves
@@ -281,6 +305,17 @@ SUBROUTINE VESSEL_FORCING
 # else
      WRITE(3,*)'Read Vessel # ', Kves
      WRITE(3,*)'T,X,Y = ', TimeVessel2(Kves),Xvessel2(Kves),Yvessel2(Kves)
+# endif
+
+    ThetaVessel(Kves) = ATAN2(Yvessel2(Kves)-Yvessel1(Kves),  &
+                              Xvessel2(Kves)-Xvessel1(Kves))
+
+
+# if defined (VESSEL_SOURCE_PANEL)
+    IF((TimeVessel2(Kves)-TimeVessel1(Kves))> ZERO)THEN
+     Uvel(Kvel) = (Xvessel2(Kves)-Xvessel1(Kves))/(TimeVessel2(Kves)-TimeVessel1(Kves))
+     Vvel(Kvel) = (Yvessel2(Kves)-Yvessel1(Kves))/(TimeVessel2(Kves)-TimeVessel1(Kves))
+    ENDIF
 # endif
 
     ENDIF ! end time > timevessel2
@@ -303,6 +338,13 @@ SUBROUTINE VESSEL_FORCING
 
     Xves = Xvessel2(Kves)*tmp1 +Xvessel1(Kves)*tmp2
     Yves = Yvessel2(Kves)*tmp1 +Yvessel1(Kves)*tmp2
+
+# if defined (VESSEL_SOURCE_PANEL)
+
+     CALL GREEN_FUNCTION_SOURCE (Xves,Yves)
+
+# else  
+   ! pressure source
 
 ! rectangular
     VesselPressureEach = ZERO
@@ -392,7 +434,16 @@ SUBROUTINE VESSEL_FORCING
     ENDDO
     ENDDO  ! end grid
 
+# endif
+  ! end difference sources
+
 120 CONTINUE  ! no more data for vessel Kves
+
+
+# if defined (VESSEL_SOURCE_PANEL)
+     VesselFluxGradient = VesselFluxGradient + VesselFluxGradientEach
+# else
+  ! pressure source
 
 # if defined (PARALLEL)
      call MPI_ALLREDUCE(ResistanceX(Kves),myvar,1,MPI_SP,MPI_SUM,MPI_COMM_WORLD,ier)
@@ -402,6 +453,9 @@ SUBROUTINE VESSEL_FORCING
 # endif
 
     VesselPressureTotal = VesselPressureTotal+VesselPressureEach
+
+# endif
+  ! end different sources
 
   ENDDO  ! end Kves
 
@@ -424,6 +478,32 @@ SUBROUTINE VESSEL_FORCING
 
 
 END SUBROUTINE VESSEL_FORCING
+
+# if defined (VESSEL_SOURCE_PANEL)
+SUBROUTINE GREEN_FUNCTION_SOURCE (Xves,Yves)
+  USE GLOBAL,ONLY : Mloc,Nloc,tmp1,tmp2,SMALL,TIME,ZERO
+  IMPLICIT NONE
+  INTEGER :: ierr,I,J
+  REAL(SP) :: Xves,Yves,Lves,Wves
+
+    DO J=1,Nloc
+    DO I=1,Mloc
+      Lves=(Xco(I)-Xves)*COS(ThetaVessel(Kves)) + (Yco(J)-Yves)*SIN(ThetaVessel(Kves))
+      Wves=-(Xco(I)-Xves)*SIN(ThetaVessel(Kves)) + (Yco(J)-Yves)*COS(ThetaVessel(Kves))
+
+      
+      IF(ABS(Lves)<=0.5_SP*LengthVessel(Kves).AND. &
+         ABS(Wves)<=0.5_SP*WidthVessel(Kves)) THEN
+         VesselFluxEach(I,J) = Pvessel(Kves)  &
+                  *SIN(2.0*PI*Lves/(LengthVessel(Kves))) &
+                  *COS(PI*Wves/(WidthVessel(Kves)))**2                  
+      ENDIF
+
+
+END SUBROUTINE GREEN_FUNCTION_SOURCE
+# endif 
+  ! end panel source
+
 
 END MODULE VESSEL_MODULE
 
