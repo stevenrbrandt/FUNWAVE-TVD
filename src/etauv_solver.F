@@ -175,6 +175,12 @@ SUBROUTINE ESTIMATE_HUV(ISTEP)
 # if defined (CARTESIAN)
         R1(I,J)=-1.0_SP/DXg*(F_right*n_right+F_left*n_left) &
                    -1.0_SP/DYg*(F_top*n_top+F_bottom*n_bottom)
+
+# if defined (VESSEL_SOURCE_PANEL)
+                   +VesselFluxGradient(I,J)
+# endif
+  ! end vessel
+
 # else
         R1(I,J)=-1.0_SP/DX(I,J)*(F_right*n_right+F_left*n_left) &
                    -1.0_SP/DY(I,J)*(F_top*n_top+F_bottom*n_bottom)
