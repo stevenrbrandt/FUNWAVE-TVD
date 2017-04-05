@@ -18,9 +18,9 @@
 #             FLAG_9 = -DZALPHA
 #             FLAG_10 = -DMANNING
 #             FLAG_11 = -DSPHERICAL_IJ_STATION
-#              FLAG_12 = -DVESSEL
+              FLAG_12 = -DVESSEL
               FLAG_13 = -DVIS_KENNEDY
-
+              FALG_14 = -DVESSEL_SOURCE_PANEL
 #--------------------------------------------------------------------------
 #  mpi defs 
 #--------------------------------------------------------------------------
