@@ -52,6 +52,9 @@
 !-------------------------------------------------------------------------------------
 SUBROUTINE ESTIMATE_HUV(ISTEP)
      USE GLOBAL
+# if defined (VESSEL_PANEL_SOURCE)
+     USE VESSEL_MODULE
+# endif
      IMPLICIT NONE
      INTEGER,INTENT(IN)::ISTEP
      REAL(SP),PARAMETER::n_left=-1.0_SP,n_right=1.0_SP,n_bottom=-1.0_SP,n_top=1.0_SP
@@ -175,9 +178,8 @@ SUBROUTINE ESTIMATE_HUV(ISTEP)
 # if defined (CARTESIAN)
         R1(I,J)=-1.0_SP/DXg*(F_right*n_right+F_left*n_left) &
                    -1.0_SP/DYg*(F_top*n_top+F_bottom*n_bottom)
-
-# if defined (VESSEL_SOURCE_PANEL)
-                   +VesselFluxGradient(I,J)
+# if defined (VESSEL_PANEL_SOURCE)
+        R1(I,J)=R1(I,J) +VesselFluxGradient(I,J)
 # endif
   ! end vessel
 

@@ -261,7 +261,6 @@ Program FUNWAVE_TVD
         CALL MAX_MIN_PROPERTY
       ENDIF
          
-
       CALL OUTPUT
 
       CALL CHECK_BLOWUP

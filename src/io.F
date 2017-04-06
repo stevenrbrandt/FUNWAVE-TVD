@@ -901,7 +901,7 @@ SUBROUTINE READ_INPUT
            WRITE(3,'(A12,F12.2)')'DT_fixed= ', DT_fixed
       endif
 # else
-      WRITE(3,'(A80') 'use fixed DT, but judged by CFL. IF not satisfy CLF, DT/2...'
+      WRITE(3,'(A80)') 'use fixed DT, but judged by CFL. IF not satisfy CLF, DT/2...'
       WRITE(3,'(A12,F12.2)')'DT_fixed= ', DT_fixed
 # endif
       ENDIF ! ierr\=1
@@ -1562,8 +1562,15 @@ SUBROUTINE PREVIEW
      
 # if defined (VESSEL)
      IF(OUT_VESSEL)THEN
+# if defined (VESSEL_PANEL_SOURCE)
+        TMP_NAME = TRIM(FDIR)//'Fves_'//TRIM(FILE_NAME)
+        call PutFile(TMP_NAME,VesselFluxGradient)
+# else
         TMP_NAME = TRIM(FDIR)//'Pves_'//TRIM(FILE_NAME)
         call PutFile(TMP_NAME,VesselPressureTotal)
+# endif
+   ! end panel source
+
      ENDIF
 # endif
 
