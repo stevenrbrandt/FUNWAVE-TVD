@@ -624,6 +624,15 @@ SUBROUTINE READ_INPUT
 # endif
         ENDIF
 
+       CALL READ_LOGICAL(EqualEnergy,FILE_NAME,'EqualEnergy',ierr)
+        IF(ierr==1)THEN
+             EqualEnergy = .FALSE.
+# if defined (PARALLEL)
+      if (myid.eq.0) WRITE(3,'(A50)'EqualEnergy NOT USED in frequency domain'
+# else
+      WRITE(3,'(A50)')'EqualEnergy NOT USED in frequency domain'
+# endif
+          ENDIF ! end ierr
 ! absorbing generating wavemaker
      IF(WaveMaker(1:3)=='ABS') THEN
 
