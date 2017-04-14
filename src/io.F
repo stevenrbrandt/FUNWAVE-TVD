@@ -628,7 +628,7 @@ SUBROUTINE READ_INPUT
         IF(ierr==1)THEN
              EqualEnergy = .FALSE.
 # if defined (PARALLEL)
-      if (myid.eq.0) WRITE(3,'(A50)'EqualEnergy NOT USED in frequency domain'
+      if (myid.eq.0) WRITE(3,'(A50)') 'EqualEnergy NOT USED in frequency domain'
 # else
       WRITE(3,'(A50)')'EqualEnergy NOT USED in frequency domain'
 # endif
