@@ -138,6 +138,8 @@ MODULE GLOBAL
        REAL(SP) :: FroudeCap=10.0_SP
        REAL(SP) :: SWE_ETA_DEP=0.7_SP
 
+       LOGICAL :: BATHY_CORRECTION = .FALSE.
+
 ! switch for dispersion
 !   gamma1 is for extra M term
        REAL(SP) :: gamma1

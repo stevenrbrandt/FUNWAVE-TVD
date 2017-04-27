@@ -273,6 +273,21 @@ SUBROUTINE READ_INPUT
       WRITE(3,'(A6,F12.2)')'Xslp=', Xslp  
 # endif
       ENDIF
+
+! depth correction
+
+      CALL READ_LOGICAL(BATHY_CORRECTION,FILE_NAME,'BATHY_CORRECTION',ierr)
+      IF(ierr == 1)THEN
+       BATHY_CORRECTION = .FALSE. 
+      ENDIF
+      IF(BATHY_CORRECTION)THEN
+# if defined (PARALLEL)
+      if (myid.eq.0) WRITE(3,'(A80)')'Bathymetry is corrected !'
+# else
+      WRITE(3,'(A80)')'Bathymetry is corrected !'
+# endif 
+      ENDIF
+
 ! time
       CALL READ_FLOAT(TOTAL_TIME,FILE_NAME,'TOTAL_TIME',ierr)
       CALL READ_FLOAT(PLOT_INTV,FILE_NAME,'PLOT_INTV',ierr)
