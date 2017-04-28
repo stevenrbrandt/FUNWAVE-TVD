@@ -161,8 +161,13 @@ SUBROUTINE CORRECTION
       DO J=Jbeg,Jend
       DO I=Ibeg,Iend
         IF(MASK0(I,J)==1)THEN
+# if defined (CARTESIAN)
           Gradx0(I,J)=ABS(Depth0(I+1,J)-Depth0(I-1,J))/DX
           Grady0(I,J)=ABS(Depth0(I,J+1)-Depth0(I,J-1))/DY
+# else
+          Gradx0(I,J)=ABS(Depth0(I+1,J)-Depth0(I-1,J))/DX(I,J)
+          Grady0(I,J)=ABS(Depth0(I,J+1)-Depth0(I,J-1))/DY(I,J)
+# endif
         ENDIF
       ENDDO
       ENDDO
@@ -189,8 +194,13 @@ SUBROUTINE CORRECTION
         DO J=Jbeg,Jend
         DO I=Ibeg,Iend
         IF(MASK0(I,J)==1)THEN
+# if defined (CARTESIAN)
           Gradx(I,J)=ABS(Depth0(I+1,J)-Depth0(I-1,J))/DX
           Grady(I,J)=ABS(Depth0(I,J+1)-Depth0(I,J-1))/DY
+# else
+          Gradx(I,J)=ABS(Depth0(I+1,J)-Depth0(I-1,J))/DX(I,J)
+          Grady(I,J)=ABS(Depth0(I,J+1)-Depth0(I,J-1))/DY(I,J)
+# endif
 
           IF(MAX(Gradx(I,J),Grady(I,J)).GT.SlopeCap) THEN
             Depth1(I,J)=0.4_SP*Depth0(I,J)   &
@@ -236,6 +246,14 @@ SUBROUTINE CORRECTION
 
 
       Depth = Depth0
+
+# if defined (PARALLEL)
+      call phi_exch (Depth)
+      call phi_exch (Gradx)
+      call phi_exch (Grady)
+      call phi_exch (Gradx0)
+      call phi_exch (Grady0)
+# endif
 
       CALL OUTPUT_CORRECTION
 

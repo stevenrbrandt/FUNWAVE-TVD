@@ -94,6 +94,7 @@ MODULE GLOBAL
        CHARACTER(LEN=80) DY_FILE
        CHARACTER(LEN=80) Coriolis_FILE
        CHARACTER(LEN=80) OBSTACLE_FILE
+       CHARACTER(LEN=80) BREAKWATER_FILE
        CHARACTER(LEN=80) RESULT_FOLDER
        CHARACTER(LEN=80) STATIONS_FILE
        CHARACTER(LEN=80) WaveMaker
@@ -139,6 +140,11 @@ MODULE GLOBAL
        REAL(SP) :: SWE_ETA_DEP=0.7_SP
 
        LOGICAL :: BATHY_CORRECTION = .FALSE.
+       LOGICAL :: BREAKWATER = .FALSE.
+
+       REAL(SP),DIMENSION(:,:),ALLOCATABLE :: &
+                BreakWaterWidth,CD_breakwater
+
 
 ! switch for dispersion
 !   gamma1 is for extra M term

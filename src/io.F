@@ -802,6 +802,24 @@ SUBROUTINE READ_INPUT
 # endif
       ENDIF
 
+! breakwater
+      CALL READ_STRING(BREAKWATER_FILE,FILE_NAME,'BREAKWATER_FILE',ierr)
+      IF(ierr==1)THEN
+        BREAKWATER=.FALSE.
+# if defined (PARALLEL)
+      if (myid.eq.0) WRITE(3,'(A20,A5)')'BREAKWATER_FILE:', 'NO'
+# else
+      WRITE(3,'(A20,A5)')'BREAKWATER_FILE:', 'NO'
+# endif
+      ELSE
+        BREAKWATER=.TRUE.
+# if defined (PARALLEL)
+      if (myid.eq.0) WRITE(3,'(A20,A50)')'BREAKWATER_FILE:', BREAKWATER_FILE
+# else
+      WRITE(3,'(A20,A50)')'BREAKWATER_FILE:', BREAKWATER_FILE
+# endif
+      ENDIF
+
 ! physics
           CALL READ_LOGICAL(DISPERSION,FILE_NAME,'DISPERSION',ierr)
           CALL READ_FLOAT(Gamma1,FILE_NAME,'Gamma1',ierr)
@@ -1494,9 +1512,11 @@ SUBROUTINE PREVIEW
     	  write(file_name(5:5),'(I1)')itmp5   !ykchoi
 
      IF(ICOUNT==1)THEN
-     IF(OUT_DEPTH)THEN
+     IF(OUT_DEPTH.OR.BREAKWATER)THEN
         TMP_NAME = TRIM(FDIR)//'dep.out'
         call PutFile(TMP_NAME,DEPTH)
+        TMP_NAME = TRIM(FDIR)//'cd_breakwater.out'
+        call PutFile(TMP_NAME,CD_breakwater)
      ENDIF
      ENDIF
 ![ykchoi
