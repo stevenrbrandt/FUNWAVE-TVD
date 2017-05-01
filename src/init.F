@@ -135,7 +135,7 @@ SUBROUTINE ALLOCATE_VARIABLES
                MASK(Mloc,Nloc),DepthNode(Mloc1,Nloc1), &
                MASK_STRUC(Mloc,Nloc),MASK9(Mloc,Nloc), &
                tmp4preview(Mloc,Nloc),Int2Flo(Mloc,Nloc),&
-               Cd(Mloc,Nloc) &
+               Cd(Mloc,Nloc),CD_breakwater(Mloc,Nloc) &
               )
 ! updating variables
       ALLOCATE(Eta(Mloc,Nloc),Eta0(Mloc,Nloc), &
@@ -889,8 +889,7 @@ SUBROUTINE INITIALIZATION
   ENDIF
 
 ! we have to use global for width 
-     ALLOCATE(BreakWaterWidth(Mglob+2*Nghost,Nglob+2*Nghost),  &
-              CD_breakwater(Mloc,Nloc))
+     ALLOCATE(BreakWaterWidth(Mglob+2*Nghost,Nglob+2*Nghost))
      BreakWaterWidth = 0.0_SP     
 
 # if defined (PARALLEL)

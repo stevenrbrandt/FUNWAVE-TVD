@@ -106,6 +106,7 @@ MODULE GLOBAL
        !ykchoi(14.12.24)]
 
        LOGICAL :: NO_MASK_FILE = .TRUE.
+       LOGICAL :: NO_UV_FILE = .TRUE.
 
         CHARACTER(LEN=14)::FORMAT_LEN=' '
 
