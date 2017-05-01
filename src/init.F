@@ -1102,6 +1102,8 @@ SUBROUTINE INITIAL_UVZ
       REAL(SP),DIMENSION(Mloc,Nloc) :: rMASK
       LOGICAL :: FILE_EXIST
 
+IF(.NOT.NO_UV_FILE)THEN
+
   INQUIRE(FILE=TRIM(U_FILE),EXIST=FILE_EXIST)
   IF(.NOT.FILE_EXIST)THEN
 # if defined (PARALLEL)
@@ -1127,6 +1129,8 @@ SUBROUTINE INITIAL_UVZ
 # endif
   ENDIF
 
+ENDIF
+
   INQUIRE(FILE=TRIM(ETA_FILE),EXIST=FILE_EXIST)
   IF(.NOT.FILE_EXIST)THEN
 # if defined (PARALLEL)
@@ -1139,16 +1143,24 @@ SUBROUTINE INITIAL_UVZ
 # endif
   ENDIF
 
-
 # if defined (PARALLEL)
+IF(.NOT.NO_UV_FILE)THEN
       CALL GetFile(U_FILE,U)
       CALL GetFile(V_FILE,V)
+ELSE
+      U=ZERO
+      V=ZERO
+ENDIF
+
       CALL GetFile(ETA_FILE,ETA)
+
       IF(.NOT.NO_MASK_FILE)THEN
       CALL GetFile(MASK_FILE,rMASK)
       ENDIF
+
 # else
 
+IF(.NOT.NO_UV_FILE)THEN
       OPEN(1,FILE=TRIM(U_FILE))
        DO J=Nghost+1,Nloc-Nghost
         READ(1,*)(U(I,J),I=Nghost+1,Mloc-Nghost)
@@ -1160,6 +1172,10 @@ SUBROUTINE INITIAL_UVZ
         READ(1,*)(V(I,J),I=Nghost+1,Mloc-Nghost)
        ENDDO
       CLOSE(1)
+ELSE
+      U=ZERO
+      V=ZERO
+ENDIF
 
       OPEN(1,FILE=TRIM(ETA_FILE))
        DO J=Nghost+1,Nloc-Nghost
@@ -1179,6 +1195,8 @@ SUBROUTINE INITIAL_UVZ
 
      IF(.NOT.NO_MASK_FILE)THEN
       MASK=INT(rMASK)
+     ELSE
+      MASK = 1
      ENDIF
 
 END SUBROUTINE INITIAL_UVZ
