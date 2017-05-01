@@ -443,7 +443,7 @@ SUBROUTINE READ_INPUT
 # else
          WRITE(*,'(A40)')'You dont specify DEPTH_FLAT, use 10 m.'
          WRITE(3,'(A40)')'You dont specify DEPTH_FLAT, use 10 m.'
- # endif
+# endif
       ENDIF      
 
 # if defined (PARALLEL)
@@ -467,7 +467,7 @@ SUBROUTINE READ_INPUT
 # else
          WRITE(*,'(A40)')'You dont specify DEPTH_FLAT, use 10 m.'
          WRITE(3,'(A40)')'You dont specify DEPTH_FLAT, use 10 m.'
- # endif
+# endif
       ENDIF 
 
       CALL READ_FLOAT(SLP,FILE_NAME,'SLP',ierr) 
@@ -482,7 +482,7 @@ SUBROUTINE READ_INPUT
 # else
          WRITE(*,'(A40)')'You dont specify SLP, use 0.1'
          WRITE(3,'(A40)')'You dont specify SLP, use 0.1'
- # endif
+# endif
       ENDIF 
 
       CALL READ_FLOAT(Xslp,FILE_NAME,'Xslp',ierr) 
@@ -497,7 +497,7 @@ SUBROUTINE READ_INPUT
 # else
          WRITE(*,'(A40)')'You dont specify Xslp, use 0.0'
          WRITE(3,'(A40)')'You dont specify Xslp, use 0.0'
- # endif
+# endif
       ENDIF 
 
 # if defined (PARALLEL)
