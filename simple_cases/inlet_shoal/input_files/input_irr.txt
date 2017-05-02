@@ -142,6 +142,7 @@ MinDepth=0.01
 
   ! -------------- BREAKING ----------------------------
 VISCOSITY_BREAKING = F  
+SHOW_BREAKING = F
 Cbrk1 = 0.65 
 Cbrk2 = 0.35 
   ! ----------------- WAVE AVERAGE ------------------------ 
