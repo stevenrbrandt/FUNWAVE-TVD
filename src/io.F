@@ -1044,12 +1044,14 @@ SUBROUTINE READ_INPUT
 
 # if defined (PARALLEL)
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Xc_WK   =', Xc_WK
+      if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'DEP_WK  =', DEP_WK
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Time_ramp=', Time_ramp
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Delta_WK=', Delta_WK
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
 # else
       WRITE(3,'(A10,F12.2)')'Xc_WK   =', Xc_WK
+      WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       WRITE(3,'(A10,F12.2)')'DEP_WK  =', DEP_WK
       WRITE(3,'(A11,F12.2)')'Time_ramp=', Time_ramp
       WRITE(3,'(A11,F12.2)')'Delta_WK=', Delta_WK
@@ -1490,6 +1492,7 @@ SUBROUTINE READ_INPUT
 
 # if defined (PARALLEL)
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Xc_WK   =', Xc_WK
+      if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Tperiod =', Tperiod
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'AMP_WK  =', AMP_WK
       if (myid.eq.0) WRITE(3,'(A10,F12.2)')'DEP_WK  =', DEP_WK
@@ -1499,6 +1502,7 @@ SUBROUTINE READ_INPUT
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
 # else
       WRITE(3,'(A10,F12.2)')'Xc_WK   =', Xc_WK
+      WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       WRITE(3,'(A10,F12.2)')'Tperiod =', Tperiod
       WRITE(3,'(A10,F12.2)')'AMP_WK  =', AMP_WK
       WRITE(3,'(A10,F12.2)')'DEP_WK  =', DEP_WK
@@ -1728,6 +1732,7 @@ SUBROUTINE READ_INPUT
 
 # if defined (PARALLEL)
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'Xc_WK   =  ', Xc_WK
+      if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'DEP_WK  =  ', DEP_WK
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'Time_ramp= ', Time_ramp
@@ -1743,6 +1748,7 @@ SUBROUTINE READ_INPUT
       if (myid.eq.0) WRITE(3,'(A13,F12.2)')'Sigma_Theta=', Sigma_Theta
 # else
       WRITE(3,'(A12,F12.2)')'Xc_WK   =  ', Xc_WK
+      WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
       WRITE(3,'(A12,F12.2)')'DEP_WK  =  ', DEP_WK
       WRITE(3,'(A12,F12.2)')'Time_ramp= ', Time_ramp
@@ -1870,12 +1876,14 @@ SUBROUTINE READ_INPUT
 
 # if defined (PARALLEL)
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'Xc_WK   =  ', Xc_WK
+      if (myid.eq.0) WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       if (myid.eq.0) WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'DEP_WK  =  ', DEP_WK
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'Time_ramp= ', Time_ramp
       if (myid.eq.0) WRITE(3,'(A12,F12.2)')'Delta_WK=  ', Delta_WK
 # else
       WRITE(3,'(A12,F12.2)')'Xc_WK   =  ', Xc_WK
+      WRITE(3,'(A10,F12.2)')'Yc_WK   =', Yc_WK
       WRITE(3,'(A11,F12.2)')'Ywidth_WK=', Ywidth_WK
       WRITE(3,'(A12,F12.2)')'DEP_WK  =  ', DEP_WK
       WRITE(3,'(A12,F12.2)')'Time_ramp= ', Time_ramp
