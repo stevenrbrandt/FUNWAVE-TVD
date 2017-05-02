@@ -17,7 +17,7 @@ TITLE = inlet_shoal_beach
    !                                 need slope,SLP starting point, Xslp 
    !                                 and depth_flat 
  DEPTH_TYPE = DATA 
- DEPTH_FILE = dep_shoal_inlet.txt 
+ DEPTH_FILE = depth.txt 
  !BATHY_CORRECTION = T
  !SmoothBelowDepth = -1.0
  !SlopeCap = 1.0
@@ -73,6 +73,12 @@ Hmo = 1.0
 GammaTMA = 5.0 
 ThetaPeak = 0.0 
 Sigma_Theta = 10.0 
+
+  ! ---------------- PERIODIC BOUNDARY CONDITION --------- 
+  ! South-North periodic boundary condition 
+  ! 
+PERIODIC = T
+
   ! ---------------- SPONGE LAYER ------------------------ 
   ! need to specify widths of four boundaries and parameters if needed
   ! set width=0.0 if no sponge 
