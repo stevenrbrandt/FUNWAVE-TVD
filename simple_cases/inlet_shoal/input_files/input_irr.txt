@@ -62,17 +62,40 @@ TITLE = inlet_shoal_beach
    !                 and then use Wei and Kirby 1999  
    !          need input WaveCompFile (including 3 columns: per,amp,pha) 
    !          NumWaveComp,PeakPeriod,DEP_WK,Xc_WK,Ywidth_WK 
+  ! wave components based on fft time series
  WAVEMAKER = WK_IRR
-DEP_WK = 10.0 
-Xc_WK = 250.0 
-Yc_WK = 0.0 
-FreqPeak = 0.0833 
-FreqMin = 0.05
-FreqMax = 0.3 
-Hmo = 1.0 
-GammaTMA = 5.0 
-ThetaPeak = 0.0 
-Sigma_Theta = 10.0 
+   ! wave components based on fft time series
+ NumWaveComp = 1505
+ PeakPeriod = 1.0
+ WaveCompFile = wave1d.txt
+   ! solitary wave
+ AMP = 3.
+ DEP = 15.
+LAGTIME = 0.0
+XWAVEMAKER = 400.
+  ! Xc, Yc and WID (degrees) are for rectangular hump with AMP
+Xc = 501.00
+Yc = 501.00
+WID = 100.0
+  ! Wei and Kirby 1999
+Time_ramp = 1.0
+Delta_WK = 0.6    ! width parameter 0.3-0.6
+DEP_WK = 10.0
+Xc_WK = 250.0
+Yc_WK = 0.0
+Ywidth_WK = 20000.0
+  ! Wei and Kirby regular wave
+Tperiod = 2.02
+AMP_WK = 0.01
+Theta_WK = 0.0
+  ! Wei and Kirby irregular wave
+FreqPeak = 0.0893
+FreqMin = 0.03
+FreqMax = 0.3
+Hmo = 1.00
+GammaTMA = 3.3
+ThetaPeak = 0.0
+Sigma_Theta = 10.0
 
   ! ---------------- PERIODIC BOUNDARY CONDITION --------- 
   ! South-North periodic boundary condition 
