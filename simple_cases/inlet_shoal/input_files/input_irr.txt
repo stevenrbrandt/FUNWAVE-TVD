@@ -141,7 +141,7 @@ FroudeCap = 1.0
 MinDepth=0.01 
 
   ! -------------- BREAKING ----------------------------
-VISCOSITY_BREAKING = T  
+VISCOSITY_BREAKING = F  
 Cbrk1 = 0.65 
 Cbrk2 = 0.35 
   ! ----------------- WAVE AVERAGE ------------------------ 
