@@ -1240,17 +1240,16 @@ SUBROUTINE READ_INPUT
 
           CALL READ_FLOAT(Yc,FILE_NAME,'Yc',ierr)
       IF(ierr==1)THEN
+       Yc = ZERO
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
          WRITE(*,'(A40)')'Yc NOT FOUND, specify Yc in input.txt'
          WRITE(3,'(A40)')'Yc NOT FOUND, specify Yc in input.txt'
       endif
-       call MPI_FINALIZE ( ier )
 # else
          WRITE(*,'(A40)')'Yc NOT FOUND, specify Yc in input.txt'
          WRITE(3,'(A40)')'Yc NOT FOUND, specify Yc in input.txt'
 # endif
-        STOP
       ENDIF
 
 
@@ -1543,7 +1542,6 @@ SUBROUTINE READ_INPUT
          WRITE(*,'(A40)')'Yc_WK defalt: 0.0'
          WRITE(3,'(A40)')'Yc_WK defalt: 0.0'
 # endif
-        STOP
       ENDIF
 
           CALL READ_FLOAT(DEP_WK,FILE_NAME,'DEP_WK',ierr)
@@ -1789,17 +1787,16 @@ SUBROUTINE READ_INPUT
 
           CALL READ_FLOAT(Yc_WK,FILE_NAME,'Yc_WK',ierr)
       IF(ierr==1)THEN
+         Yc_WK = ZERO
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
          WRITE(*,'(A80)')'Yc_WK NOT FOUND, specify Yc_WK in input.txt'
          WRITE(3,'(A80)')'Yc_WK NOT FOUND, specify Yc_WK in input.txt'
       endif
-       call MPI_FINALIZE ( ier )
 # else
          WRITE(*,'(A80)')'Yc_WK NOT FOUND, specify Yc_WK in input.txt'
          WRITE(3,'(A80)')'Yc_WK NOT FOUND, specify Yc_WK in input.txt'
 # endif
-        STOP
       ENDIF
 
           CALL READ_FLOAT(DEP_WK,FILE_NAME,'DEP_WK',ierr)
