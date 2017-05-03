@@ -39,9 +39,9 @@ TITLE = inlet_shoal_beach
    ! time: total computational time/ plot time / screen interval  
    ! all in seconds 
  TOTAL_TIME = 1200.0 
- PLOT_INTV = 10.0 
+ PLOT_INTV = 30.0 
  PLOT_INTV_STATION = 0.5 
- SCREEN_INTV = 10.0 
+ SCREEN_INTV = 30.0 
 
    ! -----------------GRID---------------------------------- 
    ! if use spherical grid, in decimal degrees 
