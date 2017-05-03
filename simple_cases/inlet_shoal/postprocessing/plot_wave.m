@@ -1,5 +1,5 @@
 clear all
-fdir='/Users/fengyanshi15/tmp2/';
+fdir='/Users/fengyanshi15/tmp1/';
 
 dep=load('../bathy/dep_shoal_inlet.txt');
 
@@ -36,7 +36,7 @@ subplot(1,length(nfile), num)
 
 pcolor(x,y,eta),shading flat
 hold on
-caxis([-1 4])
+caxis([-0.5 2])
 title([' Time = ' min{num} ' sec '])
 
 hold on
@@ -58,4 +58,4 @@ xlabel(' x (m) ')
 
 
 end
-print -djpeg eta_inlet_shoal.jpg
+print -djpeg eta_inlet_shoal_irr.jpg

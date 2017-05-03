@@ -63,8 +63,7 @@ TITLE = inlet_shoal_beach
    !          need input WaveCompFile (including 3 columns: per,amp,pha) 
    !          NumWaveComp,PeakPeriod,DEP_WK,Xc_WK,Ywidth_WK 
   ! wave components based on fft time series
- WAVEMAKER = WK_IRR
-  ! Wei and Kirby 1999
+WAVEMAKER = WK_IRR
 Time_ramp = 1.0
 Delta_WK = 0.6    ! width parameter 0.3-0.6
 DEP_WK = 10.0
