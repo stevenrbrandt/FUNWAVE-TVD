@@ -1,5 +1,5 @@
 clear all
-fdir='/Users/fengyanshi15/tmp1/';
+fdir='/Users/fengyanshi15/FUNWAVE_GITHUB/BENCHMARKS_test/simple_inlet_case/saved_results/irr_30deg_brkwater/';
 
 dep=load('../bathy/dep_shoal_inlet.txt');
 
