@@ -1237,7 +1237,7 @@ SUBROUTINE WK_WAVEMAKER_IRREGULAR_WAVE &
          tmp3=ZERO
          I=0
 !  fyshi change < to <= to include theta=0, 02/26/2017
-         Do WHILE (tmp3<=Theta)
+         Do WHILE (tmp3<Theta)
            I=I+1
            tmp2=I*2.0_SP*pi/DY/(Nglob-1.0_SP) 
            IF(tmp2.GE.tmp1)THEN
@@ -1434,7 +1434,8 @@ SUBROUTINE WK_EQUAL_DFREQ_IRREGULAR_WAVE &
         theta = 0.0_SP
       ELSE
         theta = -pi/3.0_SP + theta_input*pi/180.0_SP &
-	         + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)    
+	         + 2.0_SP/3.0_SP*pi/(real(ktotal)-1.0_SP)*(real(ktheta)-1.0_SP)   
+ 
       ENDIF
 
         alpha=-0.39_SP
@@ -1468,7 +1469,7 @@ SUBROUTINE WK_EQUAL_DFREQ_IRREGULAR_WAVE &
          tmp3=ZERO
          I=0
 !  fyshi change < to <= to include theta=0, 02/26/2017
-         Do WHILE (tmp3<=Theta)
+         Do WHILE (tmp3<Theta)
            I=I+1
            tmp2=I*2.0_SP*pi/DY/(Nglob-1.0_SP) 
            IF(tmp2.GE.tmp1)THEN
