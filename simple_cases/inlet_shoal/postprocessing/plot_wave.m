@@ -58,4 +58,4 @@ xlabel(' x (m) ')
 
 
 end
-print -djpeg eta_inlet_shoal_irr.jpg
+%print -djpeg eta_inlet_shoal_irr.jpg
