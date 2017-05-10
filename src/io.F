@@ -2803,29 +2803,29 @@ SUBROUTINE READ_INPUT
 
       CALL READ_FLOAT(T_INTV_mean,FILE_NAME,'T_INTV_mean',ierr)
       IF(ierr==1)THEN
-        T_INTV_mean = 1000.0_SP
+        T_INTV_mean = LARGE
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
-         WRITE(*,'(A40)')'T_INTV_mean Default:  1000.0 s'
-         WRITE(3,'(A40)')'T_INTV_mean Default:  1000.0 s'
+         WRITE(*,'(A40)')'T_INTV_mean Default:  LARGE'
+         WRITE(3,'(A40)')'T_INTV_mean Default:  LARGE'
       endif
 # else
-         WRITE(*,'(A40)')'T_INTV_mean Default:  1000.0 s'
-         WRITE(3,'(A40)')'T_INTV_mean Default:  1000.0 s'
+         WRITE(*,'(A40)')'T_INTV_mean Default:  LARGE'
+         WRITE(3,'(A40)')'T_INTV_mean Default:  LARGE'
 # endif
        ENDIF
 
 	CALL READ_FLOAT(STEADY_TIME,FILE_NAME,'STEADY_TIME',ierr)
       IF(ierr==1)THEN
-        STEADY_TIME = 200.0_SP
+        STEADY_TIME = LARGE
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
-         WRITE(*,'(A40)')'STEADY_TIME Default:  200.0 s'
-         WRITE(3,'(A40)')'STEADY_TIME Default:  200.0 s'
+         WRITE(*,'(A40)')'STEADY_TIME Default:  LARGE'
+         WRITE(3,'(A40)')'STEADY_TIME Default:  LARGE'
       endif
 # else
-         WRITE(*,'(A40)')'STEADY_TIME Default:  200.0 s'
-         WRITE(3,'(A40)')'STEADY_TIME Default:  200.0 s'
+         WRITE(*,'(A40)')'STEADY_TIME Default:  LARGE'
+         WRITE(3,'(A40)')'STEADY_TIME Default:  LARGE'
 # endif
        ENDIF
 
