@@ -124,6 +124,7 @@ SUBROUTINE READ_INPUT
 !ykchoi]
 
 # if defined (PARALLEL)
+    CALL MPI_COMM_SIZE (MPI_COMM_WORLD, nprocs, ier)   !ykchoi(04/May/2017)
     CALL MPI_COMM_RANK (MPI_COMM_WORLD, myid, ier)
 # endif
 
@@ -3621,19 +3622,25 @@ END SUBROUTINE PREVIEW_MEAN
 !
 !    HISTORY:
 !    05/01/2010  Fengyan Shi
-!
+!    05/08/2017  Young-Kwang Choi
 !-------------------------------------------------------------------------------------
-SUBROUTINE GetFile (FILE,PHI)
+
+SUBROUTINE GetFile(FILE,PHI)
      USE GLOBAL
      IMPLICIT NONE
 
-     INTEGER :: l
-     ! could be max. procs
-     INTEGER,DIMENSION(NumberProcessor) :: npxs,npys
-     REAL(SP),DIMENSION(NumberProcessor) :: xx
      REAL(SP),DIMENSION(MGlob+2*Nghost,NGlob+2*Nghost) :: PHIGLOB
      CHARACTER(LEN=80) FILE
      REAL(SP),DIMENSION(Mloc,Nloc),INTENT(OUT) :: PHI
+
+![-------ykchoi (08/May/2017)
+     INTEGER :: irank, lenx, leny, lenxy, ireq
+     INTEGER :: Nista, Niend, Njsta, Njend
+     INTEGER :: istanum, iendnum, jstanum, jendnum
+     INTEGER, ALLOCATABLE :: Nistas(:), Niends(:), Njstas(:), Njends(:)
+     INTEGER :: istatus(mpi_status_size)
+     REAL(SP), ALLOCATABLE :: xx(:,:)
+! -------ykchoi (08/May/2017) ]
 
 ! TEMP
 
@@ -3662,25 +3669,62 @@ SUBROUTINE GetFile (FILE,PHI)
         ENDDO
      endif
 
-     call MPI_Gather(npx,1,MPI_INTEGER,npxs,1,MPI_INTEGER,&
-          0,MPI_COMM_WORLD,ier)
-     call MPI_Gather(npy,1,MPI_INTEGER,npys,1,MPI_INTEGER,&
-          0,MPI_COMM_WORLD,ier)
+![-------ykchoi (08/May/2017)
+     Nista = iista + Nghost;
+     Niend = iiend + Nghost;
+     Njsta = jjsta + Nghost;
+     Njend = jjend + Nghost;
 
-     do i=1,Mloc
-     do j=1,Nloc
-        if (myid.eq.0) then
-           do l=1,px*py
-              xx(l) = PHIGLOB(i+npxs(l)*(Iend-Ibeg+1),&
-                   j+npys(l)*(Jend-Jbeg+1))
-           enddo
-        endif
-        call MPI_Scatter(xx,1,MPI_SP,&
-             PHI(i,j),1,MPI_SP,0,MPI_COMM_WORLD,ier)
+     allocate( Nistas(nprocs), Niends(nprocs), Njstas(nprocs), Njends(nprocs) )
+
+     call MPI_Gather( Nista, 1, MPI_INTEGER, Nistas, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( Niend, 1, MPI_INTEGER, Niends, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( Njsta, 1, MPI_INTEGER, Njstas, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( Njend, 1, MPI_INTEGER, Njends, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+
+     if( myid == 0 )then
+	 PHI = PHIGLOB( 1:Mloc, 1:Nloc )
+     endif
+
+     do irank=1, px*py-1
+	  if( myid == 0 ) then
+	    istanum = Nistas(irank+1) - Nghost
+	    iendnum = Niends(irank+1) + Nghost
+	    jstanum = Njstas(irank+1) - Nghost
+          jendnum = Njends(irank+1) + Nghost
+
+	    lenx = iendnum - istanum + 1
+	    leny = jendnum - jstanum + 1
+	    lenxy = lenx*leny
+	    allocate( xx(lenx, leny) )
+
+	    xx = PHIGLOB( istanum:iendnum, jstanum:jendnum )
+	    call mpi_isend( xx, lenxy, mpi_sp, irank, 1, mpi_comm_world, ireq, ier )
+	    call mpi_wait( ireq, istatus, ier )
+          deallocate( xx )
+
+	  elseif( myid == irank ) then
+	    
+	    lenx = Niend-Nista+1+2*Nghost
+	    leny = Njend-Njsta+1+2*Nghost
+	    lenxy = lenx*leny
+
+	    call mpi_irecv( PHI, lenxy, mpi_sp, 0, 1, mpi_comm_world, ireq, ier )
+	    call mpi_wait( ireq, istatus, ier )
+
+	  endif
      enddo
-     enddo
+
+     deallocate( Nistas, Niends, Njstas, Njends )
+
+! -------ykchoi (08/May/2017) ]
 
 END SUBROUTINE Getfile
+
 # endif
 
 # if defined (PARALLEL)
@@ -3690,23 +3734,33 @@ END SUBROUTINE Getfile
 !
 !    HISTORY:
 !      05/01/2010  Fengyan Shi
-!
+!      05/06/2017  Young-Kwang Choi 
 !-------------------------------------------------------------------------------------
 
-SUBROUTINE PutFile (FILE,PHI)
+SUBROUTINE PutFile(FILE,PHI)
      USE GLOBAL
      IMPLICIT NONE
 
-     INTEGER :: l
-     ! could be max. procs
-     INTEGER,DIMENSION(NumberProcessor) :: npxs,npys
-     REAL(SP),DIMENSION(NumberProcessor) :: xx
-     REAL(SP),DIMENSION(MGlob+2*Nghost,NGlob+2*Nghost) :: PHIGLOB
+![-------ykchoi (06/May/2017)
+      !INTEGER :: l
+      ! could be max. procs
+      !INTEGER,DIMENSION(NumberProcessor) :: npxs,npys
+	!REAL(SP),DIMENSION(NumberProcessor) :: xx
+     INTEGER :: irank, lenx, leny, lenxy, ireq
+     INTEGER, ALLOCATABLE :: iistas(:), iiends(:), jjstas(:), jjends(:)
+     INTEGER :: istatus(mpi_status_size)
+
+     REAL(SP), ALLOCATABLE :: LocalPHI(:,:)
+     REAL(SP), ALLOCATABLE :: xx(:,:)
+     
+      !REAL(SP),DIMENSION(MGlob+2*Nghost,NGlob+2*Nghost) :: PHIGLOB   
+     REAL(SP),DIMENSION( MGlob, NGlob ) :: PHIGLOB
+!-------ykchoi (06/May/2017)]
      CHARACTER(LEN=80) FILE
      REAL(SP),DIMENSION(Mloc,Nloc),INTENT(IN) :: PHI
      LOGICAL :: FirstCallPutFile = .TRUE.
      SAVE  FirstCallPutFile
-
+     
 ! first time call 
      IF(FirstCallPutFile)THEN
         FirstCallPutFile = .FALSE.
@@ -3717,43 +3771,75 @@ SUBROUTINE PutFile (FILE,PHI)
         write(FORMAT_LEN(14:14),'(A1)') ')'
      ENDIF
 
-     call MPI_Gather(npx,1,MPI_INTEGER,npxs,1,MPI_INTEGER,&
-          0,MPI_COMM_WORLD,ier)
-     call MPI_Gather(npy,1,MPI_INTEGER,npys,1,MPI_INTEGER,&
-          0,MPI_COMM_WORLD,ier)
+![-------ykchoi (06/May/2017)
+      !call MPI_Gather(npx,1,MPI_INTEGER,npxs,1,MPI_INTEGER,&
+      !    0,MPI_COMM_WORLD,ier)
+      !call MPI_Gather(npy,1,MPI_INTEGER,npys,1,MPI_INTEGER,&
+      !    0,MPI_COMM_WORLD,ier)
+     ALLOCATE( LocalPHI(Mloc-2*Nghost, Nloc-2*Nghost) )
+     LocalPHI=PHI(Ibeg:Iend,Jbeg:Jend)
 
-     do i=1,Mloc
-     do j=1,Nloc
-        call MPI_Gather(PHI(i,j),1,MPI_SP,&
-             xx,1,MPI_SP,0,MPI_COMM_WORLD,ier)
+     allocate( iistas(nprocs), iiends(nprocs), jjstas(nprocs), jjends(nprocs) ) 
 
-        if (j.eq.1) call MPI_Barrier(MPI_COMM_WORLD,ier)
+     call MPI_Gather( iista, 1, MPI_INTEGER, iistas, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( iiend, 1, MPI_INTEGER, iiends, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( jjsta, 1, MPI_INTEGER, jjstas, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+     call MPI_Gather( jjend, 1, MPI_INTEGER, jjends, 1, MPI_INTEGER, &
+                      0, MPI_COMM_WORLD, ier )
+      
+     if( myid == 0 ) then
+	 PHIGLOB( iista:iiend, jjsta:jjend ) = LocalPHI
+     endif
 
-        if (myid.eq.0) then
-           do l=1,px*py
-              PHIGLOB(i+npxs(l)*(Iend-Ibeg+1),&
-                   j+npys(l)*(Jend-Jbeg+1)) = xx(l)
-           enddo
-        endif
+     do irank=1, px*py-1  	  
+	  
+	  if( myid == 0 ) then
+	    lenx = iiends(irank+1) - iistas(irank+1) + 1 
+	    leny = jjends(irank+1) - jjstas(irank+1) + 1
+	    lenxy = lenx*leny
+	    allocate( xx(lenx, leny) )
+	  
+	    call mpi_irecv( xx, lenxy, mpi_sp, irank, 1, mpi_comm_world, ireq, ier )
+	    call mpi_wait( ireq, istatus, ier )
+	    
+		PHIGLOB( iistas(irank+1):iiends(irank+1), jjstas(irank+1):jjends(irank+1) ) = xx
+		deallocate( xx )
+
+        elseif( myid == irank ) then
+	    
+		lenxy = ( iiend-iista+1 )*( jjend-jjsta+1 )
+	    call mpi_isend( LocalPHI, lenxy, mpi_sp, 0, 1, mpi_comm_world, ireq, ier )
+	    call mpi_wait( ireq, istatus, ier )
+
+        endif	  
+
      enddo
-     enddo
+
+     deallocate(LocalPHI, iistas, iiends, jjstas, jjends)
 
      if (myid.eq.0) then
         OPEN(1,FILE=TRIM(FILE))
-        DO J=Nghost+1,NGlob+NGhost,OUTPUT_RES
-           WRITE(1,FORMAT_LEN)(real(PHIGLOB(I,J)),I=Nghost+1,MGlob+Nghost,OUTPUT_RES)
-        ENDDO
+	  DO J=1,NGlob,OUTPUT_RES
+	     WRITE(1,FORMAT_LEN)(real(PHIGLOB(I,J)),I=1,MGlob,OUTPUT_RES)
+	  ENDDO
+        !DO J=Nghost+1,NGlob+NGhost,OUTPUT_RES
+        !   WRITE(1,FORMAT_LEN)(real(PHIGLOB(I,J)),I=Nghost+1,MGlob+Nghost,OUTPUT_RES)
+        !ENDDO
 !100  FORMAT(5000E16.6)
 !100   FORMAT(FORMAT_LEN)
         CLOSE(1)
      endif
+!-------ykchoi (06/May/2017)]
 
 END SUBROUTINE Putfile
 
 # else
 !-------------------------------------------------------------------------------------
 !
-!    GetFile is subroutine for print-out of field data
+!    PutFile is subroutine for print-out of field data
 !
 !    HISTORY:
 !      05/01/2010  Fengyan Shi

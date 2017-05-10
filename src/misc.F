@@ -56,6 +56,11 @@ SUBROUTINE INDEX
     IMPLICIT NONE
     INTEGER :: icp
 
+![--------------ykchoi 02/May/2017
+    INTEGER :: myidi, myidj, irank
+    INTEGER, ALLOCATABLE :: iistas(:), iiends(:), jjstas(:), jjends(:)
+!--------------ykchoi 02/May/2017]
+
 ! TEMP
 # if defined (PARALLEL)
 
@@ -74,6 +79,17 @@ SUBROUTINE INDEX
     coords(1) = 0
     coords(2) = 0
 
+![--------------ykchoi 04/May/2017
+   if( nprocs /= NumberProcessor) then
+     if( myid==0 ) then
+	 print *, '======================================================='
+       print *, '*** STOP :: Number of processors in MPIRUN /= Px*Py ***'
+	 print *, '======================================================='
+     endif
+     call MPI_FINALIZE ( ier )
+   endif   
+!--------------ykchoi 04/May/2017]
+
     call MPI_CART_CREATE( MPI_COMM_WORLD, ndims, dims, &
          periods, reorder, comm2d, ier )
     call MPI_CART_COORDS( comm2d, myid, 2, coords, ier)
@@ -88,6 +104,11 @@ SUBROUTINE INDEX
     DO I=1,PX
     DO J=1,PY
       ProcessorID(I,J) = icp
+	![----ykchoi(04/May/2017) 
+	if( myid == icp ) then      
+	  myidi = I-1; myidj = J-1
+	endif
+	!----ykchoi]
       icp=icp+1
     ENDDO
     ENDDO
@@ -103,8 +124,47 @@ SUBROUTINE INDEX
 # endif
 
 ! now for serial code
-    Mloc=Mglob/px+2*Nghost
-    Nloc=Nglob/py+2*Nghost
+![--------------ykchoi 04/May/2017
+    !Mloc=Mglob/px+2*Nghost
+    !Nloc=Nglob/py+2*Nghost
+
+# if defined (PARALLEL)
+    call grid_range_per_procs( 1, Mglob, px, myidi, iista, iiend )
+    call grid_range_per_procs( 1, Nglob, py, myidj, jjsta, jjend )
+
+    Mloc = (iiend-iista+1) + 2*Nghost
+    Nloc = (jjend-jjsta+1) + 2*Nghost 
+    
+    !===========for check
+    allocate( iistas(nprocs), iiends(nprocs), jjstas(nprocs), jjends(nprocs) ) 
+    call mpi_gather( iista, 1, mpi_integer, iistas, 1, mpi_integer, &
+                     0, mpi_comm_world, ier )
+    call mpi_gather( iiend, 1, mpi_integer, iiends, 1, mpi_integer, &
+                     0, mpi_comm_world, ier )
+    call mpi_gather( jjsta, 1, mpi_integer, jjstas, 1, mpi_integer, &
+                     0, mpi_comm_world, ier )
+    call mpi_gather( jjend, 1, mpi_integer, jjends, 1, mpi_integer, &
+                     0, mpi_comm_world, ier )
+
+    if( myid == 0 ) then
+      open(500, file='Grid_Range.out', status='unknown')
+	write(500,'(A)')'Core#  istart#  iend#  jstart#  jend#'
+	do irank=0,nprocs-1
+	   write(500,'(5(i6,1x))') irank, iistas(irank+1), iiends(irank+1), &
+	                                  jjstas(irank+1), jjends(irank+1)
+	enddo
+	close(500)
+    endif
+    deallocate( iistas, iiends, jjstas, jjends ) 
+    !=============================
+
+# else
+    Mloc = Mglob + 2*Nghost
+    Nloc = Nglob + 2*Nghost
+
+# endif
+!--------------ykchoi 04/May/2017]
+
     Mloc1=Mloc+1
     Nloc1=Nloc+1
 
@@ -116,6 +176,33 @@ SUBROUTINE INDEX
     Jend1=Nloc1-Nghost
 
 END SUBROUTINE INDEX
+
+![--------------ykchoi 04/May/2017
+subroutine grid_range_per_procs( n1, n2, nprocs, myid, stag, endg )
+!-------------------------------------------------------------------------------------
+!
+!    Grid_range_per_procs is subroutine to get iiend etc
+!
+!    HISTORY: 
+!       05/10/2017 Fengyan Shi copied from Chois codes
+!
+!-------------------------------------------------------------------------------------
+
+    implicit none
+    integer, intent(in) :: n1, n2, nprocs, myid
+    integer, intent(out) :: stag, endg
+
+    integer :: inum1, inum2
+
+    inum1 = int( ( n2 - n1 + 1 )/nprocs )
+    inum2 = mod( n2-n1+1, nprocs )
+
+    stag = myid*inum1 + n1 + min(myid, inum2)
+    endg = stag + inum1 - 1
+
+    if( inum2 > myid ) endg=endg+1
+endsubroutine grid_range_per_procs
+!--------------ykchoi 04/May/2017]
 
 !-------------------------------------------------------------------------------------
 !

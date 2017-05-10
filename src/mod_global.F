@@ -66,6 +66,8 @@ MODULE GLOBAL
        INTEGER, DIMENSION(2) :: dims, coords
        LOGICAL, DIMENSION(2) :: periods
        LOGICAL :: reorder = .true.
+       INTEGER :: nprocs                 !ykchoi(04/May/2017)
+       INTEGER :: iista, iiend, jjsta, jjend !ykchoi(04/May/2017)
 # endif
        INTEGER :: px,py
 
