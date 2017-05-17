@@ -956,6 +956,14 @@ SUBROUTINE INITIALIZATION
 ! end breakwater
 
 
+# if defined (STORM)
+   ! use holland wind field in mod_storm.F
+      ALLOCATE(WindU2D(Mloc,Nloc),WindV2D(Mloc,Nloc),MASK_WIND(Mloc,Nloc))
+      WindU2D=ZERO
+      WindV2D=ZERO
+      MASK_WIND=0
+# else
+
 # if defined (WIND)
 ! wind force ! now constant wind, can use WindU2D for 2D applications
         ALLOCATE(WindU2D(Mloc,Nloc),WindV2D(Mloc,Nloc),MASK_WIND(Mloc,Nloc))
@@ -1000,6 +1008,9 @@ SUBROUTINE INITIALIZATION
        CLOSE(2)
       ENDIF
 # endif 
+
+# endif 
+  ! end holland wind
 
      DO J=1,Nloc
      DO I=1,Mloc

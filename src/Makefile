@@ -11,7 +11,7 @@
             FLAG_1 = -DDOUBLE_PRECISION 
             FLAG_2 = -DPARALLEL
             FLAG_3 = -DSAMPLES
-#            FLAG_4 = -DCARTESIAN
+            FLAG_4 = -DCARTESIAN
 #              FLAG_6 = -DINTEL
 #             FLAG_7 = -DMIXING
 #             FLAG_8 = -DCOUPLING
@@ -22,6 +22,8 @@
 #              FLAG_13 = -DVIS_KENNEDY
 #              FLAG_14 = -DVESSEL_PANEL_SOURCE
 #              FLAG_15 = -DREALISTIC_VESSEL_BODY
+              FLAG_16 = -DSTORM
+              FLAG_17 = -DWIND
 #--------------------------------------------------------------------------
 #  mpi defs 
 #--------------------------------------------------------------------------
@@ -69,6 +71,7 @@
 #--------------------------------------------------------------------------
 
 MODS  = mod_param.F mod_global.F mod_input.F mod_vessel.F mod_bathy_correction.F \
+        mod_storm.F
 
 MAIN  = main.F bc.F fluxes.F init.F io.F tridiagnal.F       \
         breaker.F derivatives.F dispersion.F etauv_solver.F \

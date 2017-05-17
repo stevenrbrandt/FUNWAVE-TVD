@@ -58,6 +58,10 @@ SUBROUTINE SourceTerms
 # if defined (VESSEL)
      USE VESSEL_MODULE
 # endif
+# if defined (STORM)
+     USE STORM_MODULE
+# endif
+
      IMPLICIT NONE
      REAL,DIMENSION(Mloc,Nloc) :: nu_vis
      LOGICAL :: PQ_scheme = .FALSE.
@@ -428,6 +432,12 @@ SUBROUTINE SourceTerms
 # endif
 # endif
 
+# if defined (STORM)
+    IF(AirPressure)THEN
+      SourceX = SourceX + StormPressureX
+      SourceY = SourceY + StormPressureY   
+    ENDIF  
+# endif
 
 END SUBROUTINE SourceTerms
 

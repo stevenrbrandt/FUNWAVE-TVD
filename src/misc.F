@@ -310,6 +310,10 @@ SUBROUTINE WIND_EFFECT
     IMPLICIT NONE
      REAL(SP)::Celerity,WaveAngle
 
+# if defined (STORM)
+   ! use holland
+# else
+
 ! time series wind
       IF(TIME>TimeWind(icount_winddata).AND. &
                icount_winddata<NumTimeWindData)THEN
@@ -344,14 +348,20 @@ SUBROUTINE WIND_EFFECT
 
      ENDDO
      ENDDO
+# endif
+  ! end holland
 
 ! mask_wind
+# if defined (STORM)
+     MASK_WIND=1
+# else
      MASK_WIND=1
      DO J=1,Nloc
      DO I=1,Mloc
       IF(ETA(I,J)<HeightMax(I,J)*(1-WindCrestPercent))MASK_WIND(I,J)=0
      ENDDO
      ENDDO
+# endif
 
 END SUBROUTINE WIND_EFFECT
 # endif 

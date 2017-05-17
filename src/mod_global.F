@@ -358,6 +358,7 @@ MODULE GLOBAL
 # if defined (WIND)
 ! wind
        LOGICAL :: WindForce = .TRUE.
+       LOGICAL :: AirPressure = .TRUE.
        CHARACTER(LEN=80) WIND_FILE
        INTEGER :: NumTimeWindData
        REAL(SP), DIMENSION(:,:),ALLOCATABLE :: WindU2D,WindV2D

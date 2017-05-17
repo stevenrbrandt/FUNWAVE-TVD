@@ -53,6 +53,10 @@ SUBROUTINE OUTPUT
 # if defined(VESSEL)
      USE VESSEL_MODULE
 # endif
+# if defined(STORM)
+     USE STORM_MODULE
+# endif
+
     IMPLICIT NONE
 
      SCREEN_COUNT=SCREEN_COUNT+DT
@@ -761,6 +765,22 @@ SUBROUTINE READ_INPUT
       WRITE(3,*)'-------------- WIND INFO -----------------'   
 # endif
 
+! air pressure
+      CALL READ_LOGICAL(AirPressure,FILE_NAME,'AirPressure',ierr)
+
+      IF(ierr==1)THEN
+        AirPressure = .FALSE.
+# if defined (PARALLEL)
+      if (myid.eq.0) THEN
+         WRITE(*,'(A40)')'NO air pressure effect'
+         WRITE(3,'(A40)')'NO air pressure effect'
+      endif
+# else
+         WRITE(*,'(A40)')'NO air pressure effect'
+         WRITE(3,'(A40)')'NO air pressure effect'
+# endif
+       ENDIF
+
 ! wind
       CALL READ_LOGICAL(WindForce,FILE_NAME,'WindForce',ierr)
 
@@ -778,7 +798,11 @@ SUBROUTINE READ_INPUT
        ENDIF
 
       IF(WindForce)THEN
+# if defined (STORM)
+       ! use Holland
+# else
         CALL READ_STRING(WIND_FILE,FILE_NAME,'WIND_FILE',ierr)
+# endif
 
         CALL READ_FLOAT(Cdw,FILE_NAME,'Cdw',ierr)
 
@@ -798,15 +822,15 @@ SUBROUTINE READ_INPUT
         CALL READ_FLOAT(WindCrestPercent,FILE_NAME,'WindCrestPercent',ierr)
 
       IF(ierr==1)THEN
-        WindCrestPercent=0.1_SP
+        WindCrestPercent=1.0_SP
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
-         WRITE(*,'(A40)')'WindCrestPercent Default:  0.1'
-         WRITE(3,'(A40)')'WindCrestPercent Default:  0.1'
+         WRITE(*,'(A40)')'WindCrestPercent Default:  1.0'
+         WRITE(3,'(A40)')'WindCrestPercent Default:  1.0'
       endif
 # else
-         WRITE(*,'(A40)')'WindCrestPercent Default:  0.1'
-         WRITE(3,'(A40)')'WindCrestPercent Default:  0.1'
+         WRITE(*,'(A40)')'WindCrestPercent Default:  1.0'
+         WRITE(3,'(A40)')'WindCrestPercent Default:  1.0'
 # endif
        ENDIF 
 
@@ -980,7 +1004,7 @@ SUBROUTINE READ_INPUT
          WRITE(3,'(A50)')'Yc_WK defalt: 0.0'
       endif
 # else
-         WRITE(*,'(A50)')''Yc_WK defalt: 0.0'
+         WRITE(*,'(A50)')'Yc_WK defalt: 0.0'
          WRITE(3,'(A50)')'Yc_WK defalt: 0.0'
 # endif
        ENDIF
@@ -3392,6 +3416,9 @@ SUBROUTINE PREVIEW
 # if defined (VESSEL)
      USE VESSEL_MODULE
 # endif
+# if defined(STORM)
+     USE STORM_MODULE
+# endif
 
      IMPLICIT NONE
 
@@ -3524,6 +3551,17 @@ SUBROUTINE PREVIEW
 !        TMP_NAME = TRIM(FDIR)//'etat_'//TRIM(FILE_NAME)
 !         call PutFile(TMP_NAME,etat) 
       ENDIF
+
+# if defined (STORM)
+    IF(OUT_STORM)THEN
+        TMP_NAME = TRIM(FDIR)//'Pstorm_'//TRIM(FILE_NAME)
+        call PutFile(TMP_NAME,StormPressureTotal)
+        TMP_NAME = TRIM(FDIR)//'Ustorm_'//TRIM(FILE_NAME)
+        call PutFile(TMP_NAME,WindU2D)
+        TMP_NAME = TRIM(FDIR)//'Vstorm_'//TRIM(FILE_NAME)
+        call PutFile(TMP_NAME,WindV2D)
+    ENDIF
+# endif
      
 # if defined (VESSEL)
      IF(OUT_VESSEL)THEN
