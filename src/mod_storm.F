@@ -292,7 +292,7 @@ SUBROUTINE STORM_FORCING
 
 #ifndef CARTESIAN
 #ifdef STORM
-#error "Please disable the -DSTORM flag and recompile."
+#error "Please compile without -DSTORM when -DCARTESIAN is not set."
 #endif
 #endif
 

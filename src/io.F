@@ -130,7 +130,6 @@ SUBROUTINE READ_INPUT
 # if defined (PARALLEL)
     CALL MPI_COMM_SIZE (MPI_COMM_WORLD, nprocs, ier)   !ykchoi(04/May/2017)
     CALL MPI_COMM_RANK (MPI_COMM_WORLD, myid, ier)
-    print *,'NPROCS=',nprocs
 # endif
 
       FDIR=TRIM(RESULT_FOLDER)

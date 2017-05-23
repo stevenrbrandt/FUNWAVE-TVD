@@ -1,6 +1,6 @@
 #-----------BEGIN MAKEFILE-------------------------------------------------
             SHELL         = /bin/sh
-            DEF_FLAGS     = -P -C -traditional 
+            DEF_FLAGS     = -P -traditional 
             EXEC          = mytvd
 #==========================================================================
 #--------------------------------------------------------------------------
@@ -22,14 +22,14 @@
 #              FLAG_13 = -DVIS_KENNEDY
 #              FLAG_14 = -DVESSEL_PANEL_SOURCE
 #              FLAG_15 = -DREALISTIC_VESSEL_BODY
-              FLAG_16 = -DSTORM
+#              FLAG_16 = -DSTORM
               FLAG_17 = -DWIND
 #--------------------------------------------------------------------------
 #  mpi defs 
 #--------------------------------------------------------------------------
          CPP      = /usr/bin/cpp 
          CPPFLAGS = $(DEF_FLAGS)
-         FC       = mpif90
+         FC       = /usr/lib64/openmpi/bin/mpif90
 #         FC        = /usr/local/mpi/intel/openmpi-1.8.4/bin/mpif90
          DEBFLGS  = 
          OPT      = 

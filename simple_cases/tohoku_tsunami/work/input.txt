@@ -17,12 +17,13 @@ PY = 2
   !                                 need slope,SLP starting point, Xslp
   !                                 and depth_flat
 DEPTH_TYPE = DATA
-DEPTH_FILE = ../external_files/depth_30min.txt
+DEPTH_FILE = /home/sbrandt/tsunami/depth_30min.txt
 
   ! -------------------PRINT---------------------------------
   ! PRINT*,
   ! result folder
-RESULT_FOLDER = /Users/fengyanshi15/tmp1/
+RESULT_FOLDER = ./
+!/Users/fengyanshi15/tmp1/
 
   ! ------------------DIMENSION-----------------------------
   ! global grid dimension
@@ -46,10 +47,21 @@ Dtheta = 0.5
   !         must provide three (3) files 
 INI_UVZ = T
   ! if true, input eta u and v file names
-ETA_FILE = ../external_files/ETA_30min.txt
-U_FILE = ../external_files/U_30min.txt
-V_FILE = ../external_files/V_30min.txt
+ETA_FILE = /home/sbrandt/tsunami/ETA_30min.txt
+U_FILE = /home/sbrandt/tsunami/U_30min.txt
+V_FILE = /home/sbrandt/tsunami/V_30min.txt
   ! ---------------- SPONGE LAYER ------------------------
+WAVEMAKER = INI_GAU
+Xc = 0.0
+Yc = 0.0
+AMP = 0.0
+WID = 0.0
+DEPTH_FLAT = F
+A_sponge = 0
+R_sponge = 0
+itlast = 10
+DISPERSION = F
+SPHERICAL = T
 SPONGE_ON = T
 Sponge_west_width =  100000.0  ! in meters
 Sponge_east_width =  100000.0
@@ -78,3 +90,5 @@ STATIONS_FILE = stations-pacific.txt
 ETA = T
 Hmax = T
 
+PLOT_INTV_STORM=0.0
+OUT_STORM=F
