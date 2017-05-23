@@ -130,6 +130,7 @@ SUBROUTINE READ_INPUT
 # if defined (PARALLEL)
     CALL MPI_COMM_SIZE (MPI_COMM_WORLD, nprocs, ier)   !ykchoi(04/May/2017)
     CALL MPI_COMM_RANK (MPI_COMM_WORLD, myid, ier)
+    print *,'NPROCS=',nprocs
 # endif
 
       FDIR=TRIM(RESULT_FOLDER)
@@ -231,6 +232,7 @@ SUBROUTINE READ_INPUT
       CALL READ_FLOAT(DX,FILE_NAME,'DX',ierr)
 
       IF(ierr==1)THEN
+         PRINT *,"Did you intend to use Spherical Coordinates?"
 # if defined (PARALLEL)
       if (myid.eq.0) THEN
          WRITE(*,'(A40,A40)')'DX:', 'NOT DEFINED, STOP'

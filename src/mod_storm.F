@@ -290,6 +290,11 @@ SUBROUTINE STORM_FORCING
     ENDDO
     ENDDO
 
+#ifndef CARTESIAN
+#ifdef STORM
+#error "Please disable the -DSTORM flag and recompile."
+#endif
+#endif
 
     DO J=Jbeg,Jend
     DO I=Ibeg,Iend
